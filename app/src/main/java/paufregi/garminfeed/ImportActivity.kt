@@ -7,17 +7,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
 import paufregi.garminfeed.db.Database
 import paufregi.garminfeed.lifecycle.Event
 import paufregi.garminfeed.lifecycle.ViewModel
-import paufregi.garminfeed.models.Weight
-import paufregi.garminfeed.ui.components.FailedDialog
 import paufregi.garminfeed.ui.screens.ImportScreen
 import paufregi.garminfeed.ui.theme.Theme
-import paufregi.garminfeed.utils.RenphoReader
 
 @ExperimentalMaterial3Api
 class ImportActivity : ComponentActivity() {
@@ -43,32 +39,16 @@ class ImportActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val onComplete = { finish() }
-        try {
-            intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let { uri ->
-                contentResolver.openInputStream(uri)?.let {
-                    val weights = RenphoReader.read(it)
-                    val onEvent = viewModel::onEvent
-                    val onSave = { w: List<Weight> -> onEvent(Event.SaveWeights(w)) }
-                    setContent {
-                        Theme {
-                            viewModel.state.collectAsState()
-                            ImportScreen(
-                                weights = weights,
-                                onSave = onSave,
-                                onComplete = onComplete,
-                                status = viewModel.status
-                            )
-                        }
-                    }
-                    return
-                }
-            }
-        } catch (e: Exception) {
-            setContent {
-                Theme {
-                    FailedDialog(onClick = onComplete)
-                }
+        intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let {
+            viewModel.onEvent(Event.SyncWeights(it))
+        }
+
+        setContent {
+            Theme {
+                ImportScreen(
+                    status = viewModel.importStatus,
+                    onComplete = { finish() }
+                )
             }
         }
     }

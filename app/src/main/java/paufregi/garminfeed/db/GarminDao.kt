@@ -1,7 +1,6 @@
 package paufregi.garminfeed.db
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -21,18 +20,21 @@ interface GarminDao {
     @Upsert
     suspend fun upsertCachedOauth2(oauth2: CachedOauth2)
 
-    @Delete
-    suspend fun deleteOauth1(oauth1: CachedOauth1)
+    @Query("DELETE FROM cachedOauth2 WHERE ID = 1")
+    suspend fun clearCachedOauth1()
 
-    @Delete
-    suspend fun deleteOauth2(oauth2: CachedOauth2)
+    @Query("DELETE FROM cachedOauth2 WHERE ID = 1")
+    suspend fun clearCachedOauth2()
 
     @Query("SELECT * FROM credentials WHERE ID = 1")
-    fun getCredentials(): Flow<Credentials>
+    fun getFlowCredentials(): Flow<Credentials>
+
+    @Query("SELECT * FROM credentials WHERE ID = 1")
+    suspend fun getCredentials(): Credentials?
 
     @Query("SELECT * FROM cachedOauth1 WHERE ID = 1")
-    fun getCachedOauth1(): Flow<CachedOauth1?>
+    suspend fun getCachedOauth1(): CachedOauth1?
 
     @Query("SELECT * FROM cachedOauth2 WHERE ID = 1")
-    fun getCachedOauth2(): Flow<CachedOauth2?>
+    suspend fun getCachedOauth2(): CachedOauth2?
 }

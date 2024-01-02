@@ -15,56 +15,65 @@ import paufregi.garminfeed.models.CachedOauth2
 import paufregi.garminfeed.models.Status
 import paufregi.garminfeed.ui.ShortToast
 import paufregi.garminfeed.utils.Fit
+import paufregi.garminfeed.utils.RenphoReader
 
 class ViewModel(private val application: Application, private val db: Database) :
     AndroidViewModel(application) {
-    private val _credentials = db.garminDao.getCredentials()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-    private val _oauth1 = db.garminDao.getCachedOauth1()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-    private val _oauth2 = db.garminDao.getCachedOauth2()
+    private val _credentials = db.garminDao.getFlowCredentials()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
 
     private val _state = MutableStateFlow(State())
-    val state = combine(_state, _credentials, _oauth1, _oauth2)
-    { state, credentials, oauth1, oauth2 ->
-        state.copy(
-            credentials = credentials,
-            cachedOauth1 = oauth1,
-            cachedOauth2 = oauth2,
-        )
+    val state = combine(_state, _credentials)
+    { state, credentials ->
+        state.copy(credentials = credentials)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), State())
 
-    var status = MutableStateFlow<Status?>(null)
+    var importStatus = MutableStateFlow<Status?>(null)
 
     fun onEvent(event: Event) {
         when (event) {
-            is Event.SaveWeights -> {
-                if (state.value.credentials == null) {
-                    ShortToast(application.applicationContext, "No credentials")
-                    return
-                }
-                if (event.weights.isEmpty()) {
-                    ShortToast(application.applicationContext, "Nothing to sync")
-                    return
-                }
-                viewModelScope.launch {
-                    status.value = Status.Uploading
-                    val fitFile = Fit.weight(application.applicationContext, event.weights)
+            is Event.SyncWeights -> viewModelScope.launch {
+                importStatus.value = Status.Uploading
 
+                try {
+                    val weights = application.contentResolver.openInputStream(event.uri)?.let {
+                        RenphoReader.read(it)
+                    }
+
+                    if (weights.isNullOrEmpty()) {
+                        ShortToast(application.applicationContext, "Nothing to sync")
+                        importStatus.value = Status.Success
+                        return@launch
+                    }
+
+                    val credentials = db.garminDao.getCredentials()
+
+                    if (credentials == null) {
+                        ShortToast(application.applicationContext, "No credentials")
+                        importStatus.value = Status.Failure
+                        return@launch
+                    }
+
+                    val cachedOauth1 = db.garminDao.getCachedOauth1()
+                    val cachedOauth2 = db.garminDao.getCachedOauth2()
+
+                    val fitFile = Fit.weight(application.applicationContext, weights)
                     val client = GarminClient(
-                        username = state.value.credentials!!.username,
-                        password = state.value.credentials!!.password,
-                        oauth1 = state.value.cachedOauth1?.oauth1,
-                        oauth2 = state.value.cachedOauth2?.oauth2,
-                        cacheOauth1 = { oauth1 -> onEvent(Event.CacheOauth1(oauth1)) },
-                        cacheOauth2 = { oauth2 -> onEvent(Event.CacheOauth2(oauth2)) }
+                        username = credentials.username,
+                        password = credentials.password,
+                        oauth1 = cachedOauth1?.oauth1,
+                        oauth2 = cachedOauth2?.oauth2,
+                        cacheOauth1 = { onEvent(Event.CacheOauth1(it)) },
+                        cacheOauth2 = { onEvent(Event.CacheOauth2(it)) }
                     )
 
                     val res = client.uploadFile(fitFile)
-                    status.value = if (res) Status.Success else Status.Fails
-                }
+                    importStatus.value = if (res) Status.Success else Status.Failure
 
+                } catch (e: Exception) {
+                    importStatus.value = Status.Failure
+                    return@launch
+                }
             }
 
             is Event.SaveCredentials -> viewModelScope.launch {
@@ -80,12 +89,8 @@ class ViewModel(private val application: Application, private val db: Database) 
             }
 
             is Event.ClearCache -> viewModelScope.launch {
-                if (state.value.cachedOauth1 != null) {
-                    db.garminDao.deleteOauth1(state.value.cachedOauth1!!)
-                }
-                if (state.value.cachedOauth2 != null) {
-                    db.garminDao.deleteOauth2(state.value.cachedOauth2!!)
-                }
+                db.garminDao.clearCachedOauth1()
+                db.garminDao.clearCachedOauth2()
                 ShortToast(application.applicationContext, "Cache cleared")
             }
 
