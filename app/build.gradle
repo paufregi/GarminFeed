@@ -86,6 +86,6 @@ dependencies {
     implementation 'se.akerfeldt:okhttp-signpost:1.1.0'
     implementation 'oauth.signpost:signpost-core:2.1.1'
     implementation 'com.auth0:java-jwt:4.4.0'
-    implementation 'com.garmin:fit:21.126.0'
+    implementation 'com.garmin:fit:21.141.0'
     implementation 'org.apache.commons:commons-csv:1.10.0'
 }
