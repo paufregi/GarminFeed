@@ -22,5 +22,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Dependency graph
+        uses: gradle/actions/dependency-submission@v3
+
       - name: Run build
         run: ./gradlew build
+
+      - name: Run lint
+        run: ./gradlew lint
