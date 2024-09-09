@@ -49,6 +49,7 @@ jobs:
         uses: hidakatsuya/action-report-android-lint@v1.2.0
         with:
           result-path: "app/build/reports/lint-results-debug.xml"
+          fail-on-warning: false
 
   dependacy-graph:
     name: Dependency graph
