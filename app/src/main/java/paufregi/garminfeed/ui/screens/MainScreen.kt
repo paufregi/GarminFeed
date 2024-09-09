@@ -63,6 +63,8 @@ fun MainScreen(
                 Text(text = "Setup credentials")
             }
             Spacer(modifier = Modifier.height(75.dp))
+            Button(text = "Activities", onClick = { nav.navigate(Screen.Activities.route) })
+            Spacer(modifier = Modifier.height(75.dp))
             Button(text = "Setup", onClick = { nav.navigate(Screen.Credentials.route) })
             Spacer(modifier = Modifier.height(30.dp))
             Button(text = "Clear cache", onClick = clearCache)

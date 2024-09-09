@@ -10,6 +10,7 @@ import paufregi.garminfeed.Screen
 import paufregi.garminfeed.lifecycle.Event
 import paufregi.garminfeed.lifecycle.State
 import paufregi.garminfeed.ui.preview.StatePreview
+import paufregi.garminfeed.ui.screens.ActivitiesScreen
 import paufregi.garminfeed.ui.screens.CredentialsScreen
 import paufregi.garminfeed.ui.screens.MainScreen
 
@@ -33,6 +34,11 @@ fun MainNavigation(
             CredentialsScreen(
                 credentials = state.credentials,
                 onSave = { onEvent(Event.SaveCredentials(it)) },
+                nav = navController
+            )
+        }
+        composable(route = Screen.Credentials.route) {
+            ActivitiesScreen(
                 nav = navController
             )
         }
