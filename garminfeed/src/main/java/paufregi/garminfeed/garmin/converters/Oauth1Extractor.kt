@@ -4,7 +4,7 @@ import okhttp3.ResponseBody
 import paufregi.garminfeed.garmin.data.Oauth1
 import retrofit2.Converter
 
-class Oauth1Converter : Converter<ResponseBody, Oauth1> {
+class Oauth1Extractor : Converter<ResponseBody, Oauth1> {
     override fun convert(value: ResponseBody): Oauth1 {
         val queryMap = value.string().split('&').associate {
             val parts = it.split('=')

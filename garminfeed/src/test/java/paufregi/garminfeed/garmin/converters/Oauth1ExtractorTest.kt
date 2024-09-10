@@ -6,12 +6,11 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 
 import org.junit.jupiter.api.Test
-import paufregi.garminfeed.garmin.data.CSRF
 import paufregi.garminfeed.garmin.data.Oauth1
 
-class Oauth1ConverterTest {
+class Oauth1ExtractorTest {
 
-    private val converter = Oauth1Converter()
+    private val converter = Oauth1Extractor()
 
     private val apiResponse = "oauth_token=TEST_TOKEN&oauth_token_secret=TEST_TOKEN_SECRET"
     private val mediaType = "application/json"

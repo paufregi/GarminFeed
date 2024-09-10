@@ -30,7 +30,7 @@ class GarminConverterFactory : Converter.Factory() {
         return when (type) {
             CSRF::class.java -> CSRFExtractor()
             Ticket::class.java -> TicketExtractor()
-            Oauth1::class.java -> Oauth1Converter()
+            Oauth1::class.java -> Oauth1Extractor()
             else -> null
         }
     }
