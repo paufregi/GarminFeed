@@ -5,7 +5,7 @@ import com.google.common.truth.Truth.assertThat
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
 
-import org.junit.jupiter.api.Test
+import org.junit.Test
 import paufregi.garminfeed.garmin.data.CSRF
 
 class CSRFExtractorTest {
