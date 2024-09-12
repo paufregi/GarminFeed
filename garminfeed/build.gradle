@@ -95,13 +95,18 @@ dependencies {
     debugImplementation libs.androidx.ui.test.manifest
 
     testRuntimeOnly libs.junit.platform.launcher
-    testImplementation 'junit:junit:4.13.2'
+    testImplementation libs.junit
 
     testImplementation libs.truth
     testImplementation libs.mockk
-    testImplementation "androidx.test:core:1.6.1"
+    testImplementation libs.androidx.core
 
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
     androidTestImplementation libs.androidx.compose.ui.test.junit4
+    androidTestImplementation libs.core.testing
+    androidTestImplementation libs.truth
+
+
+
 }
