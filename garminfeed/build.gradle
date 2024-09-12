@@ -55,11 +55,6 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion '1.8.0'
     }
-
-    testOptions {
-        execution 'ANDROIDX_TEST_ORCHESTRATOR'
-    }
-
 }
 
 composeCompiler {
