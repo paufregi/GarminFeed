@@ -20,7 +20,7 @@ interface GarminDao {
     @Upsert
     suspend fun upsertCachedOauth2(oauth2: CachedOauth2)
 
-    @Query("DELETE FROM cachedOauth2 WHERE ID = 1")
+    @Query("DELETE FROM cachedOauth1 WHERE ID = 1")
     suspend fun clearCachedOauth1()
 
     @Query("DELETE FROM cachedOauth2 WHERE ID = 1")
