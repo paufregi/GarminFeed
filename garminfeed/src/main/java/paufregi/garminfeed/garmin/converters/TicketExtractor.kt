@@ -8,6 +8,9 @@ class TicketExtractor : Converter<ResponseBody, Ticket> {
     private val ticketRegex = Regex("""embed\?ticket=([^"]+)""")
 
     override fun convert(value: ResponseBody): Ticket {
-        return Ticket(ticketRegex.find(value.string())?.groups?.get(1)?.value.orEmpty())
+        val matchedGroups = ticketRegex.find(value.string())?.groups
+        val firstGroup = matchedGroups?.get(1)
+
+        return Ticket(firstGroup?.value.orEmpty())
     }
 }

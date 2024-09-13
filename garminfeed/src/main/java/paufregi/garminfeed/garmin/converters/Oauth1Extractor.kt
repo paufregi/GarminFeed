@@ -8,8 +8,8 @@ class Oauth1Extractor : Converter<ResponseBody, Oauth1> {
     override fun convert(value: ResponseBody): Oauth1 {
         val queryMap = value.string().split('&').associate {
             val parts = it.split('=')
-            val k = parts.firstOrNull().orEmpty()
-            val v = parts.drop(1).firstOrNull().orEmpty()
+            val k = parts.firstOrNull()
+            val v = parts.drop(1).firstOrNull()
             Pair(k, v)
         }
 

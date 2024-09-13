@@ -41,23 +41,20 @@ class TicketExtractorTest {
         	</body>m
         </html>
     """.trimIndent()
+
     private val mediaType = "text/html; charset=UTF-8"
 
     @Test
     fun `Extract Ticket`() {
         val responseBody = html.toResponseBody(mediaType.toMediaType())
 
-        val result = converter.convert(responseBody)
-
-        assertThat(result).isEqualTo(Ticket("TEST_TICKET_VALUE"))
+        assertThat(converter.convert(responseBody)).isEqualTo(Ticket("TEST_TICKET_VALUE"))
     }
 
     @Test
     fun `No Ticket`() {
         val responseBody = "".toResponseBody(mediaType.toMediaType())
 
-        val result = converter.convert(responseBody)
-
-        assertThat(result).isEqualTo(Ticket(""))
+                assertThat(converter.convert(responseBody)).isEqualTo(Ticket(""))
     }
 }

@@ -8,6 +8,9 @@ class CSRFExtractor : Converter<ResponseBody, CSRF> {
     private val csrfRegex = Regex("""name="_csrf"\s+value="(.+?)"""")
 
     override fun convert(value: ResponseBody): CSRF {
-        return CSRF(csrfRegex.find(value.string())?.groups?.get(1)?.value.orEmpty())
+        val matchedGroups = csrfRegex.find(value.string())?.groups
+        val firstGroup = matchedGroups?.get(1)
+
+        return CSRF(firstGroup?.value.orEmpty())
     }
 }
