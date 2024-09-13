@@ -48,7 +48,7 @@ jobs:
       - name: Check and report lint results
         uses: hidakatsuya/action-report-android-lint@v1.2.0
         with:
-          result-path: "garminfeed/build/reports/lint-results-debug.xml"
+          result-path: "app/build/reports/lint-results-debug.xml"
           fail-on-warning: false
 
   dependacy-graph:

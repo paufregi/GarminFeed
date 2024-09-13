@@ -3,6 +3,7 @@ plugins {
     alias libs.plugins.kotlin.android
     alias libs.plugins.kotlin.compose
     alias libs.plugins.ksp
+    alias libs.plugins.kover
 }
 
 android {
@@ -64,8 +65,13 @@ composeCompiler {
     stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
-dependencies {
+kover {
+    reports {
+        filters.excludes.androidGeneratedClasses()
+    }
+}
 
+dependencies {
     implementation libs.androidx.core.ktx
     implementation libs.androidx.lifecycle.runtime.ktx
     implementation libs.androidx.activity.compose
@@ -101,7 +107,4 @@ dependencies {
     androidTestImplementation libs.androidx.compose.ui.test.junit4
     androidTestImplementation libs.core.testing
     androidTestImplementation libs.truth
-
-
-
 }
