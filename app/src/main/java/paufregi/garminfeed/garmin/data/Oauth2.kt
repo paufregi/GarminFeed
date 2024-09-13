@@ -22,8 +22,8 @@ data class Oauth2(
     @SerializedName("refresh_token_expires_in")
     val refreshTokenExpiresIn: Long,
 ) {
-    fun isExpired(): Boolean {
-        return accessToken.isBlank() || JWT.decode(accessToken).expiresAt.before(Date())
+    fun isExpired(date: Date = Date()): Boolean {
+        return accessToken.isBlank() || JWT.decode(accessToken).expiresAt.before(date)
     }
 
     override fun toString(): String {
