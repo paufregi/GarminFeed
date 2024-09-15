@@ -7,7 +7,7 @@ import java.util.Locale
 
 object Formatter {
     val dateTimeForFilename: DateTimeFormatter = DateTimeFormatter
-        .ofPattern("yyyyMMdd_kkmmss")
+        .ofPattern("yyyyMMdd_hhmmss")
         .withZone(ZoneId.systemDefault())
 
     val dateTimeForImport = { locale: Locale -> SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale) }
