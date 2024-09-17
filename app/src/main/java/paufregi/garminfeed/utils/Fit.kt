@@ -1,6 +1,5 @@
 package paufregi.garminfeed.utils
 
-import android.content.Context
 import com.garmin.fit.DateTime
 import com.garmin.fit.FileEncoder
 import com.garmin.fit.FileIdMesg
@@ -9,13 +8,10 @@ import com.garmin.fit.Manufacturer
 import com.garmin.fit.WeightScaleMesg
 import paufregi.garminfeed.models.Weight
 import java.io.File
-import java.time.Instant
 
 object Fit {
-    fun weight(context: Context, weights: List<Weight>): File {
-        val filename = "ws_${Formatter.dateTimeForFilename.format(Instant.now())}.fit"
-        val file = File(context.cacheDir, filename)
-        val encoder = FileEncoder(File(context.cacheDir, filename), Fit.ProtocolVersion.V1_0)
+    fun weight(file: File, weights: List<Weight>) {
+        val encoder = FileEncoder(file, Fit.ProtocolVersion.V1_0)
 
         val fileIdMesg = FileIdMesg()
         fileIdMesg.type = com.garmin.fit.File.WEIGHT
@@ -40,6 +36,5 @@ object Fit {
         }
 
         encoder.close()
-        return file
     }
 }

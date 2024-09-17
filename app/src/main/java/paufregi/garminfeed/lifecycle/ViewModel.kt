@@ -15,7 +15,10 @@ import paufregi.garminfeed.models.CachedOauth2
 import paufregi.garminfeed.models.Status
 import paufregi.garminfeed.ui.ShortToast
 import paufregi.garminfeed.utils.Fit
+import paufregi.garminfeed.utils.Formatter
 import paufregi.garminfeed.utils.RenphoReader
+import java.io.File
+import java.time.Instant
 
 class ViewModel(private val application: Application, private val db: Database) :
     AndroidViewModel(application) {
@@ -57,7 +60,9 @@ class ViewModel(private val application: Application, private val db: Database) 
                     val cachedOauth1 = db.garminDao.getCachedOauth1()
                     val cachedOauth2 = db.garminDao.getCachedOauth2()
 
-                    val fitFile = Fit.weight(application.applicationContext, weights)
+                    val filename = "ws_${Formatter.dateTimeForFilename.format(Instant.now())}.fit"
+                    val fitFile = File(application.applicationContext.cacheDir, filename)
+                    Fit.weight(fitFile, weights)
                     val client = GarminClient(
                         username = credentials.username,
                         password = credentials.password,
