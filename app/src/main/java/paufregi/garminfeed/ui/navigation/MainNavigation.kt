@@ -16,7 +16,7 @@ import paufregi.garminfeed.ui.screens.MainScreen
 @Composable
 @ExperimentalMaterial3Api
 fun MainNavigation(
-    @PreviewParameter(StatePreview::class) state: State,
+    @PreviewParameter(StatePreview::class) state: State?,
     onEvent: (Event) -> Unit = {},
 ) {
     val navController = rememberNavController()
@@ -24,14 +24,14 @@ fun MainNavigation(
     NavHost(navController = navController, startDestination = Screen.Main.route) {
         composable(route = Screen.Main.route) {
             MainScreen(
-                credentials = state.credentials,
+                credentials = state?.credentials,
                 clearCache = { onEvent(Event.ClearCache) },
                 nav = navController
             )
         }
         composable(route = Screen.Credentials.route) {
             CredentialsScreen(
-                credentials = state.credentials,
+                credentials = state?.credentials,
                 onSave = { onEvent(Event.SaveCredentials(it)) },
                 nav = navController
             )

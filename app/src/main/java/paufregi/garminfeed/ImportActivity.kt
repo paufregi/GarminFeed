@@ -7,7 +7,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.room.Room
 import paufregi.garminfeed.db.Database
 import paufregi.garminfeed.lifecycle.Event
@@ -43,10 +46,13 @@ class ImportActivity : ComponentActivity() {
             viewModel.onEvent(Event.SyncWeights(it))
         }
 
+
+
         setContent {
             Theme {
+                val state by viewModel.state.collectAsStateWithLifecycle()
                 ImportScreen(
-                    status = viewModel.importStatus,
+                    status = state.importStatus,
                     onComplete = { finish() }
                 )
             }

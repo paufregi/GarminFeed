@@ -2,41 +2,52 @@ package paufregi.garminfeed.lifecycle
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.garminfeed.db.Database
 import paufregi.garminfeed.garmin.GarminClient
 import paufregi.garminfeed.models.CachedOauth1
 import paufregi.garminfeed.models.CachedOauth2
-import paufregi.garminfeed.models.Status
+import paufregi.garminfeed.models.ImportStatus
 import paufregi.garminfeed.ui.ShortToast
 import paufregi.garminfeed.utils.Fit
 import paufregi.garminfeed.utils.Formatter
 import paufregi.garminfeed.utils.RenphoReader
 import java.io.File
 import java.time.Instant
+import javax.inject.Inject
 
-class ViewModel(private val application: Application, private val db: Database) :
-    AndroidViewModel(application) {
-    private val _credentials = db.garminDao.getFlowCredentials()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), null)
-
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
+    private val application: Application,
+    private val db: Database
+) : ViewModel() {
     private val _state = MutableStateFlow(State())
-    val state = combine(_state, _credentials)
-    { state, credentials ->
-        state.copy(credentials = credentials)
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), State())
 
-    var importStatus = MutableStateFlow<Status?>(null)
+    val state = _state.onStart {
+        val credentials = db.garminDao.getCredentials()
+        _state.update { it.copy(credentials = credentials) }
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), State())
+
+    fun resetClearCacheToast() = _state.update { it.copy(clearCacheToast = false) }
+
+    init {
+        savedStateHandle
+    }
 
     fun onEvent(event: Event) {
         when (event) {
             is Event.SyncWeights -> viewModelScope.launch {
-                importStatus.value = Status.Uploading
+                _state.update { it.copy(importStatus = ImportStatus.Uploading) }
 
                 try {
                     val weights = application.contentResolver.openInputStream(event.uri)?.let {
@@ -45,7 +56,7 @@ class ViewModel(private val application: Application, private val db: Database) 
 
                     if (weights.isNullOrEmpty()) {
                         ShortToast(application.applicationContext, "Nothing to sync")
-                        importStatus.value = Status.Success
+                        _state.update { it.copy(importStatus = ImportStatus.Success) }
                         return@launch
                     }
 
@@ -53,7 +64,7 @@ class ViewModel(private val application: Application, private val db: Database) 
 
                     if (credentials == null) {
                         ShortToast(application.applicationContext, "No credentials")
-                        importStatus.value = Status.Failure
+                        _state.update { it.copy(importStatus = ImportStatus.Failure) }
                         return@launch
                     }
 
@@ -73,10 +84,10 @@ class ViewModel(private val application: Application, private val db: Database) 
                     )
 
                     val res = client.uploadFile(fitFile)
-                    importStatus.value = if (res) Status.Success else Status.Failure
+                    _state.update { it.copy(importStatus = if (res) ImportStatus.Success else ImportStatus.Failure) }
 
                 } catch (e: Exception) {
-                    importStatus.value = Status.Failure
+                    _state.update { it.copy(importStatus = ImportStatus.Failure) }
                     return@launch
                 }
             }
@@ -96,7 +107,8 @@ class ViewModel(private val application: Application, private val db: Database) 
             is Event.ClearCache -> viewModelScope.launch {
                 db.garminDao.clearCachedOauth1()
                 db.garminDao.clearCachedOauth2()
-                ShortToast(application.applicationContext, "Cache cleared")
+                _state.update { it.copy(clearCacheToast = true) }
+//                ShortToast(application.applicationContext, "Cache cleared")
             }
 
         }
