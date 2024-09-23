@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.9.2"
-androidGradlePlugin = "8.6.0"
+androidGradlePlugin = "8.6.1"
 appcompat = "1.7.0"
 commonsCsv = "1.11.0"
 composeVersion = "1.7.1"
