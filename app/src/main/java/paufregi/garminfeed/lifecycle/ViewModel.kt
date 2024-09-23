@@ -1,7 +1,6 @@
 package paufregi.garminfeed.lifecycle
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +16,7 @@ import paufregi.garminfeed.garmin.GarminClient
 import paufregi.garminfeed.models.CachedOauth1
 import paufregi.garminfeed.models.CachedOauth2
 import paufregi.garminfeed.models.ImportStatus
-import paufregi.garminfeed.ui.ShortToast
+import paufregi.garminfeed.ui.shortToast
 import paufregi.garminfeed.utils.Fit
 import paufregi.garminfeed.utils.Formatter
 import paufregi.garminfeed.utils.RenphoReader
@@ -55,7 +54,7 @@ class MainViewModel @Inject constructor(
                     }
 
                     if (weights.isNullOrEmpty()) {
-                        ShortToast(application.applicationContext, "Nothing to sync")
+                        shortToast(application.applicationContext, "Nothing to sync")
                         _state.update { it.copy(importStatus = ImportStatus.Success) }
                         return@launch
                     }
@@ -63,7 +62,7 @@ class MainViewModel @Inject constructor(
                     val credentials = db.garminDao.getCredentials()
 
                     if (credentials == null) {
-                        ShortToast(application.applicationContext, "No credentials")
+                        shortToast(application.applicationContext, "No credentials")
                         _state.update { it.copy(importStatus = ImportStatus.Failure) }
                         return@launch
                     }

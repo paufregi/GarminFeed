@@ -38,7 +38,7 @@ interface GarminSSO {
     ): Response<Ticket>
 
     companion object {
-        private const val BASE_URL = "https://sso.garmin.com"
+        const val BASE_URL = "https://sso.garmin.com"
 
         val defaultQueryMap = mapOf(
             "id" to "gauth-widget",
@@ -49,13 +49,5 @@ interface GarminSSO {
             "redirectAfterAccountLoginUrl" to "https://sso.garmin.com/sso/embed",
             "redirectAfterAccountCreationUrl" to "https://sso.garmin.com/sso/embed",
         )
-
-        val client: GarminSSO by lazy {
-            Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GarminConverterFactory())
-                .build()
-                .create(GarminSSO::class.java)
-        }
     }
 }

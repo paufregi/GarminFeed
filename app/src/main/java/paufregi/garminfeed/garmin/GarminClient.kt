@@ -9,6 +9,7 @@ import paufregi.garminfeed.garmin.api.Garth
 import paufregi.garminfeed.garmin.data.Oauth1
 import paufregi.garminfeed.garmin.data.Oauth1Consumer
 import paufregi.garminfeed.garmin.data.Oauth2
+import paufregi.garminfeed.garmin.data.Ticket
 import java.io.File
 
 class GarminClient(
@@ -20,6 +21,12 @@ class GarminClient(
     private val cacheOauth2: (Oauth2) -> Unit = {}
 ) {
     private var oauth1Consumer: Oauth1Consumer? = null
+
+    suspend fun getOau(username: String, password: String) : Ticket {}
+
+    suspend fun signIn(username: String, password: String) : Ticket {}
+
+
     private suspend fun login(): Boolean {
         if (oauth2?.isExpired() == false) {
             Log.i("GARMIN", "Oauth2 token still valid")

@@ -86,12 +86,17 @@ dependencies {
     ksp libs.androidx.room.compiler
     implementation libs.retrofit
     implementation libs.converter.gson
+    implementation libs.converter.moshi
     implementation libs.okhttp
     implementation libs.okhttp.signpost
     implementation libs.signpost.core
     implementation libs.java.jwt
     implementation libs.fit
     implementation libs.commons.csv
+    implementation libs.androidx.datastore.preferences
+
+
+
 
     implementation libs.hilt.android
     ksp libs.hilt.compiler

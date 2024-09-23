@@ -1,4 +1,4 @@
-package paufregi.garminfeed
+package paufregi.garminfeed.activites
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import paufregi.garminfeed.db.Database
 import paufregi.garminfeed.lifecycle.ViewModel
 import paufregi.garminfeed.ui.MainNavigation
-import paufregi.garminfeed.ui.ShortToast
+import paufregi.garminfeed.ui.shortToast
 import paufregi.garminfeed.ui.theme.Theme
 import javax.inject.Inject
 
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
                 DisposableEffect(state.clearCacheToast) {
                     when(state.clearCacheToast) {
-                        true -> ShortToast(application.applicationContext, "Cache cleared")
+                        true -> shortToast(application.applicationContext, "Cache cleared")
                         else -> {}
                     }
 

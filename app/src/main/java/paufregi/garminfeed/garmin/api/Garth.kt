@@ -11,7 +11,7 @@ interface Garth {
     suspend fun getOauthConsumer(): Response<Oauth1Consumer>
 
     companion object {
-        private const val BASE_URL = "https://thegarth.s3.amazonaws.com"
+        const val BASE_URL = "https://thegarth.s3.amazonaws.com"
 
         val client: Garth by lazy {
             Retrofit.Builder()

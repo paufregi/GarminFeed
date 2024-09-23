@@ -6,7 +6,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import paufregi.garminfeed.Screen
+import paufregi.garminfeed.ui.screens.utils.Screen
 import paufregi.garminfeed.lifecycle.Event
 import paufregi.garminfeed.lifecycle.State
 import paufregi.garminfeed.ui.preview.StatePreview
