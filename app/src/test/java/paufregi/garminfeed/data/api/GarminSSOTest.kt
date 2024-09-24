@@ -143,6 +143,10 @@ class GarminSSOTest {
 
         val res = api.getCSRF()
 
+        val request = server.takeRequest()
+
+        assertThat(request.method).isEqualTo("GET")
+        assertThat(request.requestUrl?.toUrl()?.path.toString()).isEqualTo("/sso/signin")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(CSRF("TEST_CSRF_VALUE"))
     }
@@ -168,6 +172,11 @@ class GarminSSOTest {
 
         val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))
 
+        val request = server.takeRequest()
+
+        assertThat(request.method).isEqualTo("POST")
+        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/sso/signin")
+        assertThat(request.body.toString()).isEqualTo("[text=username=user&password=pass&_csrf=csrf&embed=true]")
         assertThat(res.isSuccessful).isTrue()
         assertThat(res.body()).isEqualTo(Ticket("TEST_TICKET_VALUE"))
     }

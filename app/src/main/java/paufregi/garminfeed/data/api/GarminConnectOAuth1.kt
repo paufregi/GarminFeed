@@ -28,15 +28,14 @@ interface GarminConnectOAuth1 {
 
     companion object {
         private const val BASE_URL = "https://connectapi.garmin.com"
-
-        fun client(oauthConsumer: OAuthConsumer): GarminConnectOAuth1 {
+        fun client(oauthConsumer: OAuthConsumer, url: String = BASE_URL): GarminConnectOAuth1 {
             val consumer = OkHttpOAuthConsumer(oauthConsumer.key, oauthConsumer.secret)
 
             val client = OkHttpClient.Builder()
                 .addInterceptor(SigningInterceptor(consumer))
 
             return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(url)
                 .addConverterFactory(GarminConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())

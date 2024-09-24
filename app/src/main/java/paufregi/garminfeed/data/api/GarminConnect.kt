@@ -21,7 +21,7 @@ interface GarminConnect {
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(authInterceptor: AuthInterceptor, url: String): GarminConnect {
+        fun client(authInterceptor: AuthInterceptor, url: String = BASE_URL): GarminConnect {
             val client = OkHttpClient.Builder()
                 .addInterceptor(authInterceptor)
 

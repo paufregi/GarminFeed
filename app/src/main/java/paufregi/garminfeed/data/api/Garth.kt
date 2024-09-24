@@ -13,7 +13,7 @@ interface Garth {
     companion object {
         const val BASE_URL = "https://thegarth.s3.amazonaws.com"
 
-        fun client(url: String): Garth  {
+        fun client(url: String = BASE_URL): Garth  {
             return Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
