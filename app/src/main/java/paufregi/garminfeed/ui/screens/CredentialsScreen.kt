@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import paufregi.garminfeed.models.Credentials
+import paufregi.garminfeed.data.database.models.Credentials
 import paufregi.garminfeed.ui.components.Button
 import paufregi.garminfeed.ui.preview.CredentialsPreview
 

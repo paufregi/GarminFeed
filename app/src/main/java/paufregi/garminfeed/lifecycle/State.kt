@@ -1,6 +1,6 @@
 package paufregi.garminfeed.lifecycle
 
-import paufregi.garminfeed.models.Credentials
+import paufregi.garminfeed.data.database.models.Credentials
 import paufregi.garminfeed.models.ImportStatus
 
 data class State(

@@ -3,29 +3,24 @@ package paufregi.garminfeed
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import dagger.hilt.android.AndroidEntryPoint
-import paufregi.garminfeed.db.Database
-import paufregi.garminfeed.lifecycle.ViewModel
+import paufregi.garminfeed.lifecycle.MainViewModel
 import paufregi.garminfeed.ui.MainNavigation
 import paufregi.garminfeed.ui.ShortToast
 import paufregi.garminfeed.ui.theme.Theme
-import javax.inject.Inject
 
 @ExperimentalComposeUiApi
 @ExperimentalMaterial3Api
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var db: Database
-
-    @Inject
-    lateinit var viewModel: ViewModel
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
