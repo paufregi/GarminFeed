@@ -24,9 +24,9 @@ interface GarminConnectOAuth2 {
     suspend fun getOauth2Token(): Response<OAuth2>
 
     companion object {
-        private const val BASE_URL = "https://connectapi.garmin.com"
+        const val BASE_URL = "https://connectapi.garmin.com"
 
-        fun client(oAuthConsumer: OAuthConsumer, oauth: OAuth1): GarminConnectOAuth2 {
+        fun client(oAuthConsumer: OAuthConsumer, oauth: OAuth1, url: String = BASE_URL): GarminConnectOAuth2 {
             val consumer = OkHttpOAuthConsumer(oAuthConsumer.key, oAuthConsumer.secret)
             consumer.setTokenWithSecret(oauth.token, oauth.secret)
 
@@ -34,7 +34,7 @@ interface GarminConnectOAuth2 {
                 .addInterceptor(SigningInterceptor(consumer))
 
             return Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(url)
                 .addConverterFactory(GarminConverterFactory())
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())

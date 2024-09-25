@@ -8,20 +8,23 @@ import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import paufregi.garminfeed.data.api.models.OAuth1
+import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.data.api.models.Ticket
 import java.net.HttpURLConnection
+import kotlin.math.exp
 
-class GarminConnectOAuth1Test {
+class GarminConnectOAuth2Test {
 
     private var server: MockWebServer = MockWebServer()
-    private lateinit var api: GarminConnectOAuth1
+    private lateinit var api: GarminConnectOAuth2
     private val consumer = OAuthConsumer("KEY", "SECRET")
+    private val oAuth = OAuth1("TOKEN", "SECRET")
 
     @Before
     fun setUp() {
         server.start()
-        api = GarminConnectOAuth1.client(consumer, server.url("/").toString())
+        api = GarminConnectOAuth2.client(consumer, oAuth, server.url("/").toString())
     }
 
     @After
@@ -30,28 +33,35 @@ class GarminConnectOAuth1Test {
     }
 
     @Test
-    fun `Get OAuth token`() = runTest{
+    fun `Get OAuth2 token`() = runTest{
         val response = MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_OK)
-            .setBody("oauth_token=TOKEN&oauth_token_secret=SECRET")
+            .setBody("""{"scope": "SCOPE","jti": "JTI","access_token": "ACCESS_TOKEN","token_type": "TOKEN_TYPE","refresh_token": "REFRESH","expires_in": 1704020400,"refresh_token_expires_in": 1704020400}""")
         server.enqueue(response)
 
-        val ticket = Ticket("TICKET")
-        val res = api.getOauthToken(ticket)
+        val res = api.getOauth2Token()
 
         val request = server.takeRequest()
+        val expected = OAuth2(
+            scope =  "SCOPE",
+            jti = "JTI",
+            accessToken = "ACCESS_TOKEN",
+            tokenType = "TOKEN_TYPE",
+            refreshToken = "REFRESH",
+            expiresIn = 1704020400,
+            refreshTokenExpiresIn = 1704020400
+        )
 
-        assertThat(request.method).isEqualTo("GET")
-        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/preauthorized")
-        assertThat(request.requestUrl?.queryParameterValues("ticket")).isEqualTo(listOf("TICKET"))
+        assertThat(request.method).isEqualTo("POST")
+        assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
         assertThat(request.headers["authorization"]).contains("OAuth")
         assertThat(request.headers["authorization"]).contains("""oauth_consumer_key="KEY"""")
+        assertThat(request.headers["authorization"]).contains("""oauth_token="TOKEN"""")
         assertThat(request.headers["authorization"]).contains("""oauth_signature_method="HMAC-SHA1"""")
         assertThat(request.headers["authorization"]).contains("""oauth_signature""")
         assertThat(request.headers["authorization"]).contains("""oauth_version="1.0"""")
         assertThat(res.isSuccessful).isTrue()
-        assertThat(res.body()).isEqualTo(OAuth1(token="TOKEN", secret="SECRET"))
-
+        assertThat(res.body()).isEqualTo(expected)
     }
 
     @Test
@@ -60,8 +70,7 @@ class GarminConnectOAuth1Test {
             .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
         server.enqueue(response)
 
-        val ticket = Ticket("TICKET")
-        val res = api.getOauthToken(ticket)
+        val res = api.getOauth2Token()
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()
