@@ -12,7 +12,7 @@ import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.data.api.models.Ticket
 import paufregi.garminfeed.data.database.GarminDao
-import paufregi.garminfeed.data.utils.TokenManager
+import paufregi.garminfeed.data.datastore.TokenManager
 import javax.inject.Inject
 
 class GarminAuthRepository @Inject constructor(
@@ -100,7 +100,7 @@ class GarminAuthRepository @Inject constructor(
 
             oAuth = when (val res = getOAuthToken(ticket, consumer)) {
                 is ApiResponse.Success -> {
-                    tokenManager.saveOAuth(res.data)
+                    tokenManager.saveOAuth1(res.data)
                     res.data
                 }
                 is ApiResponse.Failure -> return ApiResponse.Failure(res.error)

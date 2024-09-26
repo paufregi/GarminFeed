@@ -1,4 +1,4 @@
-package paufregi.garminfeed.data.utils
+package paufregi.garminfeed.data.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
@@ -47,7 +47,7 @@ class TokenManager (private val context: Context) {
         }
     }
 
-    suspend fun saveOAuth(oAuth1: OAuth1) {
+    suspend fun saveOAuth1(oAuth1: OAuth1) {
         context.dataStore.edit { preferences ->
             preferences[OAUTH1] = Json.encodeToString(oAuth1)
         }

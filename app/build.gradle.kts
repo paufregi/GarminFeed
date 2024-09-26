@@ -18,7 +18,7 @@ android {
         versionCode = 1
         versionName = "1.1"
 
-        testInstrumentationRunner = "com.noteapp.app.HiltTestRunner"
+        testInstrumentationRunner = "paufregi.garminfeed.TestRunner" //"com.noteapp.app.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.runner)
     ksp(libs.androidx.room.compiler)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)

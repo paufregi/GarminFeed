@@ -7,7 +7,7 @@ import okhttp3.Request
 import okhttp3.Response
 import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.data.repository.GarminAuthRepository
-import paufregi.garminfeed.data.utils.TokenManager
+import paufregi.garminfeed.data.datastore.TokenManager
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(

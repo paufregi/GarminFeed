@@ -17,8 +17,7 @@ import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.GarminDatabase
 import paufregi.garminfeed.data.repository.GarminAuthRepository
-import paufregi.garminfeed.data.utils.TokenManager
-import javax.inject.Named
+import paufregi.garminfeed.data.datastore.TokenManager
 import javax.inject.Singleton
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "data_store")

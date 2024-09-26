@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.data.repository.GarminRepository
-import paufregi.garminfeed.data.utils.TokenManager
+import paufregi.garminfeed.data.datastore.TokenManager
 import paufregi.garminfeed.models.ImportStatus
 import paufregi.garminfeed.ui.ShortToast
 import paufregi.garminfeed.utils.Fit
