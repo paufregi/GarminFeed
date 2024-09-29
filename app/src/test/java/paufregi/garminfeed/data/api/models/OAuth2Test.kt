@@ -41,7 +41,7 @@ class OAuth2Test {
     }
 
     @Test
-    fun `Empty access token Oauth2`() {
+    fun `Empty access token OAuth2`() {
         val oauth2 = OAuth2(
             scope =  "SCOPE",
             jti = "JTI",

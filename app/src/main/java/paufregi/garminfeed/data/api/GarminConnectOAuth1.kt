@@ -21,7 +21,7 @@ interface GarminConnectOAuth1 {
     @Headers(
         "User-Agent: com.garmin.android.apps.connectmobile"
     )
-    suspend fun getOauthToken(
+    suspend fun getOauth1(
         @Query("ticket") ticket: Ticket,
         @Query("login-url") loginUrl: String = "https://sso.garmin.com/sso/embed"
     ): Response<OAuth1>

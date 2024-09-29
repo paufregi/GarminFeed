@@ -30,14 +30,14 @@ class GarminConnectOAuth1Test {
     }
 
     @Test
-    fun `Get OAuth token`() = runTest{
+    fun `Get OAuth1`() = runTest{
         val response = MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_OK)
             .setBody("oauth_token=TOKEN&oauth_token_secret=SECRET")
         server.enqueue(response)
 
         val ticket = Ticket("TICKET")
-        val res = api.getOauthToken(ticket)
+        val res = api.getOauth1(ticket)
 
         val request = server.takeRequest()
 
@@ -55,13 +55,13 @@ class GarminConnectOAuth1Test {
     }
 
     @Test
-    fun `Get OAuth consumer - failure`() = runTest{
+    fun `Get OAuth1 - failure`() = runTest{
         val response = MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
         server.enqueue(response)
 
         val ticket = Ticket("TICKET")
-        val res = api.getOauthToken(ticket)
+        val res = api.getOauth1(ticket)
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()

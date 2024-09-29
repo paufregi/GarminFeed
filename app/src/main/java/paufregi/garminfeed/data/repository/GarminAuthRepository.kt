@@ -48,7 +48,7 @@ class GarminAuthRepository @Inject constructor(
     private suspend fun getOAuthToken(ticket: Ticket, consumer: OAuthConsumer): ApiResponse<OAuth1> {
         val garminConnect = GarminConnectOAuth1.client(consumer)
 
-        val res = garminConnect.getOauthToken(ticket)
+        val res = garminConnect.getOauth1(ticket)
 
         return when(res.isSuccessful) {
             true -> ApiResponse.Success(res.body()!!)

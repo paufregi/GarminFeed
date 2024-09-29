@@ -65,7 +65,7 @@ class GarminConnectOAuth2Test {
     }
 
     @Test
-    fun `Get OAuth consumer - failure`() = runTest{
+    fun `Get OAuth2 token - failure`() = runTest{
         val response = MockResponse()
             .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
         server.enqueue(response)

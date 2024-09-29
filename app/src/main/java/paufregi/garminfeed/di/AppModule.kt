@@ -68,17 +68,10 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthInterceptor(
+    fun provideGarminConnect(
         authRepo: GarminAuthRepository,
         tokenManager: TokenManager
-    ):AuthInterceptor =
-        AuthInterceptor(authRepo, tokenManager)
-
-    @Provides
-    @Singleton
-    fun provideGarminConnect(
-        authInterceptor: AuthInterceptor,
     ): GarminConnect =
-        GarminConnect.client(authInterceptor, GarminConnect.BASE_URL)
+        GarminConnect.client(authRepo, tokenManager, GarminConnect.BASE_URL)
 
 }
