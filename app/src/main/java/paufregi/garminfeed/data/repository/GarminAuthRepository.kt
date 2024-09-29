@@ -19,7 +19,9 @@ class GarminAuthRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminSSO: GarminSSO,
     private val garth: Garth,
-    private val tokenManager: TokenManager
+    private val tokenManager: TokenManager,
+    private val garminConnectOAuth1Url: String,
+    private val garminConnectOAuth2Url: String
 ) {
     private suspend fun getCSRF(): ApiResponse<CSRF> {
         val res = garminSSO.getCSRF()
@@ -46,10 +48,8 @@ class GarminAuthRepository @Inject constructor(
     }
 
     private suspend fun getOAuthToken(ticket: Ticket, consumer: OAuthConsumer): ApiResponse<OAuth1> {
-        val garminConnect = GarminConnectOAuth1.client(consumer)
-
+        val garminConnect = GarminConnectOAuth1.client(consumer, garminConnectOAuth1Url)
         val res = garminConnect.getOauth1(ticket)
-
         return when(res.isSuccessful) {
             true -> ApiResponse.Success(res.body()!!)
             false -> ApiResponse.Failure(res.errorBody().toString())
@@ -57,10 +57,8 @@ class GarminAuthRepository @Inject constructor(
     }
 
     private suspend fun getOAuth2Token(oAuth: OAuth1, consumer: OAuthConsumer): ApiResponse<OAuth2> {
-        val garminConnect = GarminConnectOAuth2.client(consumer, oAuth)
-
+        val garminConnect = GarminConnectOAuth2.client(consumer, oAuth, garminConnectOAuth2Url)
         val res = garminConnect.getOauth2Token()
-
         return when(res.isSuccessful) {
             true -> ApiResponse.Success(res.body()!!)
             false -> ApiResponse.Failure(res.errorBody().toString())
@@ -69,7 +67,6 @@ class GarminAuthRepository @Inject constructor(
 
     private suspend fun signIn(): ApiResponse<Ticket> {
         val credentials = garminDao.getCredentials() ?: return ApiResponse.Failure("No credentials")
-
         return when(val csfr = getCSRF()) {
             is ApiResponse.Success -> login(username = credentials.username, password = credentials.password, csrf = csfr.data)
             is ApiResponse.Failure -> ApiResponse.Failure(csfr.error)
@@ -77,7 +74,6 @@ class GarminAuthRepository @Inject constructor(
     }
 
     suspend fun authenticate(): ApiResponse<OAuth2> {
-
         val consumer =
             tokenManager.getOAuthConsumer().first() ?: when (val res = getOAuthConsumer()) {
                 is ApiResponse.Success -> {
@@ -86,7 +82,6 @@ class GarminAuthRepository @Inject constructor(
                 }
                 is ApiResponse.Failure -> return ApiResponse.Failure(res.error)
             }
-
 
         val cachedOAuth1 = tokenManager.getOauth1().first()
         val oAuth: OAuth1

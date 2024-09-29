@@ -11,6 +11,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import paufregi.garminfeed.data.api.GarminConnect
+import paufregi.garminfeed.data.api.GarminConnectOAuth1
+import paufregi.garminfeed.data.api.GarminConnectOAuth2
 import paufregi.garminfeed.data.api.GarminSSO
 import paufregi.garminfeed.data.api.Garth
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
@@ -25,6 +27,14 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "da
 @Module
 @InstallIn(SingletonComponent::class)
 class AppModule {
+
+    @Provides
+    @Singleton
+    fun provideGarminConnectOAuth1Url(): String = GarminConnectOAuth1.BASE_URL
+
+    @Provides
+    @Singleton
+    fun provideGarminConnectOAuth2Url(): String = GarminConnectOAuth2.BASE_URL
 
     @Provides
     @Singleton
@@ -57,13 +67,15 @@ class AppModule {
         garminDao: GarminDao,
         garminSSO: GarminSSO,
         garth: Garth,
-        tokenManager: TokenManager
+        tokenManager: TokenManager,
     ): GarminAuthRepository =
         GarminAuthRepository(
             garminDao,
             garminSSO,
             garth,
-            tokenManager
+            tokenManager,
+            provideGarminConnectOAuth1Url(),
+            provideGarminConnectOAuth2Url()
         )
 
     @Provides

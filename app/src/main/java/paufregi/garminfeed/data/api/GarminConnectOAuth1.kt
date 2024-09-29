@@ -27,8 +27,8 @@ interface GarminConnectOAuth1 {
     ): Response<OAuth1>
 
     companion object {
-        private const val BASE_URL = "https://connectapi.garmin.com"
-        fun client(oauthConsumer: OAuthConsumer, url: String = BASE_URL): GarminConnectOAuth1 {
+        const val BASE_URL = "https://connectapi.garmin.com"
+        fun client(oauthConsumer: OAuthConsumer, url: String): GarminConnectOAuth1 {
             val consumer = OkHttpOAuthConsumer(oauthConsumer.key, oauthConsumer.secret)
 
             val client = OkHttpClient.Builder()

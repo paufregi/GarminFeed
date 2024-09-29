@@ -17,7 +17,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.data.api.GarminConnect
-import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.models.Credentials
 import retrofit2.Response

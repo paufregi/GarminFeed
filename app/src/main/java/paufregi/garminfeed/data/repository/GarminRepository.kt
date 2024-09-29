@@ -26,7 +26,7 @@ class GarminRepository @Inject constructor(
         val res = garminConnect.uploadFile(fitFile)
         return when (res.isSuccessful){
             true -> ApiResponse.Success(Unit)
-            false -> ApiResponse.Failure(res.errorBody().string())
+            false -> ApiResponse.Failure(res.errorBody().toString())
         }
     }
 }
