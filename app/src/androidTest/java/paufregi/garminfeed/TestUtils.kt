@@ -3,14 +3,11 @@ package paufregi.garminfeed
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
-import okhttp3.mockwebserver.MockWebServer
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
 import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.test.R
-import java.net.InetAddress
 import java.util.Date
-import java.util.concurrent.TimeUnit
 
 
 fun createOAuth2(expiresAt: Date) = OAuth2(
@@ -25,7 +22,6 @@ fun createOAuth2(expiresAt: Date) = OAuth2(
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
-val yesterday = Date(Date().time - (1000 * 60 * 60 * 24))
 
 val htmlForCSRF = """
         <!DOCTYPE html>
@@ -132,26 +128,14 @@ val htmlForTicket = """
         </html>
     """.trimIndent()
 
-val connectServer = MockWebServer()
-val connectOAuth1Server = MockWebServer()
-val connectOAuth2Server = MockWebServer()
-val garminSSOServer = MockWebServer()
-val garthServer = MockWebServer()
-
-val connectPort = 8081
-val connectOAuth1Port = 8082
-val connectOAuth2Port = 8083
-val garminSSOPort = 8084
-val garthPort = 8085
+const val connectPort = 8081
+const val garminSSOPort = 8082
+const val garthPort = 8083
 
 fun loadRes(res: Int): String =
     getInstrumentation().context.resources.openRawResource(res).bufferedReader().use { it.readText() }
 
-var serverCertificates = HandshakeCertificates.Builder()
+var sslSocketFactory = HandshakeCertificates.Builder()
     .heldCertificate(HeldCertificate.decode(loadRes(R.raw.server)))
-    .build()
+    .build().sslSocketFactory()
 
-fun startServer(server: MockWebServer, port: Int) {
-    server.useHttps(serverCertificates.sslSocketFactory(), false)
-    server.start(port)
-}

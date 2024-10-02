@@ -19,6 +19,8 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import paufregi.garminfeed.createOAuth2
+import paufregi.garminfeed.data.api.GarminConnectOAuth1
+import paufregi.garminfeed.data.api.GarminConnectOAuth2
 import paufregi.garminfeed.data.api.GarminSSO
 import paufregi.garminfeed.data.api.Garth
 import paufregi.garminfeed.data.api.models.CSRF
@@ -41,30 +43,29 @@ class AuthInterceptorTest {
 
     private val garminDao = mockk<GarminDao>()
     private val garth = mockk<Garth>()
+    private val connectOAuth1 = mockk<GarminConnectOAuth1>()
+    private val connectOAuth2 = mockk<GarminConnectOAuth2>()
     private val garminSSO = mockk<GarminSSO>()
     private val tokenManager = mockk<TokenManager>()
 
     private val server = MockWebServer()
-    private val garminOAuth1Server = MockWebServer()
-    private val garminOAuth2Server = MockWebServer()
 
     interface TestApi {
         @GET("/test")
-        suspend fun test(): retrofit2.Response<Unit>
+        suspend fun test(): Response<Unit>
     }
 
     @Before
     fun setUp() {
         server.start()
-        garminOAuth1Server.start()
-        garminOAuth2Server.start()
+
         auth = AuthInterceptor(
             garminDao,
             garth,
             garminSSO,
             tokenManager,
-            garminOAuth1Server.url("/").toString(),
-            garminOAuth2Server.url("/").toString()
+            {_ -> connectOAuth1},
+            {_, _ -> connectOAuth2},
         )
         server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK))
         api = Retrofit.Builder()
@@ -79,8 +80,6 @@ class AuthInterceptorTest {
     fun tearDown() {
         clearAllMocks()
         server.shutdown()
-        garminOAuth1Server.shutdown()
-        garminOAuth2Server.shutdown()
     }
 
     @Test
@@ -92,7 +91,7 @@ class AuthInterceptorTest {
         api.test()
 
         verify { tokenManager.getOauth2() }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
 
         val req = server.takeRequest()
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
@@ -103,33 +102,27 @@ class AuthInterceptorTest {
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
         val oauth2 = createOAuth2(tomorrow)
-        val jsonOAuth2 = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
 
         every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
         every { tokenManager.getOauth1() } returns flow { emit(oauth1) }
         every { tokenManager.getOauth2() } returns flow { emit(null) }
         coEvery { tokenManager.saveOAuth2(any()) } returns Unit
-
-        val response = MockResponse().setResponseCode(200).setBody(jsonOAuth2)
-        garminOAuth2Server.enqueue(response)
+        coEvery { connectOAuth2.getOauth2() } returns Response.success(oauth2)
 
         api.test()
 
         val apiReq = server.takeRequest()
-        val oauthReq = garminOAuth2Server.takeRequest()
         assertThat(apiReq.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
-        assertThat(oauthReq.method).isEqualTo("POST")
-        assertThat(oauthReq.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
-        assertThat(oauthReq.headers["authorization"]).contains("OAuth")
-        assertThat(oauthReq.headers["authorization"]).contains("""oauth_consumer_key="CONSUMER_KEY"""")
-        assertThat(oauthReq.headers["authorization"]).contains("""oauth_token="OAUTH_TOKEN"""")
         verify {
             tokenManager.getOAuthConsumer()
             tokenManager.getOauth1()
             tokenManager.getOauth2()
         }
-        coVerify { tokenManager.saveOAuth2(oauth2) }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        coVerify {
+            tokenManager.saveOAuth2(oauth2)
+            connectOAuth2.getOauth2()
+        }
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -140,7 +133,6 @@ class AuthInterceptorTest {
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
         val oauth2 = createOAuth2(tomorrow)
-        val oauth2Body = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
 
         every { tokenManager.getOAuthConsumer() } returns flow { emit(null) }
         every { tokenManager.getOauth1() } returns flow { emit(null) }
@@ -152,28 +144,13 @@ class AuthInterceptorTest {
         coEvery { garminDao.getCredentials() } returns creds
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
-
-        val oauth1Response = MockResponse().setResponseCode(200).setBody("oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}")
-        garminOAuth1Server.enqueue(oauth1Response)
-
-        val oauth2Response = MockResponse().setResponseCode(200).setBody(oauth2Body)
-        garminOAuth2Server.enqueue(oauth2Response)
+        coEvery { connectOAuth1.getOauth1(any()) } returns Response.success(oauth1)
+        coEvery { connectOAuth2.getOauth2() } returns Response.success(oauth2)
 
         api.test()
 
         val apiReq = server.takeRequest()
-        val oauth1Req = garminOAuth1Server.takeRequest()
-        val oauth2Req = garminOAuth2Server.takeRequest()
         assertThat(apiReq.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
-        assertThat(oauth1Req.method).isEqualTo("GET")
-        assertThat(oauth1Req.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/preauthorized")
-        assertThat(oauth1Req.headers["authorization"]).contains("OAuth")
-        assertThat(oauth1Req.headers["authorization"]).contains("""oauth_consumer_key="${consumer.key}"""")
-        assertThat(oauth2Req.method).isEqualTo("POST")
-        assertThat(oauth2Req.requestUrl?.toUrl()?.path).isEqualTo("/oauth-service/oauth/exchange/user/2.0")
-        assertThat(oauth2Req.headers["authorization"]).contains("OAuth")
-        assertThat(oauth2Req.headers["authorization"]).contains("""oauth_consumer_key="${consumer.key}"""")
-        assertThat(oauth2Req.headers["authorization"]).contains("""oauth_token="${oauth1.token}"""")
         verify {
             tokenManager.getOAuthConsumer()
             tokenManager.getOauth1()
@@ -187,8 +164,10 @@ class AuthInterceptorTest {
             garminDao.getCredentials()
             garminSSO.getCSRF()
             garminSSO.login(creds.username, creds.password, csrf)
+            connectOAuth1.getOauth1(ticket)
+            connectOAuth2.getOauth2()
         }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -208,7 +187,7 @@ class AuthInterceptorTest {
             garth.getOAuthConsumer()
             garth.getOAuthConsumer()
         }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
 
@@ -230,7 +209,7 @@ class AuthInterceptorTest {
             tokenManager.getOauth2()
         }
         coVerify { garminDao.getCredentials() }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -256,7 +235,7 @@ class AuthInterceptorTest {
             garminDao.getCredentials()
             garminSSO.getCSRF()
         }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -285,7 +264,7 @@ class AuthInterceptorTest {
             garminSSO.getCSRF()
             garminSSO.login(creds.username, creds.password, csrf)
         }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -301,9 +280,7 @@ class AuthInterceptorTest {
         coEvery { garminDao.getCredentials() } returns creds
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
-
-        val oauth1Response = MockResponse().setResponseCode(400)
-        garminOAuth1Server.enqueue(oauth1Response)
+        coEvery { connectOAuth1.getOauth1(any()) } returns Response.error(400, "error".toResponseBody())
 
         val res = api.test()
 
@@ -317,8 +294,9 @@ class AuthInterceptorTest {
             garminDao.getCredentials()
             garminSSO.getCSRF()
             garminSSO.login(creds.username, creds.password, csrf)
+            connectOAuth1.getOauth1(ticket)
         }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -329,9 +307,7 @@ class AuthInterceptorTest {
         every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
         every { tokenManager.getOauth1() } returns flow { emit(oauth1) }
         every { tokenManager.getOauth2() } returns flow { emit(null) }
-
-        val response = MockResponse().setResponseCode(400)
-        garminOAuth2Server.enqueue(response)
+        coEvery { connectOAuth2.getOauth2() } returns Response.error(400, "error".toResponseBody())
 
         val res = api.test()
 
@@ -341,6 +317,7 @@ class AuthInterceptorTest {
             tokenManager.getOauth1()
             tokenManager.getOauth2()
         }
-        confirmVerified(garminDao, garth, garminSSO, tokenManager)
+        coVerify { connectOAuth2.getOauth2() }
+        confirmVerified(garminDao, garth, garminSSO, tokenManager, connectOAuth1, connectOAuth2)
     }
 }

@@ -21,20 +21,18 @@ import paufregi.garminfeed.data.api.models.Ticket
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.datastore.TokenManager
 import javax.inject.Inject
-import javax.inject.Named
 
 class AuthInterceptor @Inject constructor(
     private val garminDao: GarminDao,
     private val garth: Garth,
     private val garminSSO: GarminSSO,
     private val tokenManager: TokenManager,
-    @Named("GarminConnectOAuth1Url")private val garminConnectOAuth1Url: String,
-    @Named("GarminConnectOAuth2Url")private val garminConnectOAuth2Url: String
+    private val createConnectOAuth1: (oauthConsumer: OAuthConsumer) -> GarminConnectOAuth1,
+    private val createConnectOAuth2: (oauthConsumer: OAuthConsumer, oauth: OAuth1) -> GarminConnectOAuth2,
 ): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-
         val cachedOauth2 = runBlocking { tokenManager.getOauth2().first() }
         return if (cachedOauth2 != null && !cachedOauth2.isExpired()) {
             chain.proceed(newRequestWithAccessToken(cachedOauth2.accessToken, request))
@@ -77,7 +75,7 @@ class AuthInterceptor @Inject constructor(
     }
 
     private suspend fun getOAuthToken(ticket: Ticket, consumer: OAuthConsumer): ApiResponse<OAuth1> {
-        val garminConnect = GarminConnectOAuth1.client(consumer, garminConnectOAuth1Url)
+        val garminConnect = createConnectOAuth1(consumer)
         val res = garminConnect.getOauth1(ticket)
         return when(res.isSuccessful) {
             true -> ApiResponse.Success(res.body()!!)
@@ -86,8 +84,8 @@ class AuthInterceptor @Inject constructor(
     }
 
     private suspend fun getOAuth2Token(oauth: OAuth1, consumer: OAuthConsumer): ApiResponse<OAuth2> {
-        val garminConnect = GarminConnectOAuth2.client(consumer, oauth, garminConnectOAuth2Url)
-        val res = garminConnect.getOauth2Token()
+        val garminConnect = createConnectOAuth2(consumer, oauth)
+        val res = garminConnect.getOauth2()
         return when(res.isSuccessful) {
             true -> ApiResponse.Success(res.body()!!)
             false -> ApiResponse.Failure(res.errorBody().toString())
@@ -103,6 +101,7 @@ class AuthInterceptor @Inject constructor(
     }
 
     private suspend fun authenticate(): ApiResponse<OAuth2> {
+
         val consumer =
             tokenManager.getOAuthConsumer().first() ?: when (val res = getOAuthConsumer()) {
                 is ApiResponse.Success -> {

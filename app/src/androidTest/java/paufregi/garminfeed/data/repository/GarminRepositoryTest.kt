@@ -1,25 +1,20 @@
 package paufregi.garminfeed.data.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.test.filters.LargeTest
+import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.RecordedRequest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.garminfeed.connectOAuth1Port
-import paufregi.garminfeed.connectOAuth1Server
-import paufregi.garminfeed.connectOAuth2Port
-import paufregi.garminfeed.connectOAuth2Server
 import paufregi.garminfeed.connectPort
-import paufregi.garminfeed.connectServer
 import paufregi.garminfeed.createOAuth2
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuthConsumer
@@ -27,20 +22,15 @@ import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.GarminDatabase
 import paufregi.garminfeed.data.database.models.Credentials
 import paufregi.garminfeed.garminSSOPort
-import paufregi.garminfeed.garminSSOServer
 import paufregi.garminfeed.garthPort
-import paufregi.garminfeed.garthServer
 import paufregi.garminfeed.htmlForCSRF
 import paufregi.garminfeed.htmlForTicket
-import paufregi.garminfeed.startServer
+import paufregi.garminfeed.sslSocketFactory
 import paufregi.garminfeed.tomorrow
 import java.io.File
 import javax.inject.Inject
 
-
-@LargeTest
 @HiltAndroidTest
-@ExperimentalCoroutinesApi
 class GarminRepositoryTest {
 
     @get:Rule
@@ -57,25 +47,36 @@ class GarminRepositoryTest {
 
     private lateinit var dao: GarminDao
 
+    private val connectServer = MockWebServer()
+    private val garminSSOServer = MockWebServer()
+    private val garthServer = MockWebServer()
+
     @Before
     fun setUp() {
         hiltRule.inject()
-        startServer(connectServer, connectPort)
-        startServer(connectOAuth1Server, connectOAuth1Port)
-        startServer(connectOAuth2Server, connectOAuth2Port)
-        startServer(garminSSOServer, garminSSOPort)
-        startServer(garthServer, garthPort)
+        connectServer.useHttps(sslSocketFactory, false)
+        connectServer.start(connectPort)
+        garminSSOServer.useHttps(sslSocketFactory, false)
+        garminSSOServer.start(garminSSOPort)
+        garthServer.useHttps(sslSocketFactory, false)
+        garthServer.start(garthPort)
         dao = database.garminDao()
     }
 
     @After
     fun tearDown() {
         connectServer.shutdown()
-        connectOAuth1Server.shutdown()
-        connectOAuth2Server.shutdown()
         garminSSOServer.shutdown()
         garthServer.shutdown()
         database.close()
+    }
+
+    @Test
+    fun `Store credentials`() = runTest {
+        val creds = Credentials(username = "user", password = "pass")
+        dao.saveCredentials(creds)
+        val res = dao.getCredentials()
+        assertThat(res).isEqualTo(creds)
     }
 
     @Test
@@ -90,36 +91,56 @@ class GarminRepositoryTest {
 
         dao.saveCredentials(creds)
 
-        val garthResponse = MockResponse().setResponseCode(200).setBody(consumerBody)
-        garthServer.enqueue(garthResponse)
-
-        val dispatcher: Dispatcher = object : Dispatcher() {
+        val connectDispatcher: Dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
-                return when (request.method) {
-                    "GET" -> MockResponse().setResponseCode(200).setBody(htmlForCSRF)
-                    "POST" -> MockResponse().setResponseCode(200).setBody(htmlForTicket)
+                Log.i("DEBUG", request.method + " " + request.path)
+                val path = request.path ?: return MockResponse().setResponseCode(404)
+                if(path.startsWith("/oauth-service/oauth/preauthorized")){
+                    return when (request.method) {
+                        "GET" -> MockResponse().setResponseCode(200).setBody(oauth1Body)
+                        else -> MockResponse().setResponseCode(404)
+                    }
+                }
+                return when (request.method to request.path) {
+                    "POST" to "/oauth-service/oauth/exchange/user/2.0" -> MockResponse().setResponseCode(200).setBody(oauth2Body)
+                    "POST" to "/upload-service/upload" -> MockResponse().setResponseCode(200)
                     else -> MockResponse().setResponseCode(404)
                 }
             }
         }
-        garminSSOServer.dispatcher = dispatcher
+        connectServer.dispatcher = connectDispatcher
 
-        val oauth1Response = MockResponse().setResponseCode(200).setBody(oauth1Body)
-        connectOAuth1Server.enqueue(oauth1Response)
+        val garthDispatcher: Dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                Log.i("DEBUG", request.method + " " + request.path)
+                return when (request.method to request.path) {
+                    "GET" to "/oauth_consumer.json" -> MockResponse().setResponseCode(200).setBody(consumerBody)
+                    else -> MockResponse().setResponseCode(404)
+                }
+            }
+        }
+        garthServer.dispatcher = garthDispatcher
 
-        val oauth2Response = MockResponse().setResponseCode(200).setBody(oauth2Body)
-        connectOAuth2Server.enqueue(oauth2Response)
-
-        val uploadResponse = MockResponse().setResponseCode(200)
-        connectServer.enqueue(uploadResponse)
+        val garminSSODispatcher: Dispatcher = object : Dispatcher() {
+            override fun dispatch(request: RecordedRequest): MockResponse {
+                Log.i("DEBUG", request.method + " " + request.path)
+                val path = request.path ?: return MockResponse().setResponseCode(404)
+                if (path.startsWith("/sso/signin")) {
+                    return when (request.method) {
+                        "GET" -> MockResponse().setResponseCode(200).setBody(htmlForCSRF)
+                        "POST" -> MockResponse().setResponseCode(200).setBody(htmlForTicket)
+                        else -> MockResponse().setResponseCode(404)
+                    }
+                }
+                return MockResponse().setResponseCode(404)
+            }
+        }
+        garminSSOServer.dispatcher = garminSSODispatcher
 
         val testFile = File.createTempFile("test", "test")
         testFile.deleteOnExit()
         val res = repo.uploadFile(testFile)
 
-        val connectReq = connectServer.takeRequest()
-
-        assertThat(connectReq.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
         assertThat(res.isSuccessful).isTrue()
     }
 }

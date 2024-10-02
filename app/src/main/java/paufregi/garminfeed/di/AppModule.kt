@@ -10,8 +10,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import paufregi.garminfeed.data.api.GarminConnect
+import paufregi.garminfeed.data.api.GarminConnectOAuth1
+import paufregi.garminfeed.data.api.GarminConnectOAuth2
 import paufregi.garminfeed.data.api.GarminSSO
 import paufregi.garminfeed.data.api.Garth
+import paufregi.garminfeed.data.api.models.OAuth1
+import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.datastore.TokenManager
@@ -44,8 +48,8 @@ class AppModule {
         garth,
         garminSSO,
         tokenManager,
-        garminConnectOAuth1Url,
-        garminConnectOAuth2Url
+        { oauthConsumer: OAuthConsumer -> GarminConnectOAuth1.client(oauthConsumer, garminConnectOAuth1Url) },
+        { oauthConsumer: OAuthConsumer, oauth: OAuth1 -> GarminConnectOAuth2.client(oauthConsumer, oauth, garminConnectOAuth2Url) }
     )
 
     @Provides

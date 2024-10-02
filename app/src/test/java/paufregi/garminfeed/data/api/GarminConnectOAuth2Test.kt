@@ -10,9 +10,7 @@ import okhttp3.mockwebserver.MockResponse
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
-import paufregi.garminfeed.data.api.models.Ticket
 import java.net.HttpURLConnection
-import kotlin.math.exp
 
 class GarminConnectOAuth2Test {
 
@@ -39,7 +37,7 @@ class GarminConnectOAuth2Test {
             .setBody("""{"scope": "SCOPE","jti": "JTI","access_token": "ACCESS_TOKEN","token_type": "TOKEN_TYPE","refresh_token": "REFRESH","expires_in": 1704020400,"refresh_token_expires_in": 1704020400}""")
         server.enqueue(response)
 
-        val res = api.getOauth2Token()
+        val res = api.getOauth2()
 
         val request = server.takeRequest()
         val expected = OAuth2(
@@ -70,7 +68,7 @@ class GarminConnectOAuth2Test {
             .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
         server.enqueue(response)
 
-        val res = api.getOauth2Token()
+        val res = api.getOauth2()
 
         assertThat(res.isSuccessful).isFalse()
         assertThat(res.body()).isNull()

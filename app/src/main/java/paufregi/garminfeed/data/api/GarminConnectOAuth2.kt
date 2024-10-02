@@ -21,7 +21,7 @@ interface GarminConnectOAuth2 {
         "User-Agent: com.garmin.android.apps.connectmobile",
         "Content-Type: application/x-www-form-urlencoded"
     )
-    suspend fun getOauth2Token(): Response<OAuth2>
+    suspend fun getOauth2(): Response<OAuth2>
 
     companion object {
         const val BASE_URL = "https://connectapi.garmin.com"

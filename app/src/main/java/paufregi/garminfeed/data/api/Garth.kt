@@ -1,6 +1,5 @@
 package paufregi.garminfeed.data.api
 
-import okhttp3.OkHttpClient
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 import retrofit2.Response
 import retrofit2.Retrofit
