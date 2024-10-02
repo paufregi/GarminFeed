@@ -1,7 +1,6 @@
-package paufregi.garminfeed.lifecycle
+package paufregi.garminfeed.core.models
 
 import paufregi.garminfeed.data.database.models.Credentials
-import paufregi.garminfeed.core.models.ImportStatus
 
 data class State(
     val credentials: Credentials? = null,

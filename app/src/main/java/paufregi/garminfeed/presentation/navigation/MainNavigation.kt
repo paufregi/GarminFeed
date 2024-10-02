@@ -1,4 +1,4 @@
-package paufregi.garminfeed.ui
+package paufregi.garminfeed.presentation.navigation
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -6,12 +6,10 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import paufregi.garminfeed.Screen
-import paufregi.garminfeed.lifecycle.Event
-import paufregi.garminfeed.lifecycle.State
-import paufregi.garminfeed.ui.preview.StatePreview
-import paufregi.garminfeed.ui.screens.CredentialsScreen
-import paufregi.garminfeed.ui.screens.MainScreen
+import paufregi.garminfeed.core.models.State
+import paufregi.garminfeed.presentation.preview.StatePreview
+import paufregi.garminfeed.presentation.ui.screens.CredentialsScreen
+import paufregi.garminfeed.presentation.ui.screens.MainScreen
 
 @Composable
 @ExperimentalMaterial3Api

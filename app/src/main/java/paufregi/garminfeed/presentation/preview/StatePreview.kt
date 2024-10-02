@@ -1,8 +1,8 @@
-package paufregi.garminfeed.ui.preview
+package paufregi.garminfeed.presentation.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.garminfeed.data.database.models.Credentials
-import paufregi.garminfeed.lifecycle.State
+import paufregi.garminfeed.core.models.State
 
 class StatePreview : PreviewParameterProvider<State> {
     override val values = sequenceOf(

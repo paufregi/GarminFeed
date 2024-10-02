@@ -2,6 +2,7 @@ package paufregi.garminfeed.utils
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
+import paufregi.garminfeed.core.utils.Formatter
 import java.time.Instant
 import java.util.Date
 import java.util.Locale

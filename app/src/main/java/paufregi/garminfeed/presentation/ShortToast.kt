@@ -1,4 +1,4 @@
-package paufregi.garminfeed.ui
+package paufregi.garminfeed.presentation
 
 import android.content.Context
 import android.widget.Toast

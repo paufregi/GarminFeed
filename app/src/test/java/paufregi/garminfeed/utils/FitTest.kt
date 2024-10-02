@@ -5,7 +5,8 @@ import com.garmin.fit.MesgBroadcaster
 import com.garmin.fit.WeightScaleMesgListener
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import paufregi.garminfeed.models.Weight
+import paufregi.garminfeed.core.utils.Fit
+import paufregi.garminfeed.core.models.Weight
 import java.io.File
 import java.time.Instant
 import java.util.Date

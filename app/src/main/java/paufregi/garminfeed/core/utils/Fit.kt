@@ -1,4 +1,4 @@
-package paufregi.garminfeed.utils
+package paufregi.garminfeed.core.utils
 
 import com.garmin.fit.DateTime
 import com.garmin.fit.FileEncoder
@@ -6,7 +6,7 @@ import com.garmin.fit.FileIdMesg
 import com.garmin.fit.Fit
 import com.garmin.fit.Manufacturer
 import com.garmin.fit.WeightScaleMesg
-import paufregi.garminfeed.models.Weight
+import paufregi.garminfeed.core.models.Weight
 import java.io.File
 
 object Fit {

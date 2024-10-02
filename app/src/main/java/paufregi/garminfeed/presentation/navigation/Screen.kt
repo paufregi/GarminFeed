@@ -1,4 +1,4 @@
-package paufregi.garminfeed
+package paufregi.garminfeed.presentation.navigation
 
 sealed class Screen(val route: String) {
     data object Main : Screen("main")

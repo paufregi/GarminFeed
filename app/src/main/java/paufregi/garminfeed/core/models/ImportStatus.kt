@@ -1,4 +1,4 @@
-package paufregi.garminfeed.models
+package paufregi.garminfeed.core.models
 
 sealed class ImportStatus {
     data object Uploading : ImportStatus()

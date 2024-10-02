@@ -1,7 +1,7 @@
-package paufregi.garminfeed.ui.preview
+package paufregi.garminfeed.presentation.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import paufregi.garminfeed.models.ImportStatus
+import paufregi.garminfeed.core.models.ImportStatus
 
 class StatusPreview : PreviewParameterProvider<ImportStatus?> {
     override val values: Sequence<ImportStatus?> = sequenceOf(

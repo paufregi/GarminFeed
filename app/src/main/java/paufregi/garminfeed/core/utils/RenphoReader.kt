@@ -1,7 +1,7 @@
-package paufregi.garminfeed.utils
+package paufregi.garminfeed.core.utils
 
 import org.apache.commons.csv.CSVFormat
-import paufregi.garminfeed.models.Weight
+import paufregi.garminfeed.core.models.Weight
 import java.io.InputStream
 import java.util.Locale
 

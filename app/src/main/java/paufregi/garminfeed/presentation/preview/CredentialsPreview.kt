@@ -1,4 +1,4 @@
-package paufregi.garminfeed.ui.preview
+package paufregi.garminfeed.presentation.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.garminfeed.data.database.models.Credentials

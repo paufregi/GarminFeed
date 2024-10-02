@@ -1,4 +1,4 @@
-package paufregi.garminfeed
+package paufregi.garminfeed.presentation.activities
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import dagger.hilt.android.AndroidEntryPoint
-import paufregi.garminfeed.lifecycle.MainViewModel
+import paufregi.garminfeed.presentation.MainViewModel
 import paufregi.garminfeed.presentation.navigation.MainNavigation
 import paufregi.garminfeed.presentation.ShortToast
 import paufregi.garminfeed.presentation.theme.Theme

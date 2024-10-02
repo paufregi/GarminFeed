@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.ui.components.screens
+package paufregi.garminfeed.presentation.ui.screens
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold

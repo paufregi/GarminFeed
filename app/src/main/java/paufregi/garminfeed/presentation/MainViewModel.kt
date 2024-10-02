@@ -1,4 +1,4 @@
-package paufregi.garminfeed.lifecycle
+package paufregi.garminfeed.presentation
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
@@ -10,13 +10,12 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.garminfeed.core.models.Event
 import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.data.repository.GarminRepository
 import paufregi.garminfeed.data.datastore.TokenManager
 import paufregi.garminfeed.core.models.ImportStatus
 import paufregi.garminfeed.core.models.State
-import paufregi.garminfeed.presentation.ShortToast
+import paufregi.garminfeed.core.usecases.SaveCredentialsUseCase
 import paufregi.garminfeed.core.utils.Fit
 import paufregi.garminfeed.core.utils.Formatter
 import paufregi.garminfeed.core.utils.RenphoReader
@@ -26,9 +25,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val application: Application,
-    private val garminRepo: GarminRepository,
-    private val tokenManager: TokenManager
+    private val getCredentialsUseCase: GetCredentialsUseCase
+    private val saveCredentialsUseCase: SaveCredentialsUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(State())
 

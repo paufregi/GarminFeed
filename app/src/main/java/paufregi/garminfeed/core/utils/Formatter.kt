@@ -1,4 +1,4 @@
-package paufregi.garminfeed.utils
+package paufregi.garminfeed.core.utils
 
 import java.text.SimpleDateFormat
 import java.time.ZoneId

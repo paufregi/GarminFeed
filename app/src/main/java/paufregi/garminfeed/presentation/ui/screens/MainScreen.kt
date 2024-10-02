@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import paufregi.garminfeed.Screen
+import paufregi.garminfeed.presentation.navigation.Screen
 import paufregi.garminfeed.data.database.models.Credentials
 import paufregi.garminfeed.presentation.ui.components.Button
 import paufregi.garminfeed.presentation.preview.CredentialsPreview

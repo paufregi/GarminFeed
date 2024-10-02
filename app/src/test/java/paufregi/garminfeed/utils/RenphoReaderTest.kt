@@ -3,7 +3,8 @@ package paufregi.garminfeed.utils
 import com.google.common.truth.Truth.assertThat
 import org.apache.commons.io.IOUtils
 import org.junit.Test
-import paufregi.garminfeed.models.Weight
+import paufregi.garminfeed.core.utils.RenphoReader
+import paufregi.garminfeed.core.models.Weight
 import java.time.Instant
 import java.util.Date
 

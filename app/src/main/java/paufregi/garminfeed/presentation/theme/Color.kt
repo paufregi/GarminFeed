@@ -1,4 +1,4 @@
-package paufregi.garminfeed.ui.theme
+package paufregi.garminfeed.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

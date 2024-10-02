@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.components
+package paufregi.garminfeed.presentation.ui.components
 
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
