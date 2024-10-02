@@ -4,23 +4,20 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import paufregi.garminfeed.data.api.GarminConnect
-import paufregi.garminfeed.data.api.GarminConnectOAuth1
-import paufregi.garminfeed.data.api.GarminConnectOAuth2
 import paufregi.garminfeed.data.api.GarminSSO
 import paufregi.garminfeed.data.api.Garth
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import paufregi.garminfeed.data.database.GarminDao
-import paufregi.garminfeed.data.database.GarminDatabase
-import paufregi.garminfeed.data.repository.GarminAuthRepository
 import paufregi.garminfeed.data.datastore.TokenManager
 import javax.inject.Singleton
+import javax.inject.Named
+
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "data_store")
 
@@ -30,60 +27,43 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideGarminConnectOAuth1Url(): String = GarminConnectOAuth1.BASE_URL
-
-    @Provides
-    @Singleton
-    fun provideGarminConnectOAuth2Url(): String = GarminConnectOAuth2.BASE_URL
-
-    @Provides
-    @Singleton
-    fun provideGarminDatabase(@ApplicationContext context: Context): GarminDatabase =
-        Room.databaseBuilder(context, GarminDatabase::class.java, "garminFeed").build()
-
-    @Provides
-    @Singleton
-    fun provideGarminDao(garminDatabase: GarminDatabase): GarminDao =
-        garminDatabase.garminDao()
-
-    @Provides
-    @Singleton
     fun provideTokenManager(@ApplicationContext context: Context): TokenManager =
         TokenManager(context = context)
 
     @Provides
     @Singleton
-    fun provideGarth(): Garth =
-        Garth.client(Garth.BASE_URL)
-
-    @Provides
-    @Singleton
-    fun provideGarminSSO(): GarminSSO =
-        GarminSSO.client(Garth.BASE_URL)
-
-    @Provides
-    @Singleton
-    fun provideGarminAuthRepo(
+    fun provideAuthInterceptor(
         garminDao: GarminDao,
-        garminSSO: GarminSSO,
         garth: Garth,
+        garminSSO: GarminSSO,
         tokenManager: TokenManager,
-    ): GarminAuthRepository =
-        GarminAuthRepository(
-            garminDao,
-            garminSSO,
-            garth,
-            tokenManager,
-            provideGarminConnectOAuth1Url(),
-            provideGarminConnectOAuth2Url()
-        )
+        @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
+        @Named("GarminConnectOAuth2Url") garminConnectOAuth2Url: String
+    ): AuthInterceptor = AuthInterceptor(
+        garminDao,
+        garth,
+        garminSSO,
+        tokenManager,
+        garminConnectOAuth1Url,
+        garminConnectOAuth2Url
+    )
 
     @Provides
     @Singleton
     fun provideGarminConnect(
-        authRepo: GarminAuthRepository,
-        tokenManager: TokenManager
-    ): GarminConnect =
-        GarminConnect.client(authRepo, tokenManager, GarminConnect.BASE_URL)
+        authInterceptor: AuthInterceptor,
+        @Named("GarminConnectUrl") url: String
+    ): GarminConnect = GarminConnect.client(authInterceptor, url)
 
+    @Provides
+    @Singleton
+    fun provideGarminSSO(
+        @Named("GarminSSOUrl") url: String
+    ): GarminSSO = GarminSSO.client(url)
+
+    @Provides
+    @Singleton
+    fun provideGarth(
+        @Named("GarthUrl") url: String
+    ): Garth = Garth.client(url)
 }

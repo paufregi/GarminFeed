@@ -19,6 +19,7 @@ class GarthTest {
     fun setUp() {
         server.start()
         api = Garth.client(server.url("/").toString())
+        print(server.url("/").toString())
     }
 
     @After
@@ -29,7 +30,7 @@ class GarthTest {
     @Test
     fun `Get OAuth consumer`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
+            .setResponseCode(200)
             .setBody("""{"consumer_key":"KEY","consumer_secret":"SECRET"}""")
         server.enqueue(response)
 

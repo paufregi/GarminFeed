@@ -12,7 +12,6 @@ import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 
-
 class TokenManager (private val context: Context) {
     companion object {
         private val OAUTH_CONSUMER = stringPreferencesKey("oauthConsumer")
@@ -41,21 +40,21 @@ class TokenManager (private val context: Context) {
         }
     }
 
-    suspend fun saveOAuthConsumer(oAuthConsumer: OAuthConsumer) {
+    suspend fun saveOAuthConsumer(consumer: OAuthConsumer) {
         context.dataStore.edit { preferences ->
-            preferences[OAUTH_CONSUMER] = Json.encodeToString(oAuthConsumer)
+            preferences[OAUTH_CONSUMER] = Json.encodeToString(consumer)
         }
     }
 
-    suspend fun saveOAuth1(oAuth1: OAuth1) {
+    suspend fun saveOAuth1(oauth1: OAuth1) {
         context.dataStore.edit { preferences ->
-            preferences[OAUTH1] = Json.encodeToString(oAuth1)
+            preferences[OAUTH1] = Json.encodeToString(oauth1)
         }
     }
 
-    suspend fun saveOAuth2(oAuth2: OAuth2) {
+    suspend fun saveOAuth2(oauth2: OAuth2) {
         context.dataStore.edit { preferences ->
-            preferences[OAUTH2] = Json.encodeToString(oAuth2)
+            preferences[OAUTH2] = Json.encodeToString(oauth2)
         }
     }
 

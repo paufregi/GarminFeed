@@ -48,6 +48,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+
     composeOptions {
         kotlinCompilerExtensionVersion = "1.8.0"
     }
@@ -70,7 +71,6 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.runner)
-    ksp(libs.androidx.room.compiler)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
@@ -81,10 +81,9 @@ dependencies {
     implementation(libs.commons.csv)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
-
-
-
     implementation(libs.hilt.android)
+
+    ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.ui.tooling)
@@ -95,16 +94,16 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core)
-    testImplementation(libs.hilt.testing)
-    testImplementation(libs.mockwebserver)
+    testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.core.testing)
+    androidTestImplementation(libs.android.core.testing)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.turbine)
     androidTestImplementation(libs.hilt.testing)
+    androidTestImplementation(libs.okhttp.mockwebserver)
+    androidTestImplementation(libs.okhttp.tls)
 }

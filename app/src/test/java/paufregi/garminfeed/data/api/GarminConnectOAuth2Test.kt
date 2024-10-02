@@ -19,12 +19,12 @@ class GarminConnectOAuth2Test {
     private var server: MockWebServer = MockWebServer()
     private lateinit var api: GarminConnectOAuth2
     private val consumer = OAuthConsumer("KEY", "SECRET")
-    private val oAuth = OAuth1("TOKEN", "SECRET")
+    private val oauth = OAuth1("TOKEN", "SECRET")
 
     @Before
     fun setUp() {
         server.start()
-        api = GarminConnectOAuth2.client(consumer, oAuth, server.url("/").toString())
+        api = GarminConnectOAuth2.client(consumer, oauth, server.url("/").toString())
     }
 
     @After

@@ -9,34 +9,36 @@ import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
+import okhttp3.Interceptor
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.mockwebserver.MockResponse
-import paufregi.garminfeed.createOAuth2
-import paufregi.garminfeed.tomorrow
-import paufregi.garminfeed.data.datastore.TokenManager
-import paufregi.garminfeed.data.repository.GarminAuthRepository
+import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import java.io.File
 
 class GarminConnectTest {
 
     private var server: MockWebServer = MockWebServer()
     private lateinit var api: GarminConnect
-    private val authRepo = mockk<GarminAuthRepository>()
-    private val tokenManager = mockk<TokenManager>()
+    private val authInterceptor = mockk<AuthInterceptor>()
+
+    val chain = slot<Interceptor.Chain>()
 
     private val testFile = File.createTempFile("test", "test")
     private val fitFile = MultipartBody.Part.createFormData("fit", testFile.name, testFile.asRequestBody())
-    private val oAuth2 = createOAuth2(tomorrow)
 
     @Before
     fun setUp() {
         server.start()
-        api = GarminConnect.client(authRepo, tokenManager, server.url("/").toString())
-        every { tokenManager.getOauth2() } returns flow { emit(oAuth2) }
+        api = GarminConnect.client(authInterceptor, server.url("/").toString())
+        every {
+            authInterceptor.intercept(capture(chain))
+        } answers {
+            chain.captured.proceed(chain.captured.request())
+        }
     }
 
     @After
@@ -55,10 +57,9 @@ class GarminConnectTest {
         val request = server.takeRequest()
         assertThat(request.method).isEqualTo("POST")
         assertThat(request.requestUrl?.toUrl()?.path).isEqualTo("/upload-service/upload")
-        assertThat(request.headers["authorization"]).isEqualTo("Bearer ${oAuth2.accessToken}")
         assertThat(res.isSuccessful).isTrue()
-        verify { tokenManager.getOauth2() }
-        confirmVerified(authRepo, tokenManager)
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
     }
 
     @Test
@@ -69,7 +70,7 @@ class GarminConnectTest {
         val res = api.uploadFile(fitFile)
 
         assertThat(res.isSuccessful).isFalse()
-        verify { tokenManager.getOauth2() }
-        confirmVerified(authRepo, tokenManager)
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
     }
 }

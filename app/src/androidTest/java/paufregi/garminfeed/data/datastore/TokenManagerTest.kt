@@ -14,8 +14,6 @@ import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 import javax.inject.Inject
-import javax.inject.Named
-
 
 @HiltAndroidTest
 @ExperimentalCoroutinesApi
@@ -28,11 +26,10 @@ class TokenManagerTest {
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
-    @Named("test_token_manager")
     lateinit var dataStore: TokenManager
 
     @Before
-    fun setup() {
+    fun setUp() {
         hiltRule.inject()
     }
 
