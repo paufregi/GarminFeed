@@ -1,4 +1,4 @@
-package paufregi.garminfeed.ui.screens
+package paufregi.garminfeed.presentation.ui.components.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.data.database.models.Credentials
-import paufregi.garminfeed.ui.components.Button
-import paufregi.garminfeed.ui.preview.CredentialsPreview
+import paufregi.garminfeed.presentation.ui.components.Button
+import paufregi.garminfeed.presentation.preview.CredentialsPreview
 
 @Preview
 @Composable

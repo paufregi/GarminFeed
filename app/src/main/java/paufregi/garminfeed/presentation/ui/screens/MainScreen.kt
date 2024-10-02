@@ -1,6 +1,5 @@
-package paufregi.garminfeed.ui.screens
+package paufregi.garminfeed.presentation.ui.screens
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircleOutline
@@ -21,10 +20,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.Screen
 import paufregi.garminfeed.data.database.models.Credentials
-import paufregi.garminfeed.ui.components.Button
-import paufregi.garminfeed.ui.preview.CredentialsPreview
+import paufregi.garminfeed.presentation.ui.components.Button
+import paufregi.garminfeed.presentation.preview.CredentialsPreview
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview
 @Composable
 @ExperimentalMaterial3Api

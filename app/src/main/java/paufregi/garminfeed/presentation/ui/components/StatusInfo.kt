@@ -1,4 +1,4 @@
-package paufregi.garminfeed.ui.components
+package paufregi.garminfeed.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

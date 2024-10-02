@@ -11,9 +11,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.garminfeed.lifecycle.MainViewModel
-import paufregi.garminfeed.ui.MainNavigation
-import paufregi.garminfeed.ui.ShortToast
-import paufregi.garminfeed.ui.theme.Theme
+import paufregi.garminfeed.presentation.navigation.MainNavigation
+import paufregi.garminfeed.presentation.ShortToast
+import paufregi.garminfeed.presentation.theme.Theme
 
 @ExperimentalComposeUiApi
 @ExperimentalMaterial3Api
