@@ -8,7 +8,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import paufregi.garminfeed.core.models.ImportStatus
 import paufregi.garminfeed.presentation.ui.components.Loading
 import paufregi.garminfeed.presentation.ui.components.StatusInfo
-import paufregi.garminfeed.presentation.preview.StatusPreview
+import paufregi.garminfeed.presentation.utils.preview.StatusPreview
 
 @Preview
 @Composable

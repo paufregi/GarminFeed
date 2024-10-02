@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.preview
+package paufregi.garminfeed.presentation.utils.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.garminfeed.core.models.ImportStatus

@@ -34,7 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.data.database.models.Credentials
 import paufregi.garminfeed.presentation.ui.components.Button
-import paufregi.garminfeed.presentation.preview.CredentialsPreview
+import paufregi.garminfeed.presentation.utils.preview.CredentialsPreview
 
 @Preview
 @Composable

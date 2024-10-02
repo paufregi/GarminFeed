@@ -82,9 +82,15 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
+    implementation("androidx.hilt:hilt-navigation:1.2.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+//    implementation("androidx.hilt-navigation-fragment:1.2.0")
+//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.2.1")
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
+    ksp("androidx.hilt-compiler:1.2.0")
+
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import paufregi.garminfeed.presentation.MainViewModel
 import paufregi.garminfeed.presentation.ui.screens.ImportScreen
-import paufregi.garminfeed.presentation.theme.Theme
+import paufregi.garminfeed.presentation.ui.theme.Theme
 
 @ExperimentalMaterial3Api
 class ImportActivity : ComponentActivity() {

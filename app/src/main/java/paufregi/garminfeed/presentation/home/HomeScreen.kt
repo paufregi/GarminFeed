@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.ui.screens
+package paufregi.garminfeed.presentation.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,6 +9,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -16,20 +18,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import paufregi.garminfeed.presentation.navigation.Screen
+import kotlinx.coroutines.Job
 import paufregi.garminfeed.data.database.models.Credentials
+import paufregi.garminfeed.presentation.utils.preview.CredentialsPreview
+import paufregi.garminfeed.presentation.utils.Screen
 import paufregi.garminfeed.presentation.ui.components.Button
-import paufregi.garminfeed.presentation.preview.CredentialsPreview
+
+@Composable
+@ExperimentalMaterial3Api
+fun HomeScreen(
+    nav: NavController = rememberNavController(),
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val state by viewModel.state.collectAsState()
+
+    HomeContent(
+        state.credentials,
+        () -> viewModel.clearCache(),
+        nav
+    )
+}
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-fun MainScreen(
+internal fun HomeContent(
     @PreviewParameter(CredentialsPreview::class) credentials: Credentials?,
-    clearCache: () -> Unit = {},
-    nav: NavController = rememberNavController(),
+    onClearCache: Job = {},
+    nav: NavController = rememberNavController()
 ) {
     Scaffold {
         Column(
@@ -63,7 +82,8 @@ fun MainScreen(
             Spacer(modifier = Modifier.height(75.dp))
             Button(text = "Setup", onClick = { nav.navigate(Screen.Credentials.route) })
             Spacer(modifier = Modifier.height(30.dp))
-            Button(text = "Clear cache", onClick = clearCache)
+            Button(text = "Clear cache", onClick = onClearCache)
         }
     }
 }
+

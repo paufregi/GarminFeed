@@ -1,8 +1,6 @@
-package paufregi.garminfeed.presentation
+package paufregi.garminfeed.presentation.home
 
 import android.app.Application
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,22 +10,16 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.garminfeed.core.models.ImportStatus
 import paufregi.garminfeed.core.models.State
 import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.usecases.ClearCacheUseCase
 import paufregi.garminfeed.core.usecases.GetCredentialsUseCase
 import paufregi.garminfeed.core.usecases.SaveCredentialsUseCase
-import paufregi.garminfeed.core.utils.Fit
-import paufregi.garminfeed.core.utils.Formatter
-import paufregi.garminfeed.core.utils.RenphoReader
-import paufregi.garminfeed.data.database.models.Credentials
-import java.io.File
-import java.time.Instant
+import paufregi.garminfeed.presentation.ShortToast
 import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val getCredentialsUseCase: GetCredentialsUseCase,
     private val saveCredentialsUseCase: SaveCredentialsUseCase,
     private val clearCacheUseCase: ClearCacheUseCase,
@@ -50,7 +42,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun clearCache(username: String, password: String) = viewModelScope.launch{
+    fun clearCache() = viewModelScope.launch{
         when(clearCacheUseCase()) {
             is Result.Success -> ShortToast(context = application.applicationContext, "Cache cleared")
             is Result.Failure -> ShortToast(context = application.applicationContext, "Unable to clear cache")

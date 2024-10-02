@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.theme
+package paufregi.garminfeed.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

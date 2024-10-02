@@ -14,3 +14,6 @@ subprojects {
         mavenCentral()
     }
 }
+repositories {
+    google()
+}
