@@ -15,12 +15,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.garminfeed.connectPort
+import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.createOAuth2
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.GarminDatabase
-import paufregi.garminfeed.data.database.models.Credentials
+import paufregi.garminfeed.data.database.entities.CredentialEntity
 import paufregi.garminfeed.garminSSOPort
 import paufregi.garminfeed.garthPort
 import paufregi.garminfeed.htmlForCSRF
@@ -73,15 +74,15 @@ class GarminRepositoryTest {
 
     @Test
     fun `Store credentials`() = runTest {
-        val creds = Credentials(username = "user", password = "pass")
-        dao.saveCredentials(creds)
-        val res = dao.getCredentials()
-        assertThat(res).isEqualTo(creds)
+        val cred = Credential(username = "user", password = "pass")
+        repo.saveCredential(cred)
+        val res = repo.getCredential()
+        assertThat(res).isEqualTo(cred)
     }
 
     @Test
     fun `Upload file`() = runTest {
-        val creds = Credentials(username = "user", password = "pass")
+        val cred = Credential(username = "user", password = "pass")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
         val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
@@ -89,7 +90,7 @@ class GarminRepositoryTest {
         val oauth2 = createOAuth2(tomorrow)
         val oauth2Body = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
 
-        dao.saveCredentials(creds)
+        dao.saveCredential(CredentialEntity(credential = cred))
 
         val connectDispatcher: Dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {

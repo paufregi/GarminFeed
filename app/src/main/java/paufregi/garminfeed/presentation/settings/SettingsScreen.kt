@@ -1,14 +1,6 @@
-package paufregi.garminfeed.presentation.ui.screens
+package paufregi.garminfeed.presentation.settings
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -18,10 +10,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -30,30 +20,37 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import paufregi.garminfeed.data.database.models.Credentials
 import paufregi.garminfeed.presentation.ui.components.Button
-import paufregi.garminfeed.presentation.utils.preview.CredentialsPreview
+import paufregi.garminfeed.presentation.utils.preview.SettingsStatePreview
+
+@Composable
+@ExperimentalMaterial3Api
+fun SettingsScreen(
+    nav: NavController = rememberNavController(),
+    viewModel: SettingsViewModel = hiltViewModel()
+) {
+    SettingsContent(state = viewModel.state, onSave = viewModel::saveCredential, nav = nav)
+}
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-fun CredentialsScreen(
-    @PreviewParameter(CredentialsPreview::class) credentials: Credentials?,
-    onSave: (Credentials) -> Unit = {},
-    nav: NavController = rememberNavController(),
+internal fun SettingsContent(
+    @PreviewParameter(SettingsStatePreview::class) state: MutableState<SettingsState>,
+    onSave: () -> Unit = {  },
+    nav: NavController = rememberNavController()
 ) {
-    var username by remember { mutableStateOf(credentials?.username ?: "") }
-    var password by remember { mutableStateOf(credentials?.password ?: "") }
-    var showPassword by remember { mutableStateOf(false) }
-    Scaffold {
+
+    Scaffold { paddingValues ->
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(it),
+                .padding(paddingValues),
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -61,22 +58,22 @@ fun CredentialsScreen(
             ) {
                 TextField(
                     label = { Text("Username") },
-                    value = username,
-                    isError = username.isBlank(),
-                    onValueChange = { username = it }
+                    value = state.value.username,
+                    onValueChange = { state.value = state.value.copy(username = it) },
+                    isError = state.value.username.isBlank(),
                 )
                 TextField(
                     label = { Text("Password") },
-                    value = password,
-                    isError = password.isBlank(),
-                    onValueChange = { password = it },
+                    value = state.value.password,
+                    onValueChange = { state.value = state.value.copy(password = it) },
+                    isError = state.value.password.isBlank(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                    visualTransformation = if (state.value.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                     trailingIcon = {
                         Button(
-                            onClick = { showPassword = !showPassword },
-                            icon = if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            description = if (showPassword) "Hide password" else "Show password"
+                            onClick = { state.value = state.value.copy(showPassword = !state.value.showPassword) },
+                            icon = if (state.value.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                            description = if (state.value.showPassword) "Hide password" else "Show password"
                         )
                     }
                 )
@@ -85,14 +82,9 @@ fun CredentialsScreen(
                     Spacer(modifier = Modifier.weight(1f))
                     Button(
                         text = "Save",
-                        enabled = username.isNotBlank() && password.isNotBlank(),
+                        enabled = state.value.username.isNotBlank() && state.value.password.isNotBlank(),
                         onClick = {
-                            onSave(
-                                Credentials(
-                                    username = username,
-                                    password = password
-                                )
-                            )
+                            onSave()
                             nav.navigateUp()
                         }
                     )
@@ -101,3 +93,4 @@ fun CredentialsScreen(
         }
     }
 }
+

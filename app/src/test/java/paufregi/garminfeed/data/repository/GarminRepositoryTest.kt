@@ -16,9 +16,11 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.data.api.GarminConnect
 import paufregi.garminfeed.data.database.GarminDao
-import paufregi.garminfeed.data.database.models.Credentials
+import paufregi.garminfeed.data.database.entities.CredentialEntity
+import paufregi.garminfeed.data.datastore.TokenManager
 import retrofit2.Response
 import java.io.File
 
@@ -27,10 +29,11 @@ class GarminRepositoryTest {
     private lateinit var repo: GarminRepository
     private val garminDao = mockk<GarminDao>()
     private val garminConnect = mockk<GarminConnect>()
+    private val tokenManager = mockk<TokenManager>()
 
     @Before
     fun setUp(){
-        repo = GarminRepository(garminDao, garminConnect)
+        repo = GarminRepository(garminDao, garminConnect, tokenManager)
         mockkStatic(Log::class)
         every { Log.i(any(), any()) } returns 0
     }
@@ -44,25 +47,25 @@ class GarminRepositoryTest {
 
     @Test
     fun `Save credentials`() = runTest {
-        val creds = Credentials(username = "user", password = "pass")
+        val cred = Credential(username = "user", password = "pass")
 
-        coEvery { garminDao.saveCredentials(any()) } returns Unit
+        coEvery { garminDao.saveCredential(any()) } returns Unit
 
-        repo.saveCredentials(creds)
+        repo.saveCredential(cred)
 
-        coVerify { garminDao.saveCredentials(creds) }
+        coVerify { garminDao.saveCredential(CredentialEntity(credential = cred)) }
         confirmVerified(garminDao, garminConnect)
     }
 
     @Test
-    fun `Get credentials`() = runTest{
-        val creds = Credentials(username = "user", password = "pass")
-        coEvery { garminDao.getCredentials() } returns creds
+    fun `Get credential`() = runTest{
+        val cred = Credential(username = "user", password = "pass")
+        coEvery { garminDao.getCredential() } returns CredentialEntity(credential = cred)
 
-        val res = repo.getCredentials()
+        val res = repo.getCredential()
 
-        assertThat(res).isEqualTo(creds)
-        coVerify { garminDao.getCredentials() }
+        assertThat(res).isEqualTo(cred)
+        coVerify { garminDao.getCredential() }
         confirmVerified(garminDao, garminConnect)
     }
 

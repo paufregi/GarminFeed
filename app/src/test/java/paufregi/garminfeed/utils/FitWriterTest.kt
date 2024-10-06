@@ -5,13 +5,13 @@ import com.garmin.fit.MesgBroadcaster
 import com.garmin.fit.WeightScaleMesgListener
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
-import paufregi.garminfeed.core.utils.Fit
+import paufregi.garminfeed.core.utils.FitWriter
 import paufregi.garminfeed.core.models.Weight
 import java.io.File
 import java.time.Instant
 import java.util.Date
 
-class FitTest {
+class FitWriterTest {
 
     @Test
     fun `Generate Fit file from list of weight`() {
@@ -30,7 +30,7 @@ class FitTest {
         val file = File.createTempFile("garmin-feed", "test")
         file.deleteOnExit()
 
-        Fit.weight(file, listOf(weight))
+        FitWriter.weights(file, listOf(weight))
 
         val msgBroadcaster = MesgBroadcaster()
 

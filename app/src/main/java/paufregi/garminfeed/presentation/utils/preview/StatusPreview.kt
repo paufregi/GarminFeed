@@ -1,13 +1,13 @@
 package paufregi.garminfeed.presentation.utils.preview
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import paufregi.garminfeed.core.models.ImportStatus
+import paufregi.garminfeed.presentation.syncweight.SyncWeightState
 
-class StatusPreview : PreviewParameterProvider<ImportStatus?> {
-    override val values: Sequence<ImportStatus?> = sequenceOf(
-        ImportStatus.Uploading,
-        ImportStatus.Success,
-        ImportStatus.Failure,
+class StatusPreview : PreviewParameterProvider<SyncWeightState?> {
+    override val values: Sequence<SyncWeightState?> = sequenceOf(
+        SyncWeightState.Uploading,
+        SyncWeightState.Success,
+        SyncWeightState.Failure,
         null
     )
 }

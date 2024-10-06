@@ -9,8 +9,8 @@ import com.garmin.fit.WeightScaleMesg
 import paufregi.garminfeed.core.models.Weight
 import java.io.File
 
-object Fit {
-    fun weight(file: File, weights: List<Weight>) {
+object FitWriter {
+    fun weights(file: File, weights: List<Weight>) {
         val encoder = FileEncoder(file, Fit.ProtocolVersion.V1_0)
 
         val fileIdMesg = FileIdMesg()

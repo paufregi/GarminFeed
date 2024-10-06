@@ -18,7 +18,8 @@ android {
         versionCode = 1
         versionName = "1.1"
 
-        testInstrumentationRunner = "paufregi.garminfeed.TestRunner" //"com.noteapp.app.HiltTestRunner"
+        testInstrumentationRunner =
+            "paufregi.garminfeed.TestRunner" //"com.noteapp.app.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -27,7 +28,6 @@ android {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
     }
-
 
     buildFeatures {
         compose = true
@@ -46,6 +46,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
     }
 
 
@@ -69,6 +72,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.runner)
     implementation(libs.retrofit)
@@ -82,14 +86,12 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
-    implementation("androidx.hilt:hilt-navigation:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-//    implementation("androidx.hilt-navigation-fragment:1.2.0")
-//    implementation("androidx.hilt:hilt-lifecycle-viewmodel:1.2.1")
+    implementation(libs.androidx.hilt.navigation)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
-    ksp("androidx.hilt-compiler:1.2.0")
+    ksp(libs.androidx.hilt.compiler)
 
 
     debugImplementation(libs.androidx.ui.tooling)

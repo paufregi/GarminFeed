@@ -90,7 +90,7 @@ object StatusInfo {
     ) {
         StatusInfo(
             icon = Icons.Default.WarningAmber,
-            iconTint = Color.Yellow,
+            iconTint = Color.DarkGray,
             text = "Don't know what to do",
             onClick = onClick,
             contentPadding = contentPadding

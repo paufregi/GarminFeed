@@ -93,9 +93,9 @@ class AuthInterceptor @Inject constructor(
     }
 
     private suspend fun signIn(): ApiResponse<Ticket> {
-        val credentials = garminDao.getCredentials() ?: return ApiResponse.Failure("No credentials")
+        val cred = garminDao.getCredential()?.credential ?: return ApiResponse.Failure("No credentials")
         return when(val csfr = getCSRF()) {
-            is ApiResponse.Success -> login(username = credentials.username, password = credentials.password, csrf = csfr.data)
+            is ApiResponse.Success -> login(username = cred.username , password = cred.password, csrf = csfr.data)
             is ApiResponse.Failure -> ApiResponse.Failure(csfr.error)
         }
     }

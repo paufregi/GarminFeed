@@ -21,11 +21,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.Job
-import paufregi.garminfeed.data.database.models.Credentials
-import paufregi.garminfeed.presentation.utils.preview.CredentialsPreview
 import paufregi.garminfeed.presentation.utils.Screen
 import paufregi.garminfeed.presentation.ui.components.Button
+import paufregi.garminfeed.presentation.utils.preview.SetupDonePreview
 
 @Composable
 @ExperimentalMaterial3Api
@@ -33,21 +31,17 @@ fun HomeScreen(
     nav: NavController = rememberNavController(),
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsState()
+    val setUpDone by viewModel.setupDone.collectAsState()
 
-    HomeContent(
-        state.credentials,
-        () -> viewModel.clearCache(),
-        nav
-    )
+    HomeContent(setUpDone, viewModel::clearCache, nav)
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun HomeContent(
-    @PreviewParameter(CredentialsPreview::class) credentials: Credentials?,
-    onClearCache: Job = {},
+    @PreviewParameter(SetupDonePreview::class) setUpDone: Boolean,
+    onClearCache: () -> Unit = {},
     nav: NavController = rememberNavController()
 ) {
     Scaffold {
@@ -58,7 +52,7 @@ internal fun HomeContent(
                 .fillMaxSize()
                 .padding(it)
         ) {
-            if (credentials != null) {
+            if (setUpDone) {
                 Icon(
                     imageVector = Icons.Default.CheckCircleOutline,
                     contentDescription = "All done",
@@ -80,7 +74,7 @@ internal fun HomeContent(
                 Text(text = "Setup credentials")
             }
             Spacer(modifier = Modifier.height(75.dp))
-            Button(text = "Setup", onClick = { nav.navigate(Screen.Credentials.route) })
+            Button(text = "Setup", onClick = { nav.navigate(Screen.Settings.route) })
             Spacer(modifier = Modifier.height(30.dp))
             Button(text = "Clear cache", onClick = onClearCache)
         }

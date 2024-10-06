@@ -3,14 +3,14 @@ package paufregi.garminfeed.data.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import paufregi.garminfeed.data.database.models.Credentials
+import paufregi.garminfeed.data.database.entities.CredentialEntity
 
 @Dao
 interface GarminDao {
 
     @Upsert
-    suspend fun saveCredentials(credentials: Credentials)
+    suspend fun saveCredential(credentials: CredentialEntity)
 
     @Query("SELECT * FROM credentials WHERE ID = 1")
-    suspend fun getCredentials(): Credentials?
+    suspend fun getCredential(): CredentialEntity?
 }

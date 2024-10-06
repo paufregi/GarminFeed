@@ -4,27 +4,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import paufregi.garminfeed.presentation.utils.preview.ButtonIconPreview
+import paufregi.garminfeed.presentation.utils.preview.ButtonTextPreview
 import androidx.compose.material3.Button as MaterialButton
 import androidx.compose.material3.IconButton as MaterialIconButton
 
+@Preview
 @Composable
+@Suppress("PreviewShouldNotBeCalledRecursively")
 fun Button(
-    text: String,
-    onClick: () -> Unit,
+    @PreviewParameter(ButtonTextPreview::class) text: String,
+    onClick: () -> Unit = {},
     enabled: Boolean = true
 ) {
-    MaterialButton(onClick = onClick, enabled = enabled) {
-        Text(text = text)
+    MaterialButton(onClick, enabled = enabled) {
+       Text(text)
     }
 }
 
+@Preview
 @Composable
 fun Button(
-    icon: ImageVector,
-    description: String?,
-    onClick: () -> Unit
+    @PreviewParameter(ButtonIconPreview::class) icon: ImageVector,
+    description: String? = "",
+    onClick: () -> Unit = {}
 ) {
-    MaterialIconButton(onClick = onClick) {
-        Icon(imageVector = icon, contentDescription = description)
+    MaterialIconButton(onClick) {
+        Icon(icon, description)
     }
 }

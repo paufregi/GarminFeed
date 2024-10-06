@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.activities
+package paufregi.garminfeed.presentation.syncweight
 
 import android.content.Intent
 import android.net.Uri
@@ -8,27 +8,27 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import paufregi.garminfeed.presentation.MainViewModel
-import paufregi.garminfeed.presentation.ui.screens.ImportScreen
+import paufregi.garminfeed.presentation.home.SyncWeightModelView
 import paufregi.garminfeed.presentation.ui.theme.Theme
 
 @ExperimentalMaterial3Api
-class ImportActivity : ComponentActivity() {
+class SyncWeightActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: SyncWeightModelView by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let {
-            viewModel.onEvent(Event.SyncWeights(it))
+        intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)?.let { uri ->
+            contentResolver.openInputStream(uri).let { input ->
+                viewModel.syncWeight(input)
+            }
         }
 
         setContent {
             Theme {
-                val state by viewModel.state.collectAsStateWithLifecycle()
-                ImportScreen(
-                    status = state.importStatus,
+                val status by viewModel.status
+                SyncWeightScreen(
+                    status = status,
                     onComplete = { finish() }
                 )
             }
