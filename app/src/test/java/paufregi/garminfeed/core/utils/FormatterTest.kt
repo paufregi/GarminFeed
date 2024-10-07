@@ -1,4 +1,4 @@
-package paufregi.garminfeed.utils
+package paufregi.garminfeed.core.utils
 
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test

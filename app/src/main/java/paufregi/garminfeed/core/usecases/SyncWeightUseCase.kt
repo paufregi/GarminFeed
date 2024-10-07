@@ -22,6 +22,7 @@ class SyncWeightUseCase @Inject constructor (
         val filename = "ws_${Formatter.dateTimeForFilename.format(Instant.now())}.fit"
         val file = File(folder, filename)
         FitWriter.weights(file, weights)
+        file.delete()
 
         return when (garminRepository.uploadFile(file)) {
             is ApiResponse.Success -> Result.Success(Unit)

@@ -1,7 +1,5 @@
 package paufregi.garminfeed.presentation.home
 
-import android.app.Application
-import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

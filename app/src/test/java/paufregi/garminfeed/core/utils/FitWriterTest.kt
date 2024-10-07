@@ -1,4 +1,4 @@
-package paufregi.garminfeed.utils
+package paufregi.garminfeed.core.utils
 
 import com.garmin.fit.DateTime
 import com.garmin.fit.MesgBroadcaster
