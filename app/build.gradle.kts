@@ -58,6 +58,10 @@ android {
         kotlinCompilerExtensionVersion = "1.8.0"
     }
 
+    lint {
+        disable += "ObsoleteLintCustomCheck"
+    }
+
     testOptions {
         managedDevices {
             devices {
