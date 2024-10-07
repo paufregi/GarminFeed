@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 class ButtonIconPreview : PreviewParameterProvider<ImageVector> {
     override val values = sequenceOf(
-        Icons.Default.Visibility, Icons.Default.Save
+        Icons.Default.Visibility,
+        Icons.Default.Save
     )
 }

@@ -7,13 +7,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import paufregi.garminfeed.presentation.ui.components.Loading
 import paufregi.garminfeed.presentation.ui.components.StatusInfo
-import paufregi.garminfeed.presentation.utils.preview.StatusPreview
+import paufregi.garminfeed.presentation.utils.preview.SyncWeightStatePreview
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun SyncWeightScreen(
-    @PreviewParameter(StatusPreview::class) status: SyncWeightState?,
+    @PreviewParameter(SyncWeightStatePreview::class) status: SyncWeightState?,
     onComplete: () -> Unit = {},
 ) {
     Scaffold {
