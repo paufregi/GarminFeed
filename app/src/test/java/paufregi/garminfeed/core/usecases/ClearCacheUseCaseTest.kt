@@ -7,13 +7,19 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.data.repository.GarminRepository
 
 class ClearCacheUseCaseTest {
 
     private val repo = mockk<GarminRepository>()
-    private val useCase = ClearCacheUseCase(repo)
+    private lateinit var useCase: ClearCacheUseCase
+
+    @Before
+    fun setUp(){
+        useCase = ClearCacheUseCase(repo)
+    }
 
     @After
     fun tearDown(){

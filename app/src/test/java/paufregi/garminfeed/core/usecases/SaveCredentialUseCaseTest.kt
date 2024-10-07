@@ -8,15 +8,22 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.data.repository.GarminRepository
 import paufregi.garminfeed.core.models.Result
+import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
 import javax.inject.Inject
 
 class SaveCredentialUseCaseTest{
     private val repo = mockk<GarminRepository>()
-    private val useCase = SaveCredentialUseCase(repo)
+    private lateinit var useCase: SaveCredentialUseCase
+
+    @Before
+    fun setUp(){
+        useCase = SaveCredentialUseCase(repo)
+    }
 
     @After
     fun tearDown(){

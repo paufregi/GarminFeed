@@ -8,13 +8,19 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.data.repository.GarminRepository
 
 class GetCredentialUseCaseTest{
     private val repo = mockk<GarminRepository>()
-    private val useCase = GetCredentialUseCase(repo)
+    private lateinit var useCase: GetCredentialUseCase
+
+    @Before
+    fun setUp(){
+        useCase = GetCredentialUseCase(repo)
+    }
 
     @After
     fun tearDown(){
