@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -55,6 +57,19 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.8.0"
     }
+
+    testOptions {
+        managedDevices {
+            devices {
+                register("pixel9Pro", ManagedVirtualDevice::class) {
+                    device = "Pixel 9 Pro"
+                    apiLevel = 34
+                    systemImageSource = "aosp"
+                }
+            }
+        }
+    }
+
 }
 
 composeCompiler {
