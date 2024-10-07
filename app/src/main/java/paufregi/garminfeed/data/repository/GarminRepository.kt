@@ -4,8 +4,8 @@ import android.util.Log
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.garminfeed.data.api.GarminConnect
-import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.core.models.Credential
+import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.entities.CredentialEntity
 import paufregi.garminfeed.data.datastore.TokenManager
@@ -30,14 +30,14 @@ class GarminRepository @Inject constructor(
         tokenManager.deleteOAuth2()
     }
 
-    suspend fun uploadFile(file: File): ApiResponse<Unit> {
+    suspend fun uploadFile(file: File): Result<Unit> {
         Log.i("GARMIN", "Uploading fit file")
         val multipartBody = MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
 
         val res = garminConnect.uploadFile(multipartBody)
         return when (res.isSuccessful){
-            true -> ApiResponse.Success(Unit)
-            false -> ApiResponse.Failure(res.errorBody().toString())
+            true -> Result.Success(Unit)
+            false -> Result.Failure(res.errorBody().toString())
         }
     }
 }

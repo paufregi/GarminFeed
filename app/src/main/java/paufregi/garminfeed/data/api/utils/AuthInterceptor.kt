@@ -8,11 +8,11 @@ import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.data.api.GarminConnectOAuth1
 import paufregi.garminfeed.data.api.GarminConnectOAuth2
 import paufregi.garminfeed.data.api.GarminSSO
 import paufregi.garminfeed.data.api.Garth
-import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.data.api.models.CSRF
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
@@ -38,8 +38,8 @@ class AuthInterceptor @Inject constructor(
             chain.proceed(newRequestWithAccessToken(cachedOauth2.accessToken, request))
         } else {
             when (val oauth2 = runBlocking { authenticate() }){
-                is ApiResponse.Success -> chain.proceed(newRequestWithAccessToken(oauth2.data.accessToken, request))
-                is ApiResponse.Failure -> Response.Builder()
+                is Result.Success -> chain.proceed(newRequestWithAccessToken(oauth2.data.accessToken, request))
+                is Result.Failure -> Response.Builder()
                     .request(request)
                     .protocol(Protocol.HTTP_1_1)
                     .code(401)
@@ -50,65 +50,65 @@ class AuthInterceptor @Inject constructor(
         }
     }
 
-    private suspend fun getCSRF(): ApiResponse<CSRF> {
+    private suspend fun getCSRF(): Result<CSRF> {
         val res = garminSSO.getCSRF()
         return when(res.isSuccessful) {
-            true -> ApiResponse.Success(res.body()!!)
-            false -> ApiResponse.Failure(res.errorBody().toString())
+            true -> Result.Success(res.body()!!)
+            false -> Result.Failure(res.errorBody().toString())
         }
     }
 
-    private suspend fun login(username: String, password: String, csrf: CSRF): ApiResponse<Ticket> {
+    private suspend fun login(username: String, password: String, csrf: CSRF): Result<Ticket> {
         val res = garminSSO.login(username = username, password = password, csrf = csrf)
         return when(res.isSuccessful) {
-            true -> ApiResponse.Success(res.body()!!)
-            false -> ApiResponse.Failure(res.errorBody().toString())
+            true -> Result.Success(res.body()!!)
+            false -> Result.Failure(res.errorBody().toString())
         }
     }
 
-    private suspend fun getOAuthConsumer(): ApiResponse<OAuthConsumer> {
+    private suspend fun getOAuthConsumer(): Result<OAuthConsumer> {
         val res = garth.getOAuthConsumer()
         return when(res.isSuccessful) {
-            true -> ApiResponse.Success(res.body()!!)
-            false -> ApiResponse.Failure(res.errorBody().toString())
+            true -> Result.Success(res.body()!!)
+            false -> Result.Failure(res.errorBody().toString())
         }
     }
 
-    private suspend fun getOAuthToken(ticket: Ticket, consumer: OAuthConsumer): ApiResponse<OAuth1> {
+    private suspend fun getOAuthToken(ticket: Ticket, consumer: OAuthConsumer): Result<OAuth1> {
         val garminConnect = createConnectOAuth1(consumer)
         val res = garminConnect.getOauth1(ticket)
         return when(res.isSuccessful) {
-            true -> ApiResponse.Success(res.body()!!)
-            false -> ApiResponse.Failure(res.errorBody().toString())
+            true -> Result.Success(res.body()!!)
+            false -> Result.Failure(res.errorBody().toString())
         }
     }
 
-    private suspend fun getOAuth2Token(oauth: OAuth1, consumer: OAuthConsumer): ApiResponse<OAuth2> {
+    private suspend fun getOAuth2Token(oauth: OAuth1, consumer: OAuthConsumer): Result<OAuth2> {
         val garminConnect = createConnectOAuth2(consumer, oauth)
         val res = garminConnect.getOauth2()
         return when(res.isSuccessful) {
-            true -> ApiResponse.Success(res.body()!!)
-            false -> ApiResponse.Failure(res.errorBody().toString())
+            true -> Result.Success(res.body()!!)
+            false -> Result.Failure(res.errorBody().toString())
         }
     }
 
-    private suspend fun signIn(): ApiResponse<Ticket> {
-        val cred = garminDao.getCredential()?.credential ?: return ApiResponse.Failure("No credentials")
+    private suspend fun signIn(): Result<Ticket> {
+        val cred = garminDao.getCredential()?.credential ?: return Result.Failure("No credentials")
         return when(val csfr = getCSRF()) {
-            is ApiResponse.Success -> login(username = cred.username , password = cred.password, csrf = csfr.data)
-            is ApiResponse.Failure -> ApiResponse.Failure(csfr.error)
+            is Result.Success -> login(username = cred.username , password = cred.password, csrf = csfr.data)
+            is Result.Failure -> Result.Failure(csfr.error)
         }
     }
 
-    private suspend fun authenticate(): ApiResponse<OAuth2> {
+    private suspend fun authenticate(): Result<OAuth2> {
 
         val consumer =
             tokenManager.getOAuthConsumer().first() ?: when (val res = getOAuthConsumer()) {
-                is ApiResponse.Success -> {
+                is Result.Success -> {
                     tokenManager.saveOAuthConsumer(res.data)
                     res.data
                 }
-                is ApiResponse.Failure -> return ApiResponse.Failure(res.error)
+                is Result.Failure -> return Result.Failure(res.error)
             }
 
         val cachedOAuth1 = tokenManager.getOauth1().first()
@@ -117,25 +117,25 @@ class AuthInterceptor @Inject constructor(
             oauth = cachedOAuth1
         } else {
             val ticket = when (val res = signIn()) {
-                is ApiResponse.Success -> res.data
-                is ApiResponse.Failure -> return ApiResponse.Failure(res.error)
+                is Result.Success -> res.data
+                is Result.Failure -> return Result.Failure(res.error)
             }
 
             oauth = when (val res = getOAuthToken(ticket, consumer)) {
-                is ApiResponse.Success -> {
+                is Result.Success -> {
                     tokenManager.saveOAuth1(res.data)
                     res.data
                 }
-                is ApiResponse.Failure -> return ApiResponse.Failure(res.error)
+                is Result.Failure -> return Result.Failure(res.error)
             }
         }
 
         return when (val oauth2 = getOAuth2Token(oauth, consumer)) {
-            is ApiResponse.Success -> {
+            is Result.Success -> {
                 tokenManager.saveOAuth2(oauth2.data)
-                ApiResponse.Success(oauth2.data)
+                Result.Success(oauth2.data)
             }
-            is ApiResponse.Failure -> ApiResponse.Failure(oauth2.error)
+            is Result.Failure -> Result.Failure(oauth2.error)
         }
     }
 

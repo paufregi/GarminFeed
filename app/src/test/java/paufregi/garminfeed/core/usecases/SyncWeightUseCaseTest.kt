@@ -22,7 +22,6 @@ import paufregi.garminfeed.core.models.Weight
 import paufregi.garminfeed.core.utils.FitWriter
 import paufregi.garminfeed.core.utils.Formatter
 import paufregi.garminfeed.core.utils.RenphoReader
-import paufregi.garminfeed.data.api.models.ApiResponse
 import paufregi.garminfeed.data.repository.GarminRepository
 import java.time.Instant
 import java.util.Date
@@ -78,7 +77,7 @@ class SyncWeightUseCaseTest {
         every { RenphoReader.read(any()) } returns weights
         every { Formatter.dateTimeForFilename.format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
-        coEvery { repo.uploadFile(any()) } returns ApiResponse.Success(Unit)
+        coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
 
         coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(stubInputStream)
@@ -102,7 +101,7 @@ class SyncWeightUseCaseTest {
         every { RenphoReader.read(any()) } returns emptyList()
         every { Formatter.dateTimeForFilename.format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
-        coEvery { repo.uploadFile(any()) } returns ApiResponse.Success(Unit)
+        coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
 
         coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(stubInputStream)
@@ -126,7 +125,7 @@ class SyncWeightUseCaseTest {
         every { RenphoReader.read(any()) } returns emptyList()
         every { Formatter.dateTimeForFilename.format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
-        coEvery { repo.uploadFile(any()) } returns ApiResponse.Failure("Failed to upload file")
+        coEvery { repo.uploadFile(any()) } returns Result.Failure("Failed to upload file")
 
         coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(stubInputStream)

@@ -5,7 +5,6 @@ import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.utils.FitWriter
 import paufregi.garminfeed.core.utils.Formatter
 import paufregi.garminfeed.core.utils.RenphoReader
-import paufregi.garminfeed.data.api.models.ApiResponse
 import java.io.File
 import java.io.InputStream
 import java.time.Instant
@@ -26,8 +25,8 @@ class SyncWeightUseCase @Inject constructor (
         file.delete()
 
         return when (res) {
-            is ApiResponse.Success -> Result.Success(Unit)
-            is ApiResponse.Failure -> Result.Failure("Failed to upload file")
+            is Result.Success -> Result.Success(Unit)
+            is Result.Failure -> Result.Failure("Failed to upload file")
         }
 
     }
