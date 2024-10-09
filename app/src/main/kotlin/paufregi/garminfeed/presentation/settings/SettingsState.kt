@@ -1,7 +1,8 @@
 package paufregi.garminfeed.presentation.settings
 
+import paufregi.garminfeed.core.models.Credential
+
 data class SettingsState(
-    val username: String = "",
-    val password: String = "",
+    val credential: Credential = Credential(),
     val showPassword: Boolean = false,
 )
