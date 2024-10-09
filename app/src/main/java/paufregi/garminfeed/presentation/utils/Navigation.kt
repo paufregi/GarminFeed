@@ -12,11 +12,11 @@ import paufregi.garminfeed.presentation.settings.SettingsScreen
 @ExperimentalMaterial3Api
 fun Navigation() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = Screen.Home.route) {
-        composable(route = Screen.Home.route) {
+    NavHost(navController = navController, startDestination = Route.Home) {
+        composable(route = Route.Home) {
             HomeScreen(nav = navController)
         }
-        composable(route = Screen.Settings.route) {
+        composable(route = Route.Settings) {
             SettingsScreen(nav = navController)
         }
     }
