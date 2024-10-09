@@ -11,10 +11,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
-import paufregi.garminfeed.data.repository.GarminRepository
 import paufregi.garminfeed.core.models.Result
-import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
-import javax.inject.Inject
+import paufregi.garminfeed.data.repository.GarminRepository
 
 class SaveCredentialUseCaseTest{
     private val repo = mockk<GarminRepository>()

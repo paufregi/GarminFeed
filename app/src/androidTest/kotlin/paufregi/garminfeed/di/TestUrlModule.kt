@@ -7,8 +7,8 @@ import dagger.hilt.testing.TestInstallIn
 import paufregi.garminfeed.connectPort
 import paufregi.garminfeed.garminSSOPort
 import paufregi.garminfeed.garthPort
-import javax.inject.Singleton
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @TestInstallIn(

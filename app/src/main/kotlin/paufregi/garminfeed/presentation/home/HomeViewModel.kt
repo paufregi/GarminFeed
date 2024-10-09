@@ -21,7 +21,7 @@ class HomeViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(HomeState())
     val state = _state
-        .onStart { checkSetup() }
+        .onStart { checkSetup(); print("test") }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), HomeState())
 
     private fun checkSetup() = viewModelScope.launch {

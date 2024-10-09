@@ -1,6 +1,5 @@
 package paufregi.garminfeed.data.api.utils
 
-import android.util.Log
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

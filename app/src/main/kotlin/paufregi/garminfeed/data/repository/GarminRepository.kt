@@ -3,14 +3,13 @@ package paufregi.garminfeed.data.repository
 import android.util.Log
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import paufregi.garminfeed.data.api.GarminConnect
 import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.core.models.Result
+import paufregi.garminfeed.data.api.GarminConnect
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.entities.CredentialEntity
 import paufregi.garminfeed.data.datastore.TokenManager
 import java.io.File
-
 import javax.inject.Inject
 
 class GarminRepository @Inject constructor(

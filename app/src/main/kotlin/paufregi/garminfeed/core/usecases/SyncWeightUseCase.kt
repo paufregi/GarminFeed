@@ -1,10 +1,10 @@
 package paufregi.garminfeed.core.usecases
 
-import paufregi.garminfeed.data.repository.GarminRepository
 import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.utils.FitWriter
 import paufregi.garminfeed.core.utils.Formatter
 import paufregi.garminfeed.core.utils.RenphoReader
+import paufregi.garminfeed.data.repository.GarminRepository
 import java.io.File
 import java.io.InputStream
 import java.time.Instant

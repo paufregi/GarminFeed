@@ -1,9 +1,5 @@
 package paufregi.garminfeed.data.api
 
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.confirmVerified
@@ -16,6 +12,10 @@ import okhttp3.Interceptor
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import java.io.File
 

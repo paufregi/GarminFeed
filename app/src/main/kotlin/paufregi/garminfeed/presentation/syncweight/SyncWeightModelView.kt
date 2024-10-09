@@ -6,9 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import paufregi.garminfeed.presentation.syncweight.SyncWeightState
 import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.usecases.SyncWeightUseCase
+import paufregi.garminfeed.presentation.syncweight.SyncWeightState
 import java.io.InputStream
 import javax.inject.Inject
 

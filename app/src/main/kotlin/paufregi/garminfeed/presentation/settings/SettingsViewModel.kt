@@ -11,7 +11,6 @@ import paufregi.garminfeed.core.usecases.GetCredentialUseCase
 import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
 import paufregi.garminfeed.presentation.ui.ShortToast
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(

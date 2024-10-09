@@ -3,8 +3,8 @@ package paufregi.garminfeed.data.api
 import okhttp3.OkHttpClient
 import paufregi.garminfeed.data.api.converters.GarminConverterFactory
 import paufregi.garminfeed.data.api.models.OAuth1
-import paufregi.garminfeed.data.api.models.Ticket
 import paufregi.garminfeed.data.api.models.OAuthConsumer
+import paufregi.garminfeed.data.api.models.Ticket
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

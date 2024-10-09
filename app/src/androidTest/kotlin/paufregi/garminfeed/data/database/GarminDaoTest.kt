@@ -1,16 +1,15 @@
 package paufregi.garminfeed.data.database
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
-
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.data.database.entities.CredentialEntity
 import javax.inject.Inject

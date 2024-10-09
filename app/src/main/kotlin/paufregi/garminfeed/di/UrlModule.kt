@@ -9,8 +9,8 @@ import paufregi.garminfeed.data.api.GarminConnectOAuth1
 import paufregi.garminfeed.data.api.GarminConnectOAuth2
 import paufregi.garminfeed.data.api.GarminSSO
 import paufregi.garminfeed.data.api.Garth
-import javax.inject.Singleton
 import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

@@ -21,8 +21,8 @@ import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.datastore.TokenManager
 import paufregi.garminfeed.presentation.ui.ShortToast
 import java.io.File
-import javax.inject.Singleton
 import javax.inject.Named
+import javax.inject.Singleton
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "data_store")
 

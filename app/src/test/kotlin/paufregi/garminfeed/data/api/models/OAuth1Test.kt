@@ -1,7 +1,7 @@
 package paufregi.garminfeed.data.api.models
 
-import org.junit.Test
 import com.google.common.truth.Truth.assertThat
+import org.junit.Test
 
 class OAuth1Test {
 

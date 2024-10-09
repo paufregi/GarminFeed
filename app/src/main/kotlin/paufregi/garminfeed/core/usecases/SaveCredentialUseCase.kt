@@ -1,8 +1,8 @@
 package paufregi.garminfeed.core.usecases
 
 import paufregi.garminfeed.core.models.Credential
-import paufregi.garminfeed.data.repository.GarminRepository
 import paufregi.garminfeed.core.models.Result
+import paufregi.garminfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class SaveCredentialUseCase @Inject constructor (private val garminRepository: GarminRepository) {

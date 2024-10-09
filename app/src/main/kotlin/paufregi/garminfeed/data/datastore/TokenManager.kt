@@ -7,10 +7,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import paufregi.garminfeed.di.dataStore
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
+import paufregi.garminfeed.di.dataStore
 
 class TokenManager (private val context: Context) {
     companion object {

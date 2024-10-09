@@ -1,12 +1,12 @@
 package paufregi.garminfeed.data.api
 
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.test.runTest
+import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
 import paufregi.garminfeed.data.api.models.OAuthConsumer
