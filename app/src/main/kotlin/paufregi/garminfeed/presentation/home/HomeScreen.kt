@@ -2,6 +2,7 @@ package paufregi.garminfeed.presentation.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -33,69 +34,47 @@ import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.ui.components.Button
 import paufregi.garminfeed.presentation.utils.Route
 
-@Composable
-@ExperimentalMaterial3Api
-fun HomeScreen(
-    nav: NavController = rememberNavController(),
-    viewModel: HomeViewModel = hiltViewModel()
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    HomeContent(state, viewModel::resetClearCacheMessage, viewModel::clearCache, nav)
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun HomeContent(
+internal fun HomeScreen(
     @PreviewParameter(HomeStatePreview::class) state: HomeState,
-    resetClearCacheMessage: () -> Unit = {},
-    onClearCache: () -> Unit = {},
+    onEvent: (HomeEvent) -> Unit = {},
+    paddingValues: PaddingValues = PaddingValues(),
     nav: NavController = rememberNavController()
 ) {
-    val snackHost = remember { SnackbarHostState() }
-
-    LaunchedEffect(key1 = state.clearCacheMessage) {
-        state.clearCacheMessage?.let {
-            snackHost.showSnackbar(it)
-            resetClearCacheMessage()
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    ) {
+        if (state.setupDone) {
+            Icon(
+                imageVector = Icons.Default.CheckCircleOutline,
+                contentDescription = "All done",
+                tint = Color.Green,
+                modifier = Modifier
+                    .scale(3f)
+                    .padding(30.dp)
+            )
+            Text(text = "All good")
+        } else {
+            Icon(
+                imageVector = Icons.Default.WarningAmber,
+                contentDescription = "Setup credentials",
+                tint = Color.Red,
+                modifier = Modifier
+                    .scale(3f)
+                    .padding(30.dp)
+            )
+            Text(text = "Setup credentials")
         }
-    }
-
-    Scaffold(snackbarHost = { SnackbarHost(snackHost) }) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-        ) {
-            if (state.setupDone) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircleOutline,
-                    contentDescription = "All done",
-                    tint = Color.Green,
-                    modifier = Modifier
-                        .scale(3f)
-                        .padding(30.dp)
-                )
-                Text(text = "All good")
-            } else {
-                Icon(
-                    imageVector = Icons.Default.WarningAmber,
-                    contentDescription = "Setup credentials",
-                    tint = Color.Red,
-                    modifier = Modifier
-                        .scale(3f)
-                        .padding(30.dp)
-                )
-                Text(text = "Setup credentials")
-            }
-            Spacer(modifier = Modifier.height(75.dp))
-            Button(text = "Setup", onClick = { nav.navigate(Route.Settings) })
-            Spacer(modifier = Modifier.height(30.dp))
-            Button(text = "Clear cache", onClick = onClearCache )
-        }
+        Spacer(modifier = Modifier.height(75.dp))
+        Button(text = "Setup", onClick = { nav.navigate(Route.Settings) })
+        Spacer(modifier = Modifier.height(30.dp))
+        Button(text = "Clear cache", onClick = { onEvent(HomeEvent.CleanCache) } )
     }
 }
 

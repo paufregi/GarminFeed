@@ -3,6 +3,7 @@ package paufregi.garminfeed.presentation.settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,71 +34,59 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.ui.components.Button
 
-@Composable
-@ExperimentalMaterial3Api
-fun SettingsScreen(
-    nav: NavController = rememberNavController(),
-    viewModel: SettingsViewModel = hiltViewModel()
-) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-
-    SettingsContent(state = state, onSave = viewModel::saveCredential, nav = nav)
-}
-
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun SettingsContent(
+internal fun SettingsScreen(
     @PreviewParameter(SettingsStatePreview::class) state: SettingsState,
-    onSave: () -> Unit = {  },
+    onEvent: (SettingsEvent) -> Unit = {  },
+    paddingValues: PaddingValues = PaddingValues(),
     nav: NavController = rememberNavController()
 ) {
 
-    Scaffold { paddingValues ->
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
+    ) {
         Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
+            modifier = Modifier.width(IntrinsicSize.Min)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.width(IntrinsicSize.Min)
-            ) {
-                TextField(
-                    label = { Text("Username") },
-                    value = state.value.username,
-                    onValueChange = { state.value = state.value.copy(username = it) },
-                    isError = state.value.username.isBlank(),
-                )
-                TextField(
-                    label = { Text("Password") },
-                    value = state.value.password,
-                    onValueChange = { state.value = state.value.copy(password = it) },
-                    isError = state.value.password.isBlank(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    visualTransformation = if (state.value.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                    trailingIcon = {
-                        Button(
-                            onClick = { state.value = state.value.copy(showPassword = !state.value.showPassword) },
-                            icon = if (state.value.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                            description = if (state.value.showPassword) "Hide password" else "Show password"
-                        )
-                    }
-                )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Button(text = "Cancel", onClick = { nav.navigateUp() })
-                    Spacer(modifier = Modifier.weight(1f))
+            TextField(
+                label = { Text("Username") },
+                value = state.credential.username,
+                onValueChange = { onEvent(SettingsEvent.UpdateUsername(it)) },
+                isError = state.credential.username.isBlank(),
+            )
+            TextField(
+                label = { Text("Password") },
+                value = state.credential.password,
+                onValueChange =  { onEvent(SettingsEvent.UpdateUsername(it)) },
+                isError = state.credential.password.isBlank(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                trailingIcon = {
                     Button(
-                        text = "Save",
-                        enabled = state.value.username.isNotBlank() && state.value.password.isNotBlank(),
-                        onClick = {
-                            onSave()
-                            nav.navigateUp()
-                        }
+                        onClick = { onEvent(SettingsEvent.UpdateShowPassword(!state.showPassword)) },
+                        icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        description = if (state.showPassword) "Hide password" else "Show password"
                     )
                 }
+            )
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Button(text = "Cancel", onClick = { nav.navigateUp() })
+                Spacer(modifier = Modifier.weight(1f))
+                Button(
+                    text = "Save",
+                    enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
+                    onClick = {
+                        onEvent(SettingsEvent.SaveCredential)
+                        nav.navigateUp()
+                    }
+                )
             }
         }
     }

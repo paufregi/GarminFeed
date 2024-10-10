@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.garminfeed.core.usecases.ClearCacheUseCase
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
+import paufregi.garminfeed.presentation.utils.SnackbarController
+import paufregi.garminfeed.presentation.utils.SnackbarEvent
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,19 +26,25 @@ class HomeViewModel @Inject constructor(
         .onStart { checkSetup() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), HomeState())
 
+    fun onEvent(event: HomeEvent) {
+        when (event) {
+            is HomeEvent.CleanCache -> clearCache()
+        }
+    }
+
     private fun checkSetup() = viewModelScope.launch {
         val cred = getCredentialUseCase()
         _state.update { it.copy(setupDone = cred != null && cred.username.isNotBlank() && cred.password.isNotBlank()) }
     }
 
-    fun clearCache() = viewModelScope.launch {
+    private fun clearCache() = viewModelScope.launch {
         clearCacheUseCase()
     }.invokeOnCompletion { cause ->
-        when (cause == null) {
-            true -> _state.update { it.copy(clearCacheMessage = "Cache cleared") }
-            false -> _state.update { it.copy(clearCacheMessage = "Unable to clear cache") }
+        viewModelScope.launch {
+            when (cause == null) {
+                true -> SnackbarController.sendEvent(SnackbarEvent("Cache cleared"))
+                false -> SnackbarController.sendEvent(SnackbarEvent("Unable to clear cache"))
+            }
         }
     }
-
-    fun resetClearCacheMessage() = _state.update { it.copy(clearCacheMessage = null) }
 }

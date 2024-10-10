@@ -1,6 +1,5 @@
 package paufregi.garminfeed.presentation.settings
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,11 +9,9 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
 import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
-import paufregi.garminfeed.presentation.home.HomeState
 import paufregi.garminfeed.presentation.ui.ShortToast
 import javax.inject.Inject
 
@@ -25,21 +22,29 @@ class SettingsViewModel @Inject constructor(
     val toast: ShortToast
 ) : ViewModel() {
 
-    val state = mutableStateOf(SettingsState())
+    private val _state = MutableStateFlow(SettingsState())
+    val state = _state
+        .onStart { loadCredential() }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), SettingsState())
 
-    init {
-        viewModelScope.launch {
-            val cred = getCredentialUseCase()
-            if (cred != null) {
-                state.value = state.value.copy(username = cred.username, password = cred.password)
-            }
+    fun onEvent(event: SettingsEvent) {
+        when (event) {
+            is SettingsEvent.UpdateUsername -> _state.update { it.copy(credential = it.credential.copy(username = event.username)) }
+            is SettingsEvent.UpdatePassword -> _state.update { it.copy(credential = it.credential.copy(password = event.password)) }
+            is SettingsEvent.UpdateShowPassword -> _state.update { it.copy(showPassword = event.showPassword) }
+            is SettingsEvent.SaveCredential -> saveCredential()
         }
     }
 
-    private
+    private fun loadCredential() = viewModelScope.launch {
+        val cred = getCredentialUseCase()
+        if (cred != null) {
+            _state.update { it.copy(credential = cred) }
+        }
+    }
 
-    fun saveCredential() = viewModelScope.launch {
-        when (saveCredentialUseCase(_state.value.credential)) {
+    private fun saveCredential() = viewModelScope.launch {
+        when (saveCredentialUseCase(state.value.credential)) {
             is Result.Success -> toast.show("Credential saved")
             is Result.Failure -> toast.show("Unable to save credential")
         }
