@@ -20,16 +20,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 
+sealed class StatusInfoType(
+    val icon: ImageVector,
+    val color: Color
+){
+    object Success: StatusInfoType(Icons.Default.CheckCircleOutline, Color.Green)
+    object Failure: StatusInfoType(Icons.Default.WarningAmber, Color.Red)
+    object Unknown: StatusInfoType(Icons.Default.WarningAmber, Color.DarkGray)
+}
+
+@Preview
 @Composable
 @ExperimentalMaterial3Api
 fun StatusInfo(
-    icon: ImageVector,
-    iconTint: Color,
-    text: String,
+    @PreviewParameter(StatusInfoTypePreview::class) type: StatusInfoType,
+    text: String = "",
     onClick: () -> Unit = {},
-    contentPadding: PaddingValues
+    contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -39,9 +51,9 @@ fun StatusInfo(
             .padding(contentPadding)
     ) {
         Icon(
-            imageVector = icon,
+            imageVector = type.icon,
             contentDescription = text,
-            tint = iconTint,
+            tint = type.color,
             modifier = Modifier.scale(2.5f)
         )
         Spacer(modifier = Modifier.height(20.dp))
@@ -51,49 +63,10 @@ fun StatusInfo(
     }
 }
 
-object StatusInfo {
-    @Composable
-    @ExperimentalMaterial3Api
-    fun Failure(
-        onClick: () -> Unit,
-        contentPadding: PaddingValues
-    ) {
-        StatusInfo(
-            icon = Icons.Default.WarningAmber,
-            iconTint = Color.Red,
-            text = "Sync failed",
-            onClick = onClick,
-            contentPadding = contentPadding
-        )
-    }
-
-    @Composable
-    @ExperimentalMaterial3Api
-    fun Success(
-        onClick: () -> Unit,
-        contentPadding: PaddingValues
-    ) {
-        StatusInfo(
-            icon = Icons.Default.CheckCircleOutline,
-            iconTint = Color.Green,
-            text = "Sync succeeded",
-            onClick = onClick,
-            contentPadding = contentPadding
-        )
-    }
-
-    @Composable
-    @ExperimentalMaterial3Api
-    fun Unknown(
-        onClick: () -> Unit,
-        contentPadding: PaddingValues
-    ) {
-        StatusInfo(
-            icon = Icons.Default.WarningAmber,
-            iconTint = Color.DarkGray,
-            text = "Don't know what to do",
-            onClick = onClick,
-            contentPadding = contentPadding
-        )
-    }
+class StatusInfoTypePreview : PreviewParameterProvider<StatusInfoType> {
+    override val values = sequenceOf(
+        StatusInfoType.Success,
+        StatusInfoType.Failure,
+        StatusInfoType.Unknown
+    )
 }

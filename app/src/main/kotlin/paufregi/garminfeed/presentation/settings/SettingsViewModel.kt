@@ -12,14 +12,13 @@ import kotlinx.coroutines.launch
 import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
 import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
-import paufregi.garminfeed.presentation.ui.ShortToast
+import paufregi.garminfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val getCredentialUseCase: GetCredentialUseCase,
     private val saveCredentialUseCase: SaveCredentialUseCase,
-    val toast: ShortToast
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -45,8 +44,8 @@ class SettingsViewModel @Inject constructor(
 
     private fun saveCredential() = viewModelScope.launch {
         when (saveCredentialUseCase(state.value.credential)) {
-            is Result.Success -> toast.show("Credential saved")
-            is Result.Failure -> toast.show("Unable to save credential")
+            is Result.Success -> SnackbarController.sendEvent("Credential saved")
+            is Result.Failure -> SnackbarController.sendEvent("Unable to save credential")
         }
     }
 }

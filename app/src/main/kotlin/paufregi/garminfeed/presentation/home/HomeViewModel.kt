@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.garminfeed.core.usecases.ClearCacheUseCase
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
-import paufregi.garminfeed.presentation.utils.SnackbarController
-import paufregi.garminfeed.presentation.utils.SnackbarEvent
+import paufregi.garminfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
 @HiltViewModel
@@ -42,8 +41,8 @@ class HomeViewModel @Inject constructor(
     }.invokeOnCompletion { cause ->
         viewModelScope.launch {
             when (cause == null) {
-                true -> SnackbarController.sendEvent(SnackbarEvent("Cache cleared"))
-                false -> SnackbarController.sendEvent(SnackbarEvent("Unable to clear cache"))
+                true -> SnackbarController.sendEvent("Cache cleared")
+                false -> SnackbarController.sendEvent("Unable to clear cache")
             }
         }
     }

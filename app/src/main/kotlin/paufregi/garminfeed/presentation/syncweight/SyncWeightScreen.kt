@@ -7,7 +7,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import paufregi.garminfeed.presentation.ui.components.Loading
 import paufregi.garminfeed.presentation.ui.components.StatusInfo
-import paufregi.garminfeed.presentation.utils.preview.SyncWeightStatePreview
+import paufregi.garminfeed.presentation.ui.components.StatusInfoType
 
 @Preview
 @Composable
@@ -19,10 +19,21 @@ internal fun SyncWeightScreen(
     Scaffold {
         when (status) {
             is SyncWeightState.Uploading -> Loading(it)
-            is SyncWeightState.Success -> StatusInfo.Success(onClick = onComplete, contentPadding = it)
-            is SyncWeightState.Failure -> StatusInfo.Failure(onClick = onComplete, contentPadding = it)
-            else -> StatusInfo.Unknown(onClick = onComplete, contentPadding = it)
+            is SyncWeightState.Success -> StatusInfo(
+                type = StatusInfoType.Success,
+                text = "Sync succeeded",
+                onClick = onComplete,
+                contentPadding = it)
+            is SyncWeightState.Failure -> StatusInfo(
+                type = StatusInfoType.Failure,
+                text = "Sync failed",
+                onClick = onComplete,
+                contentPadding = it)
+            else -> StatusInfo(
+                type = StatusInfoType.Unknown,
+                text = "Don't know what to do",
+                onClick = onComplete,
+                contentPadding = it)
         }
     }
 }
-

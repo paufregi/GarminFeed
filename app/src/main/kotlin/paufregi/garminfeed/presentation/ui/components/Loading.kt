@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 @ExperimentalMaterial3Api
 fun Loading(
-    paddingContent: PaddingValues = PaddingValues(0.dp, 0.dp, 0.dp, 0.dp)
+    paddingContent: PaddingValues = PaddingValues()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,

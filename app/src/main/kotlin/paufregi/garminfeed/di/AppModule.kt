@@ -19,7 +19,6 @@ import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.datastore.TokenManager
-import paufregi.garminfeed.presentation.ui.ShortToast
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
@@ -77,8 +76,4 @@ class AppModule {
     @Named("tempFolder")
     fun provideTempFolder(@ApplicationContext context: Context): File =
         context.cacheDir
-
-    @Provides
-    @Singleton
-    fun provideToast(@ApplicationContext context: Context): ShortToast = ShortToast(context)
 }

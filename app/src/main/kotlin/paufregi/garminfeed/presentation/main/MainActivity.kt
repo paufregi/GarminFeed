@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation
+package paufregi.garminfeed.presentation.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,11 +13,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import paufregi.garminfeed.presentation.ui.theme.Theme
-import paufregi.garminfeed.presentation.utils.Navigation
-import paufregi.garminfeed.presentation.utils.ObserveAsEvents
-import paufregi.garminfeed.presentation.utils.SnackbarController
+import paufregi.garminfeed.presentation.ui.components.SnackbarObserver
 
 @AndroidEntryPoint
 @ExperimentalMaterial3Api
@@ -26,28 +23,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val snackbarState = remember { SnackbarHostState() }
             val scope = rememberCoroutineScope()
+            val snackbarHostState = remember { SnackbarHostState() }
 
-            ObserveAsEvents(
-                flow = SnackbarController.events,
-                key1 = snackbarState
-            ) { event ->
-                scope.launch {
-                    snackbarState.currentSnackbarData?.dismiss()
-                    snackbarState.showSnackbar(message = event.message,)
-                }
-            }
+            SnackbarObserver(snackbarHostState, scope)
 
             Theme {
                 Scaffold(
-                    snackbarHost = { SnackbarHost(hostState = snackbarState) },
-                    modifier = Modifier.fillMaxSize()
-                ) { padding ->
-                    Navigation(padding)
+                    modifier = Modifier.fillMaxSize(),
+                    snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+                ) {
+                    Navigation(it)
                 }
             }
-
         }
     }
 }

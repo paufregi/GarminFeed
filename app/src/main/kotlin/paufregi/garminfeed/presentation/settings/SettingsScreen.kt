@@ -15,11 +15,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,8 +26,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.ui.components.Button
@@ -43,7 +39,6 @@ internal fun SettingsScreen(
     paddingValues: PaddingValues = PaddingValues(),
     nav: NavController = rememberNavController()
 ) {
-
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -64,7 +59,7 @@ internal fun SettingsScreen(
             TextField(
                 label = { Text("Password") },
                 value = state.credential.password,
-                onValueChange =  { onEvent(SettingsEvent.UpdateUsername(it)) },
+                onValueChange =  { onEvent(SettingsEvent.UpdatePassword(it)) },
                 isError = state.credential.password.isBlank(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),

@@ -17,7 +17,6 @@ fun createOAuth2(expiresAt: Date) = OAuth2(
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
-val yesterday = Date(Date().time - (1000 * 60 * 60 * 24))
 
 val htmlForCSRF = """
         <!DOCTYPE html>

@@ -1,14 +1,14 @@
-package paufregi.garminfeed.presentation.home
+package paufregi.garminfeed.presentation.syncweight
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.usecases.SyncWeightUseCase
-import paufregi.garminfeed.presentation.syncweight.SyncWeightState
 import java.io.InputStream
 import javax.inject.Inject
 
@@ -17,19 +17,18 @@ class SyncWeightModelView @Inject constructor(
     private val syncWeightUseCase: SyncWeightUseCase
 ) : ViewModel() {
 
-    private val mutableStatus = mutableStateOf<SyncWeightState?>(null)
-    val status: State<SyncWeightState?> = mutableStatus
+    private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState.Uploading)
+    val status = _state.asStateFlow()
 
     fun syncWeight(inputStream: InputStream?) = viewModelScope.launch {
-        mutableStatus.value = SyncWeightState.Uploading
-        if (inputStream != null) {
-            when (syncWeightUseCase(inputStream)) {
-                is Result.Failure -> mutableStatus.value = SyncWeightState.Success
-                is Result.Success -> mutableStatus.value = SyncWeightState.Failure
-            }
+        _state.update { SyncWeightState.Uploading }
+        if (inputStream == null) {
+            _state.update { SyncWeightState.Failure }
         } else {
-            mutableStatus.value = SyncWeightState.Failure
+            when (syncWeightUseCase(inputStream)) {
+                is Result.Success -> _state.update { SyncWeightState.Success }
+                is Result.Failure -> _state.update { SyncWeightState.Failure }
+            }
         }
-        return@launch
     }
 }
