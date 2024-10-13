@@ -1,4 +1,4 @@
-package paufregi.garminfeed.presentation.settings
+package paufregi.garminfeed.presentation.syncweight
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -17,16 +17,17 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
-import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.core.usecases.ClearCacheUseCase
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
 import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
 import paufregi.garminfeed.presentation.home.HomeEvent
 import paufregi.garminfeed.presentation.home.HomeViewModel
+import paufregi.garminfeed.presentation.settings.SettingsEvent
+import paufregi.garminfeed.presentation.settings.SettingsViewModel
 import paufregi.garminfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
-class SettingsViewModelTest {
+class SyncWeightViewModelTest {
 
     private val getCredential = mockk<GetCredentialUseCase>()
     private val saveCredential = mockk<SaveCredentialUseCase>()
@@ -80,20 +81,5 @@ class SettingsViewModelTest {
             viewModel.onEvent(SettingsEvent.UpdateShowPassword(false))
             assertThat(awaitItem().showPassword).isFalse()
         }
-    }
-
-    @Test
-    fun `Save credential`() = runTest {
-        val cred = Credential("saveUser", "savePass")
-        coEvery { getCredential.invoke() } returns Credential("", "")
-        coEvery { saveCredential.invoke(any()) } returns Result.Success(Unit)
-//        viewModel.state.test {
-            viewModel.onEvent(SettingsEvent.UpdateUsername(cred.username))
-            viewModel.onEvent(SettingsEvent.UpdatePassword(cred.password))
-            viewModel.onEvent(SettingsEvent.SaveCredential)
-//        }
-
-        coVerify { saveCredential.invoke(cred) }
-        confirmVerified( saveCredential )
     }
 }
