@@ -31,7 +31,7 @@ class GarminConnectTest {
     private val fitFile = MultipartBody.Part.createFormData("fit", testFile.name, testFile.asRequestBody())
 
     @Before
-    fun setUp() {
+    fun setup() {
         server.start()
         api = GarminConnect.client(authInterceptor, server.url("/").toString())
         every {

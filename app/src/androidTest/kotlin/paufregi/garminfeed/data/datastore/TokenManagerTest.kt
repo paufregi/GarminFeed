@@ -29,7 +29,7 @@ class TokenManagerTest {
     lateinit var dataStore: TokenManager
 
     @Before
-    fun setUp() {
+    fun setup() {
         hiltRule.inject()
     }
 

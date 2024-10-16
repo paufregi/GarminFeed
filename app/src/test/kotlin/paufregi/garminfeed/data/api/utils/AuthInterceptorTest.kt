@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -57,7 +58,7 @@ class AuthInterceptorTest {
     }
 
     @Before
-    fun setUp() {
+    fun setup() {
         server.start()
 
         auth = AuthInterceptor(
@@ -87,7 +88,7 @@ class AuthInterceptorTest {
     fun `Use cachedOAuth2`() = runTest {
         val oauth2 = createOAuth2(tomorrow)
 
-        every { tokenManager.getOauth2() } returns flow { emit(oauth2) }
+        every { tokenManager.getOauth2() } returns flowOf(oauth2)
 
         api.test()
 
@@ -104,9 +105,9 @@ class AuthInterceptorTest {
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
         val oauth2 = createOAuth2(tomorrow)
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
-        every { tokenManager.getOauth1() } returns flow { emit(oauth1) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
+        every { tokenManager.getOAuthConsumer() } returns flowOf(consumer)
+        every { tokenManager.getOauth1() } returns flowOf(oauth1)
+        every { tokenManager.getOauth2() } returns flowOf(null)
         coEvery { tokenManager.saveOAuth2(any()) } returns Unit
         coEvery { connectOAuth2.getOauth2() } returns Response.success(oauth2)
 
@@ -135,14 +136,14 @@ class AuthInterceptorTest {
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
         val oauth2 = createOAuth2(tomorrow)
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(null) }
-        every { tokenManager.getOauth1() } returns flow { emit(null) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
+        every { tokenManager.getOAuthConsumer() } returns flowOf(null)
+        every { tokenManager.getOauth1() } returns flowOf(null)
+        every { tokenManager.getOauth2() } returns flowOf(null)
         coEvery { tokenManager.saveOAuthConsumer(any()) } returns Unit
         coEvery { tokenManager.saveOAuth1(any()) } returns Unit
         coEvery { tokenManager.saveOAuth2(any()) } returns Unit
         coEvery { garth.getOAuthConsumer() } returns Response.success(consumer)
-        coEvery { garminDao.getCredential() } returns CredentialEntity(credential = cred)
+        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
         coEvery { connectOAuth1.getOauth1(any()) } returns Response.success(oauth1)
@@ -173,8 +174,8 @@ class AuthInterceptorTest {
 
     @Test
     fun `Authenticate - failure get consumer`() = runTest {
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(null) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
+        every { tokenManager.getOAuthConsumer() } returns flowOf(null)
+        every { tokenManager.getOauth2() } returns flowOf(null)
         coEvery { garth.getOAuthConsumer() } returns Response.error(400, "error".toResponseBody())
 
         val res = api.test()
@@ -196,10 +197,10 @@ class AuthInterceptorTest {
     fun `Authenticate - failure no credentials`() = runTest {
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
-        every { tokenManager.getOauth1() } returns flow { emit(null) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
-        coEvery { garminDao.getCredential() } returns null
+        every { tokenManager.getOAuthConsumer() } returns flowOf(consumer)
+        every { tokenManager.getOauth1() } returns flowOf(null)
+        every { tokenManager.getOauth2() } returns flowOf(null)
+        coEvery { garminDao.getCredential() } returns flowOf(null)
 
         val res = api.test()
 
@@ -218,10 +219,10 @@ class AuthInterceptorTest {
         val cred = Credential(username = "user", password = "pass")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
-        every { tokenManager.getOauth1() } returns flow { emit(null) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
-        coEvery { garminDao.getCredential() } returns CredentialEntity(credential = cred)
+        every { tokenManager.getOAuthConsumer() } returns flowOf(consumer)
+        every { tokenManager.getOauth1() } returns flowOf(null)
+        every { tokenManager.getOauth2() } returns flowOf(null)
+        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.error(400, "error".toResponseBody())
 
         val res = api.test()
@@ -245,10 +246,10 @@ class AuthInterceptorTest {
         val csrf = CSRF("csrf")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
-        every { tokenManager.getOauth1() } returns flow { emit(null) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
-        coEvery { garminDao.getCredential() } returns CredentialEntity(credential = cred)
+        every { tokenManager.getOAuthConsumer() } returns flowOf(consumer)
+        every { tokenManager.getOauth1() } returns flowOf(null)
+        every { tokenManager.getOauth2() } returns flowOf(null)
+        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.error(400, "error".toResponseBody())
 
@@ -275,10 +276,10 @@ class AuthInterceptorTest {
         val ticket = Ticket("ticket")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
-        every { tokenManager.getOauth1() } returns flow { emit(null) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
-        coEvery { garminDao.getCredential() } returns CredentialEntity(credential = cred)
+        every { tokenManager.getOAuthConsumer() } returns flowOf(consumer)
+        every { tokenManager.getOauth1() } returns flowOf(null)
+        every { tokenManager.getOauth2() } returns flowOf(null)
+        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
         coEvery { connectOAuth1.getOauth1(any()) } returns Response.error(400, "error".toResponseBody())
@@ -305,9 +306,9 @@ class AuthInterceptorTest {
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
 
-        every { tokenManager.getOAuthConsumer() } returns flow { emit(consumer) }
-        every { tokenManager.getOauth1() } returns flow { emit(oauth1) }
-        every { tokenManager.getOauth2() } returns flow { emit(null) }
+        every { tokenManager.getOAuthConsumer() } returns flowOf(consumer)
+        every { tokenManager.getOauth1() } returns flowOf(oauth1)
+        every { tokenManager.getOauth2() } returns flowOf(null)
         coEvery { connectOAuth2.getOauth2() } returns Response.error(400, "error".toResponseBody())
 
         val res = api.test()

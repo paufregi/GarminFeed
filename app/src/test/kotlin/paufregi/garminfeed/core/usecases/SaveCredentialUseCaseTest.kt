@@ -19,7 +19,7 @@ class SaveCredentialUseCaseTest{
     private lateinit var useCase: SaveCredentialUseCase
 
     @Before
-    fun setUp(){
+    fun setup(){
         useCase = SaveCredentialUseCase(repo)
     }
 

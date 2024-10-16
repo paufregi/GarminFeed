@@ -3,6 +3,7 @@ package paufregi.garminfeed.data.database
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import kotlinx.coroutines.flow.Flow
 import paufregi.garminfeed.data.database.entities.CredentialEntity
 
 @Dao
@@ -12,5 +13,6 @@ interface GarminDao {
     suspend fun saveCredential(credentials: CredentialEntity)
 
     @Query("SELECT * FROM credentials WHERE ID = 1")
-    suspend fun getCredential(): CredentialEntity?
+    fun getCredential(): Flow<CredentialEntity?>
+
 }

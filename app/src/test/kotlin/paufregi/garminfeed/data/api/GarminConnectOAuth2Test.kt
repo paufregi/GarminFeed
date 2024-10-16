@@ -20,7 +20,7 @@ class GarminConnectOAuth2Test {
     private val oauth = OAuth1("TOKEN", "SECRET")
 
     @Before
-    fun setUp() {
+    fun setup() {
         server.start()
         api = GarminConnectOAuth2.client(consumer, oauth, server.url("/").toString())
     }

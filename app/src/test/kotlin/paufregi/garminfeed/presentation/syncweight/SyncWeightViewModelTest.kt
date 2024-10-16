@@ -6,9 +6,11 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -38,7 +40,7 @@ class SyncWeightViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
-    fun setUp(){
+    fun setup(){
         viewModel = SettingsViewModel(getCredential, saveCredential)
     }
 
@@ -49,7 +51,7 @@ class SyncWeightViewModelTest {
 
     @Test
     fun `Update username`() = runTest {
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
         viewModel.state.test {
             assertThat(awaitItem().credential.username).isEqualTo("")
             viewModel.onEvent(SettingsEvent.UpdateUsername("user"))
@@ -61,7 +63,7 @@ class SyncWeightViewModelTest {
 
     @Test
     fun `Update password`() = runTest {
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
         viewModel.state.test {
             assertThat(awaitItem().credential.password).isEqualTo("")
             viewModel.onEvent(SettingsEvent.UpdatePassword("password"))
@@ -73,7 +75,7 @@ class SyncWeightViewModelTest {
 
     @Test
     fun `Update show password`() = runTest {
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
         viewModel.state.test {
             assertThat(awaitItem().showPassword).isFalse()
             viewModel.onEvent(SettingsEvent.UpdateShowPassword(true))

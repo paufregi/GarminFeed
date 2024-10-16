@@ -1,6 +1,5 @@
 package paufregi.garminfeed.presentation.home
 
-import android.R
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

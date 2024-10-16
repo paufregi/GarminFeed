@@ -1,6 +1,7 @@
 package paufregi.garminfeed.data.repository
 
 import android.util.Log
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.clearStaticMockk
@@ -10,6 +11,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody
@@ -32,7 +34,7 @@ class GarminRepositoryTest {
     private val tokenManager = mockk<TokenManager>()
 
     @Before
-    fun setUp(){
+    fun setup(){
         repo = GarminRepository(garminDao, garminConnect, tokenManager)
         mockkStatic(Log::class)
         every { Log.i(any(), any()) } returns 0
@@ -60,11 +62,15 @@ class GarminRepositoryTest {
     @Test
     fun `Get credential`() = runTest{
         val cred = Credential(username = "user", password = "pass")
-        coEvery { garminDao.getCredential() } returns CredentialEntity(credential = cred)
+        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
 
         val res = repo.getCredential()
 
-        assertThat(res).isEqualTo(cred)
+        res.test {
+            assertThat(awaitItem()).isEqualTo(cred)
+            cancelAndIgnoreRemainingEvents()
+        }
+
         coVerify { garminDao.getCredential() }
         confirmVerified(garminDao, garminConnect)
     }

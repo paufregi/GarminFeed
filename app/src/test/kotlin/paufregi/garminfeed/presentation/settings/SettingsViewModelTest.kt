@@ -6,23 +6,19 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.core.models.Result
-import paufregi.garminfeed.core.usecases.ClearCacheUseCase
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
 import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
-import paufregi.garminfeed.presentation.home.HomeEvent
-import paufregi.garminfeed.presentation.home.HomeViewModel
 import paufregi.garminfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -37,8 +33,8 @@ class SettingsViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
-    fun setUp(){
-        viewModel = SettingsViewModel(getCredential, saveCredential)
+    fun setup(){
+
     }
 
     @After
@@ -48,50 +44,68 @@ class SettingsViewModelTest {
 
     @Test
     fun `Update username`() = runTest {
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
+
+        viewModel = SettingsViewModel(getCredential, saveCredential)
+
         viewModel.state.test {
             assertThat(awaitItem().credential.username).isEqualTo("")
             viewModel.onEvent(SettingsEvent.UpdateUsername("user"))
             assertThat(awaitItem().credential.username).isEqualTo("user")
             viewModel.onEvent(SettingsEvent.UpdateUsername("user2"))
             assertThat(awaitItem().credential.username).isEqualTo("user2")
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Update password`() = runTest {
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
+
+        viewModel = SettingsViewModel(getCredential, saveCredential)
+
         viewModel.state.test {
             assertThat(awaitItem().credential.password).isEqualTo("")
             viewModel.onEvent(SettingsEvent.UpdatePassword("password"))
             assertThat(awaitItem().credential.password).isEqualTo("password")
             viewModel.onEvent(SettingsEvent.UpdatePassword("password2"))
             assertThat(awaitItem().credential.password).isEqualTo("password2")
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Update show password`() = runTest {
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
+
+        viewModel = SettingsViewModel(getCredential, saveCredential)
+
         viewModel.state.test {
             assertThat(awaitItem().showPassword).isFalse()
             viewModel.onEvent(SettingsEvent.UpdateShowPassword(true))
             assertThat(awaitItem().showPassword).isTrue()
             viewModel.onEvent(SettingsEvent.UpdateShowPassword(false))
             assertThat(awaitItem().showPassword).isFalse()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
     fun `Save credential`() = runTest {
         val cred = Credential("saveUser", "savePass")
-        coEvery { getCredential.invoke() } returns Credential("", "")
+        every { getCredential.invoke() } returns flowOf(Credential("", ""))
+
+        viewModel = SettingsViewModel(getCredential, saveCredential)
+
         coEvery { saveCredential.invoke(any()) } returns Result.Success(Unit)
-//        viewModel.state.test {
+
+        viewModel.state.test{
             viewModel.onEvent(SettingsEvent.UpdateUsername(cred.username))
             viewModel.onEvent(SettingsEvent.UpdatePassword(cred.password))
             viewModel.onEvent(SettingsEvent.SaveCredential)
-//        }
+
+            cancelAndIgnoreRemainingEvents()
+        }
 
         coVerify { saveCredential.invoke(cred) }
         confirmVerified( saveCredential )

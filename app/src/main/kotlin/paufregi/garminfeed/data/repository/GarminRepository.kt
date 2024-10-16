@@ -1,6 +1,8 @@
 package paufregi.garminfeed.data.repository
 
 import android.util.Log
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.garminfeed.core.models.Credential
@@ -20,8 +22,8 @@ class GarminRepository @Inject constructor(
     suspend fun saveCredential(credential: Credential) =
         garminDao.saveCredential(CredentialEntity(credential = credential))
 
-    suspend fun getCredential(): Credential? =
-        garminDao.getCredential()?.credential
+    fun getCredential(): Flow<Credential?> =
+        garminDao.getCredential().map { it?.credential }
 
 
     suspend fun clearCache() {

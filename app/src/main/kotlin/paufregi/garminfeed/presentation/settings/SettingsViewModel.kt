@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -36,14 +37,14 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun loadCredential() = viewModelScope.launch {
-        val cred = getCredentialUseCase()
-        if (cred != null) {
-            _state.update { it.copy(credential = cred) }
-        }
+        getCredentialUseCase()
+            .last()?.let { cred -> _state.update { it.copy(credential = cred) } }
     }
 
     private fun saveCredential() = viewModelScope.launch {
-        when (saveCredentialUseCase(state.value.credential)) {
+        val res = saveCredentialUseCase(state.value.credential)
+        print(state.value.credential)
+        when (res) {
             is Result.Success -> SnackbarController.sendEvent("Credential saved")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save credential")
         }

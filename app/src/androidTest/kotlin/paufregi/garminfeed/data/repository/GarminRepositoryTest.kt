@@ -2,6 +2,7 @@ package paufregi.garminfeed.data.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.util.Log
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -53,7 +54,7 @@ class GarminRepositoryTest {
     private val garthServer = MockWebServer()
 
     @Before
-    fun setUp() {
+    fun setup() {
         hiltRule.inject()
         connectServer.useHttps(sslSocketFactory, false)
         connectServer.start(connectPort)
@@ -77,7 +78,11 @@ class GarminRepositoryTest {
         val cred = Credential(username = "user", password = "pass")
         repo.saveCredential(cred)
         val res = repo.getCredential()
-        assertThat(res).isEqualTo(cred)
+
+        res.test{
+            assertThat(awaitItem()).isEqualTo(cred)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test
@@ -94,7 +99,6 @@ class GarminRepositoryTest {
 
         val connectDispatcher: Dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
-                Log.i("DEBUG", request.method + " " + request.path)
                 val path = request.path ?: return MockResponse().setResponseCode(404)
                 if(path.startsWith("/oauth-service/oauth/preauthorized")){
                     return when (request.method) {
@@ -113,7 +117,6 @@ class GarminRepositoryTest {
 
         val garthDispatcher: Dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
-                Log.i("DEBUG", request.method + " " + request.path)
                 return when (request.method to request.path) {
                     "GET" to "/oauth_consumer.json" -> MockResponse().setResponseCode(200).setBody(consumerBody)
                     else -> MockResponse().setResponseCode(404)
@@ -124,7 +127,6 @@ class GarminRepositoryTest {
 
         val garminSSODispatcher: Dispatcher = object : Dispatcher() {
             override fun dispatch(request: RecordedRequest): MockResponse {
-                Log.i("DEBUG", request.method + " " + request.path)
                 val path = request.path ?: return MockResponse().setResponseCode(404)
                 if (path.startsWith("/sso/signin")) {
                     return when (request.method) {

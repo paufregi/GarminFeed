@@ -17,7 +17,7 @@ class ClearCacheUseCaseTest {
     private lateinit var useCase: ClearCacheUseCase
 
     @Before
-    fun setUp(){
+    fun setup(){
         useCase = ClearCacheUseCase(repo)
     }
 

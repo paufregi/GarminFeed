@@ -4,9 +4,12 @@ import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -16,23 +19,19 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.garminfeed.core.usecases.ClearCacheUseCase
 import paufregi.garminfeed.core.usecases.GetCredentialUseCase
+import paufregi.garminfeed.core.usecases.GetSetupDoneUseCase
 import paufregi.garminfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class HomeViewModelTest {
 
-    private val getCredential = mockk<GetCredentialUseCase>()
+    private val getSetupDone = mockk<GetSetupDoneUseCase>()
     private val clearCache = mockk<ClearCacheUseCase>()
 
     private lateinit var viewModel: HomeViewModel
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
-
-    @Before
-    fun setUp(){
-        viewModel = HomeViewModel(getCredential, clearCache)
-    }
 
     @After
     fun tearDown(){
@@ -41,10 +40,15 @@ class HomeViewModelTest {
 
     @Test
     fun `Clear cache`() = runTest {
+        every { getSetupDone.invoke() } returns flowOf(true)
         coEvery { clearCache.invoke() } returns Unit
+
+        viewModel = HomeViewModel(getSetupDone, clearCache)
+
         viewModel.onEvent(HomeEvent.CleanCache)
 
+        verify { getSetupDone.invoke() }
         coVerify { clearCache.invoke() }
-        confirmVerified(getCredential, clearCache)
+        confirmVerified(clearCache)
     }
 }

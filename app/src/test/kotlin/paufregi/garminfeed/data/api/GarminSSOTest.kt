@@ -19,7 +19,7 @@ class GarminSSOTest {
     private lateinit var api: GarminSSO
 
     @Before
-    fun setUp() {
+    fun setup() {
         server.start()
         api = GarminSSO.client(server.url("/").toString())
     }

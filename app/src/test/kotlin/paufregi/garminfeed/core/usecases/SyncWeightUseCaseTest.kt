@@ -36,7 +36,7 @@ class SyncWeightUseCaseTest {
     private lateinit var useCase: SyncWeightUseCase
 
     @Before
-    fun setUp(){
+    fun setup(){
         mockkObject(RenphoReader)
         mockkObject(Formatter)
         mockkObject(FitWriter)

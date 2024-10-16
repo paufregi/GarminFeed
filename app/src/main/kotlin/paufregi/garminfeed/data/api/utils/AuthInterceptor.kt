@@ -1,6 +1,10 @@
 package paufregi.garminfeed.data.api.utils
 
+import android.util.Log
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Protocol
@@ -92,7 +96,9 @@ class AuthInterceptor @Inject constructor(
     }
 
     private suspend fun signIn(): Result<Ticket> {
-        val cred = garminDao.getCredential()?.credential ?: return Result.Failure("No credentials")
+        Log.i("GARMIN", "Signing in")
+        val cred = garminDao.getCredential().firstOrNull()?.credential ?: return Result.Failure("No credentials")
+        Log.i("GARMIN", cred.username)
         return when(val csfr = getCSRF()) {
             is Result.Success -> login(username = cred.username , password = cred.password, csrf = csfr.data)
             is Result.Failure -> Result.Failure(csfr.error)

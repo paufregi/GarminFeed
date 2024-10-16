@@ -16,7 +16,7 @@ class GarthTest {
     private lateinit var api: Garth
 
     @Before
-    fun setUp() {
+    fun setup() {
         server.start()
         api = Garth.client(server.url("/").toString())
         print(server.url("/").toString())
