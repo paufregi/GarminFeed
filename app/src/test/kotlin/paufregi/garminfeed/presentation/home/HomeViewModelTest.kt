@@ -7,18 +7,13 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.garminfeed.core.usecases.ClearCacheUseCase
-import paufregi.garminfeed.core.usecases.GetCredentialUseCase
 import paufregi.garminfeed.core.usecases.GetSetupDoneUseCase
 import paufregi.garminfeed.presentation.utils.MainDispatcherRule
 

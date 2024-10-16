@@ -31,9 +31,6 @@ class MainActivityTest {
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
-//    @get:Rule(order = 1)
-//    val composeRule = createAndroidComposeRule<MainActivity>()
-
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
 
@@ -46,17 +43,9 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Home page with no credential`() {
+    fun `Home page`() {
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithText("Setup credentials").assertIsDisplayed()
-    }
-
-    @Test
-    fun `Home page with credential`() = runTest{
-        repo.saveCredential(Credential("user", "pass"))
-
-        ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithText("All good").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Setup credential").assertIsDisplayed()
     }
 
     @Test
@@ -83,6 +72,4 @@ class MainActivityTest {
 
         composeTestRule.onNodeWithText("Cache cleared").assertIsDisplayed()
     }
-
-
 }

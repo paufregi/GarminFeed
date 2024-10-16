@@ -17,8 +17,8 @@ class SyncWeightModelView @Inject constructor(
     private val syncWeightUseCase: SyncWeightUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState.Uploading)
-    val status = _state.asStateFlow()
+    private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState.Idle)
+    val state = _state.asStateFlow()
 
     fun syncWeight(inputStream: InputStream?) = viewModelScope.launch {
         _state.update { SyncWeightState.Uploading }

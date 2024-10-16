@@ -26,9 +26,9 @@ class SyncWeightActivity : ComponentActivity() {
 
         setContent {
             Theme {
-                val status by viewModel.status.collectAsStateWithLifecycle()
+                val state by viewModel.state.collectAsStateWithLifecycle()
                 SyncWeightScreen(
-                    status = status,
+                    state = state,
                     onComplete = { finish() }
                 )
             }

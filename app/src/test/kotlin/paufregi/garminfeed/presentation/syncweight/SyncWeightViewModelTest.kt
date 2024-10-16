@@ -2,46 +2,37 @@ package paufregi.garminfeed.presentation.syncweight
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import io.mockk.awaits
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
-import io.mockk.every
 import io.mockk.mockk
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
+import org.apache.commons.io.IOUtils
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.garminfeed.core.models.Credential
-import paufregi.garminfeed.core.usecases.ClearCacheUseCase
-import paufregi.garminfeed.core.usecases.GetCredentialUseCase
-import paufregi.garminfeed.core.usecases.SaveCredentialUseCase
-import paufregi.garminfeed.presentation.home.HomeEvent
-import paufregi.garminfeed.presentation.home.HomeViewModel
-import paufregi.garminfeed.presentation.settings.SettingsEvent
-import paufregi.garminfeed.presentation.settings.SettingsViewModel
+import paufregi.garminfeed.core.models.Result
+import paufregi.garminfeed.core.usecases.SyncWeightUseCase
 import paufregi.garminfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class SyncWeightViewModelTest {
 
-    private val getCredential = mockk<GetCredentialUseCase>()
-    private val saveCredential = mockk<SaveCredentialUseCase>()
+    private val syncWeight = mockk<SyncWeightUseCase>()
 
-    private lateinit var viewModel: SettingsViewModel
+    private lateinit var viewModel: SyncWeightModelView
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setup(){
-        viewModel = SettingsViewModel(getCredential, saveCredential)
+        viewModel = SyncWeightModelView(syncWeight)
     }
 
     @After
@@ -50,38 +41,27 @@ class SyncWeightViewModelTest {
     }
 
     @Test
-    fun `Update username`() = runTest {
-        every { getCredential.invoke() } returns flowOf(Credential("", ""))
-        viewModel.state.test {
-            assertThat(awaitItem().credential.username).isEqualTo("")
-            viewModel.onEvent(SettingsEvent.UpdateUsername("user"))
-            assertThat(awaitItem().credential.username).isEqualTo("user")
-            viewModel.onEvent(SettingsEvent.UpdateUsername("user2"))
-            assertThat(awaitItem().credential.username).isEqualTo("user2")
-        }
-    }
+    fun `Sync weight`() = runTest {
+        val csvText = """
+            Time of Measurement,Weight(kg),BMI,Body Fat(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Skeletal Muscle(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
+            2024-01-01 10:20:30,76.15,23.8,23.2,58.48,20.9,7.0,55.4,49.5,55.59,2.89,17.5,1618,35,,,,,,
+        """.trimIndent()
 
-    @Test
-    fun `Update password`() = runTest {
-        every { getCredential.invoke() } returns flowOf(Credential("", ""))
-        viewModel.state.test {
-            assertThat(awaitItem().credential.password).isEqualTo("")
-            viewModel.onEvent(SettingsEvent.UpdatePassword("password"))
-            assertThat(awaitItem().credential.password).isEqualTo("password")
-            viewModel.onEvent(SettingsEvent.UpdatePassword("password2"))
-            assertThat(awaitItem().credential.password).isEqualTo("password2")
-        }
-    }
+        val inputStream = IOUtils.toInputStream(csvText, "UTF-8")
 
-    @Test
-    fun `Update show password`() = runTest {
-        every { getCredential.invoke() } returns flowOf(Credential("", ""))
-        viewModel.state.test {
-            assertThat(awaitItem().showPassword).isFalse()
-            viewModel.onEvent(SettingsEvent.UpdateShowPassword(true))
-            assertThat(awaitItem().showPassword).isTrue()
-            viewModel.onEvent(SettingsEvent.UpdateShowPassword(false))
-            assertThat(awaitItem().showPassword).isFalse()
+        coEvery { syncWeight.invoke(any()) } coAnswers {
+            delay(1)
+            Result.Success(Unit)
         }
+
+        viewModel.state.test {
+            assertThat(awaitItem()).isEqualTo(SyncWeightState.Idle)
+            viewModel.syncWeight(inputStream)
+            assertThat(awaitItem()).isEqualTo(SyncWeightState.Uploading)
+            assertThat(awaitItem()).isEqualTo(SyncWeightState.Success)
+            cancelAndIgnoreRemainingEvents()
+        }
+        coVerify { syncWeight.invoke(inputStream) }
+        confirmVerified(syncWeight)
     }
 }

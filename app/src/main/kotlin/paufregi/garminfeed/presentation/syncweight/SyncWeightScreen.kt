@@ -13,11 +13,16 @@ import paufregi.garminfeed.presentation.ui.components.StatusInfoType
 @Composable
 @ExperimentalMaterial3Api
 internal fun SyncWeightScreen(
-    @PreviewParameter(SyncWeightStatePreview::class) status: SyncWeightState?,
+    @PreviewParameter(SyncWeightStatePreview::class) state: SyncWeightState?,
     onComplete: () -> Unit = {},
 ) {
     Scaffold {
-        when (status) {
+        when (state) {
+            is SyncWeightState.Idle -> StatusInfo(
+                type = StatusInfoType.Waiting,
+                text = "Waiting",
+                onClick = onComplete,
+                contentPadding = it)
             is SyncWeightState.Uploading -> Loading(it)
             is SyncWeightState.Success -> StatusInfo(
                 type = StatusInfoType.Success,

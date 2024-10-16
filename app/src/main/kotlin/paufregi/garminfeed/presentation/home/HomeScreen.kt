@@ -55,13 +55,13 @@ internal fun HomeScreen(
         } else {
             Icon(
                 imageVector = Icons.Default.WarningAmber,
-                contentDescription = "Setup credentials",
+                contentDescription = "Setup credential",
                 tint = Color.Red,
                 modifier = Modifier
                     .scale(3f)
                     .padding(30.dp)
             )
-            Text(text = "Setup credentials")
+            Text(text = "Setup credential")
         }
         Spacer(modifier = Modifier.height(75.dp))
         Button(text = "Setup", onClick = { nav.navigate(MainRoutes.SETTINGS) })
