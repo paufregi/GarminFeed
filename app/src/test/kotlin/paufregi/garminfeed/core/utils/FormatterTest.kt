@@ -1,6 +1,5 @@
 package paufregi.garminfeed.core.utils
 
-import android.text.format.DateFormat
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 import java.time.Instant

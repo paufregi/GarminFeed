@@ -31,6 +31,7 @@ truth = "1.4.4"
 hilt = "2.52"
 runner = "1.6.2"
 turbine = "1.1.0"
+testLogger = "4.0.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -88,4 +89,5 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-serializable = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinPlugin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+test-logger = { id = "com.adarshr.test-logger", version.ref = "testLogger"}
 

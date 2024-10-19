@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serializable)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.test.logger)
 }
 
 android {
