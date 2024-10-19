@@ -14,6 +14,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
       - name: Set Timezone
         uses: szenius/set-timezone@v2.0
         with:
@@ -34,6 +40,9 @@ jobs:
         run: ./gradlew test
 
       - name: Run android test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
         run: ./gradlew pixel9ProDebugAndroidTest
 
       - name: Run build
