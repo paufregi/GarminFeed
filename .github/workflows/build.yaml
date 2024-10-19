@@ -43,7 +43,7 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
-        run: ./gradlew pixel9ProDebugAndroidTest
+          script: ./gradlew pixel9ProDebugAndroidTest
 
       - name: Run build
         run: ./gradlew build
