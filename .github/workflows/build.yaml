@@ -1,4 +1,4 @@
-name: Build
+name: Build & Test
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build & test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,6 +25,12 @@ jobs:
 
       - name: Run build
         run: ./gradlew build
+
+      - name: Run test
+        run: ./gradlew test
+
+      - name: Run android test
+        run: ./gradlew pixel9ProDebugAndroidTest
 
   lint:
     name: Lint
