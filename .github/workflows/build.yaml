@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build & test
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,8 +30,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Run build
+      - name: Run test
         run: ./gradlew test
+
+      - name: Run android test
+        run: ./gradlew pixel9ProDebugAndroidTest
+
+      - name: Run build
+        run: ./gradlew build
 
   lint:
     name: Lint
