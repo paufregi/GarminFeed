@@ -20,6 +20,7 @@ class FormatterTest {
 
     @Test
     fun `Formatter date time for importer`() {
+        Locale.setDefault(Locale.ENGLISH)
         val date = Date.from(Instant.ofEpochMilli(1704057630000)) // 2024-01-01 10:20:30
         val result = Formatter.dateTimeForImport(Locale.ENGLISH).parse("2024-01-01 10:20:30")
         assertThat(result).isEqualTo(date)

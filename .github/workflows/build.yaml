@@ -24,7 +24,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Run build
-        run: ./gradlew build
+        run: ./gradlew test
 
   lint:
     name: Lint
