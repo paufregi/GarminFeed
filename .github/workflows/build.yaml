@@ -17,7 +17,9 @@ jobs:
       - name: Set Timezone
         uses: szenius/set-timezone@v2.0
         with:
-          timezoneLinux: "Pacific/Auckland"
+          timezoneLinux: Pacific/Auckland
+          timezoneMacos: Pacific/Auckland
+          timezoneWindows: Pacific/Auckland
 
       - name: Setup JDK
         uses: actions/setup-java@v3
