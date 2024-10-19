@@ -75,7 +75,7 @@ class SyncWeightUseCaseTest {
         ))
 
         every { RenphoReader.read(any()) } returns weights
-        every { Formatter.dateTimeForFilename.format(any()) } returns "20240101_000000"
+        every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
 
@@ -85,7 +85,7 @@ class SyncWeightUseCaseTest {
         assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
         verify {
             RenphoReader.read(stubInputStream)
-            Formatter.dateTimeForFilename.format(any())
+            Formatter.dateTimeForFilename(any()).format(any())
             FitWriter.weights(any(), weights)
         }
         coVerify { repo.uploadFile(any()) }
@@ -99,7 +99,7 @@ class SyncWeightUseCaseTest {
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
 
         every { RenphoReader.read(any()) } returns emptyList()
-        every { Formatter.dateTimeForFilename.format(any()) } returns "20240101_000000"
+        every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.Success(Unit)
 
@@ -109,7 +109,7 @@ class SyncWeightUseCaseTest {
         assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
         verify {
             RenphoReader.read(stubInputStream)
-            Formatter.dateTimeForFilename.format(any())
+            Formatter.dateTimeForFilename(any()).format(any())
             FitWriter.weights(any(), emptyList())
         }
         coVerify { repo.uploadFile(any()) }
@@ -123,7 +123,7 @@ class SyncWeightUseCaseTest {
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
 
         every { RenphoReader.read(any()) } returns emptyList()
-        every { Formatter.dateTimeForFilename.format(any()) } returns "20240101_000000"
+        every { Formatter.dateTimeForFilename(any()).format(any()) } returns "20240101_000000"
         every { FitWriter.weights(any(), any()) } returns Unit
         coEvery { repo.uploadFile(any()) } returns Result.Failure("Failed to upload file")
 
@@ -133,7 +133,7 @@ class SyncWeightUseCaseTest {
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Failed to upload file").javaClass)
         verify {
             RenphoReader.read(stubInputStream)
-            Formatter.dateTimeForFilename.format(any())
+            Formatter.dateTimeForFilename(any()).format(any())
             FitWriter.weights(any(), emptyList())
         }
         coVerify { repo.uploadFile(any()) }

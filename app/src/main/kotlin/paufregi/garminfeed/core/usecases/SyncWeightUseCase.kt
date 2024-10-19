@@ -8,6 +8,7 @@ import paufregi.garminfeed.data.repository.GarminRepository
 import java.io.File
 import java.io.InputStream
 import java.time.Instant
+import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -18,7 +19,8 @@ class SyncWeightUseCase @Inject constructor (
     suspend operator fun invoke(inputStream: InputStream):Result<Unit> {
         val weights = RenphoReader.read(inputStream)
 
-        val filename = "ws_${Formatter.dateTimeForFilename.format(Instant.now())}.fit"
+        val dateFormatter = Formatter.dateTimeForFilename(ZoneId.systemDefault())
+        val filename = "ws_${dateFormatter.format(Instant.now())}.fit"
         val file = File(folder, filename)
         FitWriter.weights(file, weights)
         val res = garminRepository.uploadFile(file)

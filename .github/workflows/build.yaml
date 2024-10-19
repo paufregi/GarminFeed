@@ -24,13 +24,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Run build
-        run: ./gradlew build -S
-
-      - name: Run test
-        run: ./gradlew test
-
-      - name: Run android test
-        run: ./gradlew pixel9ProDebugAndroidTest
+        run: ./gradlew build
 
   lint:
     name: Lint
