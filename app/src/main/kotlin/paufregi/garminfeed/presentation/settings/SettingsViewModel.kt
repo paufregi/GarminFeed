@@ -42,9 +42,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun saveCredential() = viewModelScope.launch {
-        val res = saveCredentialUseCase(state.value.credential)
-        print(state.value.credential)
-        when (res) {
+        when (saveCredentialUseCase(state.value.credential)) {
             is Result.Success -> SnackbarController.sendEvent("Credential saved")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save credential")
         }
