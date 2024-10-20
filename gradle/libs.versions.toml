@@ -2,7 +2,7 @@
 activityCompose = "1.9.3"
 androidGradlePlugin = "8.7.1"
 appcompat = "1.7.0"
-commonsCsv = "1.11.0"
+commonsCsv = "1.12.0"
 composeVersion = "1.7.4"
 core = "1.6.1"
 coreKtx = "1.13.1"
