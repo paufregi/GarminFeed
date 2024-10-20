@@ -34,7 +34,7 @@ jobs:
           distribution: "adopt"
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run test
         run: ./gradlew test
@@ -63,7 +63,7 @@ jobs:
           distribution: "adopt"
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Run lint
         run: ./gradlew lint
@@ -90,4 +90,4 @@ jobs:
           distribution: "adopt"
 
       - name: Dependency graph
-        uses: gradle/actions/dependency-submission@v3
+        uses: gradle/actions/dependency-submission@v4
