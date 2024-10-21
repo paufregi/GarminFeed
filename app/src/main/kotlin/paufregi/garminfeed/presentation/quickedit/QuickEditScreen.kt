@@ -34,8 +34,6 @@ import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.ui.components.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
-import paufregi.garminfeed.core.models.Activity
-import paufregi.garminfeed.core.models.Profile
 import paufregi.garminfeed.core.models.ActivityType
 
 @Preview
@@ -43,27 +41,18 @@ import paufregi.garminfeed.core.models.ActivityType
 @ExperimentalMaterial3Api
 internal fun QuickEditScreen(
     @PreviewParameter(QuickEditStatePreview ::class) state: QuickEditState,
+    onEvent: (QuickEditEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
     nav: NavController = rememberNavController()
 ) {
-    val (actExpanded, setActExpanded) = remember { mutableStateOf(false) }
-    var actSelected by remember { mutableStateOf<Activity?>(null) }
-    val activities = listOf(
-        Activity(123L, "Auckland ride", ActivityType.Cycling),
-        Activity(456L, "Auckland run", ActivityType.Running),
-    )
+    var activityExpanded by remember { mutableStateOf(false) }
+    var profileExpanded by remember { mutableStateOf(false) }
 
-    val (profileExpanded, setProfileExpanded) = remember { mutableStateOf(false) }
-    var profileSelected by remember { mutableStateOf<Profile?>(null) }
-
-    val byTypePredicate: (Profile) -> Boolean = { profile ->
-        actSelected == null || profile.activityType == actSelected?.type
-    }
-
-    fun typeToIcon(profile: ActivityType) = when (profile) {
-        is ActivityType.Running -> Icons.AutoMirrored.Default.DirectionsRun
-        is ActivityType.Cycling -> Icons.AutoMirrored.Default.DirectionsBike
-        else -> error("Unknown profile: $profile")
+    @Composable
+    fun typeToIcon(activityType: ActivityType?) = when (activityType) {
+        is ActivityType.Running -> Icon(Icons.AutoMirrored.Default.DirectionsRun, null)
+        is ActivityType.Cycling -> Icon(Icons.AutoMirrored.Default.DirectionsBike, null)
+        else -> null
     }
 
     Column(
@@ -78,32 +67,31 @@ internal fun QuickEditScreen(
             modifier = Modifier.width(IntrinsicSize.Min)
         ) {
             ExposedDropdownMenuBox(
-                expanded = actExpanded,
-                onExpandedChange = setActExpanded
+                expanded = activityExpanded,
+                onExpandedChange = { activityExpanded = it }
             ) {
                 TextField(
-                    modifier = Modifier. menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                    value = actSelected?.name ?: "",
+                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                    label = { Text("Activity") },
+                    value = state.selectedActivity?.name ?: "",
+                    leadingIcon = { typeToIcon(state.selectedActivity?.type) },
                     onValueChange = {},
                     readOnly = true,
                     singleLine = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults. TrailingIcon(expanded = actExpanded) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = activityExpanded) },
                     colors = ExposedDropdownMenuDefaults.textFieldColors(),
                 )
                 ExposedDropdownMenu(
-                    expanded = actExpanded,
-                    onDismissRequest = { setActExpanded(false) },
+                    expanded = activityExpanded,
+                    onDismissRequest = { activityExpanded = false },
                 ){
-                    activities.forEach{
+                    state.activities.forEach{
                         DropdownMenuItem(
                             text = { Text(it.name) },
-                            leadingIcon = { Icon(typeToIcon(it.type), null) },
+                            leadingIcon = { typeToIcon(it.type) },
                             onClick = {
-                                actSelected = it
-                                if (it.type != profileSelected?.activityType) {
-                                    profileSelected = null
-                                }
-                                setActExpanded(false)
+                                onEvent(QuickEditEvent.SelectActivity(it))
+                                activityExpanded = false
                             }
                         )
                     }
@@ -112,12 +100,14 @@ internal fun QuickEditScreen(
 
             ExposedDropdownMenuBox(
                 expanded = profileExpanded,
-                onExpandedChange = setProfileExpanded,
+                onExpandedChange = { profileExpanded = it },
 
             ) {
                 TextField(
                     modifier = Modifier. menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                    value = profileSelected?.activityName ?: "",
+                    value = state.selectedProfile?.activityName ?: "",
+                    label = { Text("Profile") },
+                    leadingIcon = { typeToIcon(state.selectedProfile?.activityType) },
                     onValueChange = {},
                     readOnly = true,
                     singleLine = true,
@@ -126,15 +116,15 @@ internal fun QuickEditScreen(
                 )
                 ExposedDropdownMenu(
                     expanded = profileExpanded,
-                    onDismissRequest = { setProfileExpanded(false) },
+                    onDismissRequest = { profileExpanded = false },
                 ){
-                    Profile.presets.filter(byTypePredicate).forEach{
+                    state.availableProfiles.forEach{
                         DropdownMenuItem(
                             text = { Text(it.activityName) },
-                            leadingIcon = { Icon(typeToIcon(it.activityType), null) },
+                            leadingIcon = { typeToIcon(it.activityType) },
                             onClick = {
-                                profileSelected = it
-                                setProfileExpanded(false)
+                                onEvent(QuickEditEvent.SelectProfile(it))
+                                profileExpanded = false
                             }
                         )
                     }
@@ -146,6 +136,7 @@ internal fun QuickEditScreen(
                 Spacer(modifier = Modifier.weight(1f))
                 Button(
                     text = "Save",
+                    enabled = state.selectedActivity != null && state.selectedProfile != null,
                     onClick = {
                         nav.navigateUp()
                     }

@@ -23,8 +23,13 @@ class GarminRepository @Inject constructor(
         garminDao.saveCredential(CredentialEntity(credential = credential))
 
     fun getCredential(): Flow<Credential?> =
-        garminDao.getCredential().map { it?.credential }
-
+        garminDao.getCredential().map {
+            Log.i(
+                "GARMINFEED",
+                "${it?.credential?.username ?: "nope"}, ${it?.credential?.password ?: "nope"}"
+            )
+            it?.credential
+        }
 
     suspend fun clearCache() {
         tokenManager.deleteOAuth1()

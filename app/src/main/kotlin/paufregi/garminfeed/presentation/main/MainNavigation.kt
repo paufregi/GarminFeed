@@ -12,7 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.home.HomeScreen
 import paufregi.garminfeed.presentation.home.HomeViewModel
 import paufregi.garminfeed.presentation.quickedit.QuickEditScreen
-import paufregi.garminfeed.presentation.quickedit.QuickEditState
+import paufregi.garminfeed.presentation.quickedit.QuickEditViewModel
 import paufregi.garminfeed.presentation.settings.SettingsScreen
 import paufregi.garminfeed.presentation.settings.SettingsViewModel
 
@@ -24,7 +24,7 @@ fun Navigation(
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = MainRoutes.HOME) {
         composable(route = MainRoutes.HOME) {
-            val viewModel: HomeViewModel = hiltViewModel<HomeViewModel>()
+            val viewModel = hiltViewModel<HomeViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
             HomeScreen(
                 state = state,
@@ -34,7 +34,7 @@ fun Navigation(
             )
         }
         composable(route = MainRoutes.SETTINGS) {
-            val viewModel: SettingsViewModel = hiltViewModel<SettingsViewModel>()
+            val viewModel = hiltViewModel<SettingsViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
             SettingsScreen(
                 state = state,
@@ -44,8 +44,11 @@ fun Navigation(
             )
         }
         composable(route = MainRoutes.QUICKEDIT) {
+            val viewModel = hiltViewModel<QuickEditViewModel>()
+            val state by viewModel.state.collectAsStateWithLifecycle()
             QuickEditScreen(
-                state = QuickEditState(),
+                state = state,
+                onEvent = viewModel::onEvent,
                 paddingValues = paddingValues,
                 nav = navController
             )
