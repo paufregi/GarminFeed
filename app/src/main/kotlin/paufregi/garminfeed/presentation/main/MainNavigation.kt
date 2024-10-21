@@ -11,6 +11,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.home.HomeScreen
 import paufregi.garminfeed.presentation.home.HomeViewModel
+import paufregi.garminfeed.presentation.quickedit.QuickEditScreen
+import paufregi.garminfeed.presentation.quickedit.QuickEditState
 import paufregi.garminfeed.presentation.settings.SettingsScreen
 import paufregi.garminfeed.presentation.settings.SettingsViewModel
 
@@ -37,6 +39,13 @@ fun Navigation(
             SettingsScreen(
                 state = state,
                 onEvent = viewModel::onEvent,
+                paddingValues = paddingValues,
+                nav = navController
+            )
+        }
+        composable(route = MainRoutes.QUICKEDIT) {
+            QuickEditScreen(
+                state = QuickEditState(),
                 paddingValues = paddingValues,
                 nav = navController
             )
