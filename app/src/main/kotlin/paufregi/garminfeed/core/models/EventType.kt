@@ -1,10 +1,10 @@
 package paufregi.garminfeed.core.models
 
-data class ActivityEventType(
+data class EventType(
     val id: Long,
     val name: String,
 ) {
     companion object {
-        val transportation = ActivityEventType(5, "Transportation")
+        val transportation = EventType(5, "Transportation")
     }
 }

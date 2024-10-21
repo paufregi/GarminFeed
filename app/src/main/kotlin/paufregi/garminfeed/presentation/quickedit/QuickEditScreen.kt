@@ -35,7 +35,7 @@ import paufregi.garminfeed.presentation.ui.components.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import paufregi.garminfeed.core.models.Activity
-import paufregi.garminfeed.core.models.ActivityProfile
+import paufregi.garminfeed.core.models.Profile
 import paufregi.garminfeed.core.models.ActivityType
 
 @Preview
@@ -54,9 +54,9 @@ internal fun QuickEditScreen(
     )
 
     val (profileExpanded, setProfileExpanded) = remember { mutableStateOf(false) }
-    var profileSelected by remember { mutableStateOf<ActivityProfile?>(null) }
+    var profileSelected by remember { mutableStateOf<Profile?>(null) }
 
-    val byTypePredicate: (ActivityProfile) -> Boolean = { profile ->
+    val byTypePredicate: (Profile) -> Boolean = { profile ->
         actSelected == null || profile.activityType == actSelected?.type
     }
 
@@ -128,7 +128,7 @@ internal fun QuickEditScreen(
                     expanded = profileExpanded,
                     onDismissRequest = { setProfileExpanded(false) },
                 ){
-                    ActivityProfile.presets.filter(byTypePredicate).forEach{
+                    Profile.presets.filter(byTypePredicate).forEach{
                         DropdownMenuItem(
                             text = { Text(it.activityName) },
                             leadingIcon = { Icon(typeToIcon(it.activityType), null) },
