@@ -13,7 +13,6 @@ class SaveActivityUseCase @Inject constructor (private val garminRepository: Gar
         activity: Activity?,
         profile: Profile?
     ):Result<Unit> {
-        Log.i("GARMIN", "activity = $activity, profile = $profile")
         return if (activity != null && profile != null)
             Result.Success(Unit)
         else
