@@ -27,7 +27,7 @@ class SettingsViewModel @Inject constructor(
     private val saveCredentialUseCase: SaveCredentialUseCase,
 ) : ViewModel() {
 
-    private val _state =  MutableStateFlow(SettingsState())
+    private val _state = MutableStateFlow(SettingsState())
 
     val state = _state
         .onStart { loadCredential() }
@@ -44,8 +44,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadCredential() = viewModelScope.launch {
         getCredentialUseCase().collect { cred ->
-            if (cred != null)
-                _state.update { it.copy(credential = cred) } }
+            _state.update { it.copy(credential = cred ?: it.credential) } }
         }
 
     private fun saveCredential() = viewModelScope.launch {
