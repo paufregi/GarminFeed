@@ -54,7 +54,7 @@ class QuickEditViewModel @Inject constructor(
         }
     }
 
-    fun saveActivity() = viewModelScope.launch {
+    private fun saveActivity() = viewModelScope.launch {
         when (saveActivityUseCase(state.value.selectedActivity, state.value.selectedProfile)) {
             is Result.Success -> SnackbarController.sendEvent("Activity saved")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save activity")
