@@ -23,13 +23,7 @@ class GarminRepository @Inject constructor(
         garminDao.saveCredential(CredentialEntity(credential = credential))
 
     fun getCredential(): Flow<Credential?> =
-        garminDao.getCredential().map {
-            Log.i(
-                "GARMINFEED",
-                "${it?.credential?.username ?: "nope"}, ${it?.credential?.password ?: "nope"}"
-            )
-            it?.credential
-        }
+        garminDao.getCredential().map { it?.credential }
 
     suspend fun clearCache() {
         tokenManager.deleteOAuth1()
@@ -37,7 +31,6 @@ class GarminRepository @Inject constructor(
     }
 
     suspend fun uploadFile(file: File): Result<Unit> {
-        Log.i("GARMIN", "Uploading fit file")
         val multipartBody = MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
 
         val res = garminConnect.uploadFile(multipartBody)
