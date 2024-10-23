@@ -1,6 +1,8 @@
 package paufregi.garminfeed.presentation.settings
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.assertValueEquals
@@ -28,6 +30,7 @@ class SettingsScreenTest {
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("••••••••")
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
 
     @Test
@@ -37,5 +40,16 @@ class SettingsScreenTest {
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("passTest")
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Save button disabled`() {
+        composeTestRule.setContent {
+            SettingsScreen(state = SettingsState(Credential("", "")))
+        }
+        composeTestRule.onNodeWithText("Username").assertTextContains("")
+        composeTestRule.onNodeWithText("Password").assertTextContains("")
+        composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 }

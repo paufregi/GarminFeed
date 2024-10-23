@@ -2,7 +2,6 @@ package paufregi.garminfeed.presentation.main
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -14,7 +13,6 @@ import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import jakarta.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -69,7 +67,6 @@ class MainActivityTest {
     fun `Clear cache`() = runTest{
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithText("Clear cache").performClick()
-
         composeTestRule.onNodeWithText("Cache cleared").assertIsDisplayed()
     }
 }
