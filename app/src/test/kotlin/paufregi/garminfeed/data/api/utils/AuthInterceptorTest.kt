@@ -69,7 +69,7 @@ class AuthInterceptorTest {
             {_ -> connectOAuth1},
             {_, _ -> connectOAuth2},
         )
-        server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK))
+        server.enqueue(MockResponse().setResponseCode(200))
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))
             .addConverterFactory(GsonConverterFactory.create())

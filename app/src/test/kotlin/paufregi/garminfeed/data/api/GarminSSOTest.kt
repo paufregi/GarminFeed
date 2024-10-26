@@ -11,7 +11,6 @@ import paufregi.garminfeed.data.api.models.CSRF
 import paufregi.garminfeed.data.api.models.Ticket
 import paufregi.garminfeed.htmlForCSRF
 import paufregi.garminfeed.htmlForTicket
-import java.net.HttpURLConnection
 
 class GarminSSOTest {
 
@@ -32,7 +31,7 @@ class GarminSSOTest {
     @Test
     fun `Get CSRF`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
+            .setResponseCode(200)
             .setBody(htmlForCSRF)
         server.enqueue(response)
 
@@ -49,7 +48,7 @@ class GarminSSOTest {
     @Test
     fun `Get CSRF - failure`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
+            .setResponseCode(400)
         server.enqueue(response)
 
         val res = api.getCSRF()
@@ -61,7 +60,7 @@ class GarminSSOTest {
     @Test
     fun `Get Ticket`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
+            .setResponseCode(200)
             .setBody(htmlForTicket)
         server.enqueue(response)
 
@@ -79,7 +78,7 @@ class GarminSSOTest {
     @Test
     fun `Get Ticket - failure`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
+            .setResponseCode(400)
         server.enqueue(response)
 
         val res = api.login(username = "user", password = "pass", csrf = CSRF("csrf"))

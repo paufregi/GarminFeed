@@ -8,7 +8,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.data.api.models.OAuthConsumer
-import java.net.HttpURLConnection
 
 class GarthTest {
 
@@ -47,7 +46,7 @@ class GarthTest {
     @Test
     fun `Get OAuth consumer - failure`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
+            .setResponseCode(400)
         server.enqueue(response)
 
         val res = api.getOAuthConsumer()

@@ -10,7 +10,6 @@ import org.junit.Test
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.data.api.models.Ticket
-import java.net.HttpURLConnection
 
 class GarminConnectOAuth1Test {
 
@@ -32,7 +31,7 @@ class GarminConnectOAuth1Test {
     @Test
     fun `Get OAuth1`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_OK)
+            .setResponseCode(200)
             .setBody("oauth_token=TOKEN&oauth_token_secret=SECRET")
         server.enqueue(response)
 
@@ -57,7 +56,7 @@ class GarminConnectOAuth1Test {
     @Test
     fun `Get OAuth1 - failure`() = runTest{
         val response = MockResponse()
-            .setResponseCode(HttpURLConnection.HTTP_BAD_REQUEST)
+            .setResponseCode(400)
         server.enqueue(response)
 
         val ticket = Ticket("TICKET")
