@@ -1,10 +1,13 @@
 package paufregi.garminfeed.data.api
 
+import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.clearStaticMockk
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -16,7 +19,14 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.garminfeed.data.api.models.Activity
+import paufregi.garminfeed.data.api.models.ActivityType
+import paufregi.garminfeed.data.api.models.EventType
+import paufregi.garminfeed.data.api.models.Metadata
+import paufregi.garminfeed.data.api.models.Summary
+import paufregi.garminfeed.data.api.models.UpdateActivityRequest
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
+import paufregi.garminfeed.latestActivitiesJson
 import java.io.File
 
 class GarminConnectTest {
@@ -68,6 +78,85 @@ class GarminConnectTest {
         server.enqueue(response)
 
         val res = api.uploadFile(fitFile)
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Get latest activities`() = runTest{
+        val response = MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
+        server.enqueue(response)
+
+        val res = api.getLatestActivity(limit = 3)
+
+        val expected = listOf(
+            Activity(activityId = 17363361721, activityName = "Commute to home", activityType = ActivityType(typeId = 10, typeKey = "road_biking")),
+            Activity(activityId = 17359938034, activityName = "Commute to work", activityType = ActivityType(typeId = 10, typeKey = "road_biking"))
+        )
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(expected)
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Get latest activities - empty`() = runTest{
+        val response = MockResponse().setResponseCode(200).setBody("[]")
+        server.enqueue(response)
+
+        val res = api.getLatestActivity(limit = 3)
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(emptyList<Activity>())
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Get latest activities - failure`() = runTest{
+        val response = MockResponse().setResponseCode(400)
+        server.enqueue(response)
+
+        val res = api.getLatestActivity(limit = 3)
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Update activity`() = runTest{
+        val response = MockResponse().setResponseCode(200)
+        server.enqueue(response)
+        val updateActivityRequest = UpdateActivityRequest(
+            activityId = 1,
+            activityName = "newName",
+            eventTypeDTO = EventType(typeId = 1, typeKey = "key"),
+            metadataDTO = Metadata(courseId = 1),
+            summaryDTO = Summary(500),
+        )
+        val res = api.updateActivity(id = 1, updateActivityRequest = updateActivityRequest)
+
+        assertThat(res.isSuccessful).isTrue()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Update activity - failure`() = runTest{
+        val response = MockResponse().setResponseCode(400)
+        server.enqueue(response)
+        val updateActivityRequest = UpdateActivityRequest(
+            activityId = 1,
+            activityName = "newName",
+            eventTypeDTO = EventType(typeId = 1, typeKey = "key"),
+            metadataDTO = Metadata(courseId = 1),
+            summaryDTO = Summary(500),
+        )
+        val res = api.updateActivity(id = 1, updateActivityRequest = updateActivityRequest)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

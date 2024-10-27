@@ -19,7 +19,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.garminfeed.core.models.Credential
+import paufregi.garminfeed.core.models.Result
+import paufregi.garminfeed.core.models.Activity as CoreActivity
 import paufregi.garminfeed.data.api.GarminConnect
+import paufregi.garminfeed.data.api.models.Activity
+import paufregi.garminfeed.data.api.models.ActivityType
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.entities.CredentialEntity
 import paufregi.garminfeed.data.datastore.TokenManager
@@ -38,6 +42,8 @@ class GarminRepositoryTest {
         repo = GarminRepository(garminDao, garminConnect, tokenManager)
         mockkStatic(Log::class)
         every { Log.i(any(), any()) } returns 0
+        every { Log.e(any(), any()) } returns 0
+        every { Log.e(any(), any(), any()) } returns 0
     }
 
     @After
@@ -99,5 +105,61 @@ class GarminRepositoryTest {
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.uploadFile(any()) }
         confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Get latest activities`() = runTest{
+        val activities = listOf(
+            Activity(activityId = 1, activityName = "activity_1", activityType = ActivityType(typeId = 1, typeKey = "running")),
+            Activity(activityId = 2, activityName = "activity_2", activityType = ActivityType(typeId = 10, typeKey = "road_biking"))
+        )
+        coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(activities)
+
+        val expected = activities.map { it.toCore() }
+
+        val res = repo.getLatestActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+        coVerify { garminConnect.getLatestActivity(5) }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get latest activities - empty list`() = runTest{
+        coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(emptyList<Activity>())
+
+        val res = repo.getLatestActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        coVerify { garminConnect.getLatestActivity(5) }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get latest activities - null`() = runTest{
+        coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(null)
+
+        val res = repo.getLatestActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreActivity>())
+        coVerify { garminConnect.getLatestActivity(5) }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get latest activities - failure`() = runTest{
+        coEvery { garminConnect.getLatestActivity(any()) } returns Response.error<List<Activity>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getLatestActivities(limit = 5)
+
+        assertThat(res.isSuccessful).isFalse()
+        coVerify { garminConnect.getLatestActivity(5) }
+        confirmVerified(garminConnect)
     }
 }
