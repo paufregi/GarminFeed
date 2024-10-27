@@ -14,7 +14,7 @@ data class UpdateActivityRequest(
     @SerializedName("eventTypeDTO")
     val eventTypeDTO: EventType,
     @SerializedName("metadataDTO")
-    val metadataDTO: Metadata,
+    val metadataDTO: Metadata?,
     @SerializedName("summaryDTO")
-    val summaryDTO: Summary
+    val summaryDTO: Summary?
 )
