@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -49,6 +50,19 @@ class QuickEditScreenTest {
         composeTestRule.onNodeWithText("Activity").isDisplayed()
         composeTestRule.onNodeWithText("Profile").isDisplayed()
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
+    }
+
+    @Test
+    fun `Loading spinner`() {
+        composeTestRule.setContent {
+            QuickEditScreen(state = QuickEditState(
+                loading = true,
+                activities = activities,
+                allProfiles = profiles,
+                availableProfiles = profiles
+            ))
+        }
+        composeTestRule.onNodeWithTag("loading").isDisplayed()
     }
 
     @Test
