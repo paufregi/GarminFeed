@@ -35,6 +35,7 @@ import paufregi.garminfeed.presentation.ui.components.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import paufregi.garminfeed.core.models.ActivityType
+import paufregi.garminfeed.presentation.ui.components.Loading
 
 @Preview
 @Composable
@@ -55,93 +56,97 @@ internal fun QuickEditScreen(
         else -> null
     }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-    ) {
+    if (state.loading) {
+        Loading(paddingValues)
+    } else {
         Column(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.width(IntrinsicSize.Min)
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
         ) {
-            ExposedDropdownMenuBox(
-                expanded = activityExpanded,
-                onExpandedChange = { activityExpanded = it }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.width(IntrinsicSize.Min)
             ) {
-                TextField(
-                    modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                    label = { Text("Activity") },
-                    value = state.selectedActivity?.name ?: "",
-                    leadingIcon = { typeToIcon(state.selectedActivity?.type) },
-                    onValueChange = {},
-                    readOnly = true,
-                    singleLine = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = activityExpanded) },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                )
-                ExposedDropdownMenu(
+                ExposedDropdownMenuBox(
                     expanded = activityExpanded,
-                    onDismissRequest = { activityExpanded = false },
-                ){
-                    state.activities.forEach{
-                        DropdownMenuItem(
-                            text = { Text(it.name) },
-                            leadingIcon = { typeToIcon(it.type) },
-                            onClick = {
-                                onEvent(QuickEditEvent.SelectActivity(it))
-                                activityExpanded = false
-                            }
-                        )
+                    onExpandedChange = { activityExpanded = it }
+                ) {
+                    TextField(
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        label = { Text("Activity") },
+                        value = state.selectedActivity?.name ?: "",
+                        leadingIcon = { typeToIcon(state.selectedActivity?.type) },
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = activityExpanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = activityExpanded,
+                        onDismissRequest = { activityExpanded = false },
+                    ){
+                        state.activities.forEach{
+                            DropdownMenuItem(
+                                text = { Text(it.name) },
+                                leadingIcon = { typeToIcon(it.type) },
+                                onClick = {
+                                    onEvent(QuickEditEvent.SelectActivity(it))
+                                    activityExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            ExposedDropdownMenuBox(
-                expanded = profileExpanded,
-                onExpandedChange = { profileExpanded = it },
-
-            ) {
-                TextField(
-                    modifier = Modifier. menuAnchor(MenuAnchorType.PrimaryNotEditable),
-                    value = state.selectedProfile?.activityName ?: "",
-                    label = { Text("Profile") },
-                    leadingIcon = { typeToIcon(state.selectedProfile?.activityType) },
-                    onValueChange = {},
-                    readOnly = true,
-                    singleLine = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults. TrailingIcon(expanded = profileExpanded) },
-                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                )
-                ExposedDropdownMenu(
+                ExposedDropdownMenuBox(
                     expanded = profileExpanded,
-                    onDismissRequest = { profileExpanded = false },
-                ){
-                    state.availableProfiles.forEach{
-                        DropdownMenuItem(
-                            text = { Text(it.activityName) },
-                            leadingIcon = { typeToIcon(it.activityType) },
-                            onClick = {
-                                onEvent(QuickEditEvent.SelectProfile(it))
-                                profileExpanded = false
-                            }
-                        )
+                    onExpandedChange = { profileExpanded = it },
+
+                    ) {
+                    TextField(
+                        modifier = Modifier. menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        value = state.selectedProfile?.activityName ?: "",
+                        label = { Text("Profile") },
+                        leadingIcon = { typeToIcon(state.selectedProfile?.activityType) },
+                        onValueChange = {},
+                        readOnly = true,
+                        singleLine = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults. TrailingIcon(expanded = profileExpanded) },
+                        colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    )
+                    ExposedDropdownMenu(
+                        expanded = profileExpanded,
+                        onDismissRequest = { profileExpanded = false },
+                    ){
+                        state.availableProfiles.forEach{
+                            DropdownMenuItem(
+                                text = { Text(it.activityName) },
+                                leadingIcon = { typeToIcon(it.activityType) },
+                                onClick = {
+                                    onEvent(QuickEditEvent.SelectProfile(it))
+                                    profileExpanded = false
+                                }
+                            )
+                        }
                     }
                 }
-            }
 
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Button(text = "Cancel", onClick = { nav.navigateUp() })
-                Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    text = "Save",
-                    enabled = state.selectedActivity != null && state.selectedProfile != null,
-                    onClick = {
-                        onEvent(QuickEditEvent.Save)
-                        nav.navigateUp()
-                    }
-                )
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Button(text = "Cancel", onClick = { nav.navigateUp() })
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        text = "Save",
+                        enabled = state.selectedActivity != null && state.selectedProfile != null,
+                        onClick = {
+                            onEvent(QuickEditEvent.Save)
+                            nav.navigateUp()
+                        }
+                    )
+                }
             }
         }
     }
