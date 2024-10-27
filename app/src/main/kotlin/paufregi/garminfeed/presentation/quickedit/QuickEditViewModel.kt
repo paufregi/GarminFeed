@@ -10,17 +10,17 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.garminfeed.core.models.Result
-import paufregi.garminfeed.core.usecases.GetActivitiesUseCase
+import paufregi.garminfeed.core.usecases.GetLatestActivitiesUseCase
 import paufregi.garminfeed.core.usecases.GetProfilesUseCase
-import paufregi.garminfeed.core.usecases.SaveActivityUseCase
+import paufregi.garminfeed.core.usecases.UpdateActivityUseCase
 import paufregi.garminfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
 @HiltViewModel
 class QuickEditViewModel @Inject constructor(
-    val getActivitiesUseCase: GetActivitiesUseCase,
+    val getLatestActivitiesUseCase: GetLatestActivitiesUseCase,
     val getProfilesUseCase: GetProfilesUseCase,
-    val saveActivityUseCase: SaveActivityUseCase
+    val updateActivityUseCase: UpdateActivityUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(QuickEditState())
@@ -42,7 +42,14 @@ class QuickEditViewModel @Inject constructor(
 
     private fun loadData() = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
-        val activities = getActivitiesUseCase()
+        var errors = mutableListOf<String>()
+        val activities = when (val res = getLatestActivitiesUseCase()) {
+            is Result.Success -> res.data
+            is Result.Failure -> {
+                errors.add("activities")
+                emptyList()
+            }
+        }
         val profiles = getProfilesUseCase()
         _state.update {
             it.copy(
@@ -52,11 +59,13 @@ class QuickEditViewModel @Inject constructor(
                 loading = false
             )
         }
+
+        SnackbarController.sendEvent("Couldn't get ${errors.joinToString(" & ")}")
     }
 
     private fun saveActivity() = viewModelScope.launch {
-        when (saveActivityUseCase(state.value.selectedActivity, state.value.selectedProfile)) {
-            is Result.Success -> SnackbarController.sendEvent("Activity saved")
+        when (updateActivityUseCase(state.value.selectedActivity, state.value.selectedProfile)) {
+            is Result.Success -> SnackbarController.sendEvent("Activity updated")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save activity")
         }
     }

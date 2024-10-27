@@ -20,17 +20,17 @@ import paufregi.garminfeed.core.models.Course
 import paufregi.garminfeed.core.models.EventType
 import paufregi.garminfeed.core.models.Profile
 import paufregi.garminfeed.core.models.Result
-import paufregi.garminfeed.core.usecases.GetActivitiesUseCase
+import paufregi.garminfeed.core.usecases.GetLatestActivitiesUseCase
 import paufregi.garminfeed.core.usecases.GetProfilesUseCase
-import paufregi.garminfeed.core.usecases.SaveActivityUseCase
+import paufregi.garminfeed.core.usecases.UpdateActivityUseCase
 import paufregi.garminfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class QuickEditViewModelTest {
 
-    private val getActivities = mockk<GetActivitiesUseCase>()
+    private val getActivities = mockk<GetLatestActivitiesUseCase>()
     private val getProfiles = mockk<GetProfilesUseCase>()
-    private val saveActivity = mockk<SaveActivityUseCase>()
+    private val updateActivity = mockk<UpdateActivityUseCase>()
 
     private lateinit var viewModel: QuickEditViewModel
 
@@ -60,10 +60,10 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Load activities and profiles`() = runTest {
-        every { getActivities.invoke() } returns activities
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns profiles
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, saveActivity)
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -76,11 +76,28 @@ class QuickEditViewModelTest {
     }
 
     @Test
-    fun `Select activity`() = runTest {
-        every { getActivities.invoke() } returns activities
+    fun `Fails to load activities`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Failure("error")
         every { getProfiles.invoke() } returns profiles
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, saveActivity)
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            val state = awaitItem()
+            assertThat(state.loading).isFalse()
+            assertThat(state.activities).isEqualTo(emptyList<Activity>())
+            assertThat(state.allProfiles).isEqualTo(profiles)
+            assertThat(state.availableProfiles).isEqualTo(profiles)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Select activity`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
+        every { getProfiles.invoke() } returns profiles
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             awaitItem() // Initial state
@@ -94,10 +111,10 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Select profile`() = runTest {
-        every { getActivities.invoke() } returns activities
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns profiles
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, saveActivity)
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             awaitItem() // Initial state
@@ -110,11 +127,11 @@ class QuickEditViewModelTest {
 
     @Test
     fun `Save activity`() = runTest {
-        every { getActivities.invoke() } returns activities
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns profiles
-        coEvery { saveActivity.invoke(any(), any()) } returns Result.Success(Unit)
+        coEvery { updateActivity.invoke(any(), any()) } returns Result.Success(Unit)
 
-        viewModel = QuickEditViewModel(getActivities, getProfiles, saveActivity)
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
@@ -123,7 +140,7 @@ class QuickEditViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { saveActivity.invoke(activities[0], profiles[0]) }
-        confirmVerified( saveActivity )
+        coVerify { updateActivity.invoke(activities[0], profiles[0]) }
+        confirmVerified( updateActivity )
     }
 }
