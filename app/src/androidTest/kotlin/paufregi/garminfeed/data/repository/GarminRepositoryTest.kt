@@ -1,7 +1,6 @@
 package paufregi.garminfeed.data.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
-import android.util.Log
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -145,5 +144,15 @@ class GarminRepositoryTest {
         val res = repo.uploadFile(testFile)
 
         assertThat(res.isSuccessful).isTrue()
+    }
+
+    @Test
+    fun `Get latest activities`() = runTest {
+        //TODO: write test
+    }
+
+    @Test
+    fun `Update activity`() = runTest {
+        //TODO: write test
     }
 }

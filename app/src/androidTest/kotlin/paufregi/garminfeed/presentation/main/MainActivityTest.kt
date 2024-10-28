@@ -69,4 +69,9 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Clear cache").performClick()
         composeTestRule.onNodeWithText("Cache cleared").assertIsDisplayed()
     }
+
+    @Test
+    fun `Update activity`() = runTest{
+        //TODO; write test
+    }
 }
