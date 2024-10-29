@@ -34,6 +34,7 @@ import androidx.navigation.compose.rememberNavController
 import paufregi.garminfeed.presentation.ui.components.Button
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.testTag
 import paufregi.garminfeed.core.models.ActivityType
 import paufregi.garminfeed.presentation.ui.components.Loading
 
@@ -72,7 +73,8 @@ internal fun QuickEditScreen(
             ) {
                 ExposedDropdownMenuBox(
                     expanded = activityExpanded,
-                    onExpandedChange = { activityExpanded = it }
+                    onExpandedChange = { activityExpanded = it },
+                    modifier = Modifier.testTag("activityDropDown")
                 ) {
                     TextField(
                         modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
@@ -105,7 +107,7 @@ internal fun QuickEditScreen(
                 ExposedDropdownMenuBox(
                     expanded = profileExpanded,
                     onExpandedChange = { profileExpanded = it },
-
+                    modifier = Modifier.testTag("profileDropDown")
                     ) {
                     TextField(
                         modifier = Modifier. menuAnchor(MenuAnchorType.PrimaryNotEditable),

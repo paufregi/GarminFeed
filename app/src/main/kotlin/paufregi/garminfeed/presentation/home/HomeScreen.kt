@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -43,6 +44,7 @@ internal fun HomeScreen(
         floatingActionButton = { if (state.setupDone) {
             FloatingActionButton(
                 onClick = { nav.navigate(MainRoutes.QUICKEDIT) },
+                modifier = Modifier.testTag("quickedit")
             ) {
                 Icon(Icons.AutoMirrored.Default.DirectionsRun, "Edit activities")
             } } }

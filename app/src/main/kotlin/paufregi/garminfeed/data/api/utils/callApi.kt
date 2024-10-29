@@ -7,7 +7,6 @@ import retrofit2.Response
 suspend fun <T, R>callApi(block: suspend () -> Response<T>, transform: (Response<T>) -> R): Result<R> {
     return runCatching { block() }
         .map{ res ->
-            Log.i("GarminFeed", "Response: ${res.isSuccessful} - ${res.code()}")
             when(res.isSuccessful) {
                 true -> Result.Success(transform(res))
                 false -> {

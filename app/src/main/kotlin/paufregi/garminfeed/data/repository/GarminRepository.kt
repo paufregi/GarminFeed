@@ -38,7 +38,6 @@ class GarminRepository @Inject constructor(
     }
 
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> {
-        Log.i("GarminFeed", "Call GarminConnect - get last $limit activities")
         return callApi (
             { garminConnect.getLatestActivity(limit) },
             { res -> res.body()?.map { it.toCore() } ?: emptyList() }
@@ -53,7 +52,6 @@ class GarminRepository @Inject constructor(
             metadataDTO = Metadata(profile.course.id),
             summaryDTO = Summary(profile.water)
         )
-        Log.i("GarminFeed", "Call GarminConnect - update activity: $request")
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },
             { _ -> Result.Success(Unit) }
@@ -62,7 +60,6 @@ class GarminRepository @Inject constructor(
 
     suspend fun uploadFile(file: File): Result<Unit> {
         val multipartBody = MultipartBody.Part.createFormData("fit", file.name, file.asRequestBody())
-        Log.i("GarminFeed", "Call GarminConnect - upload fit file")
         return callApi(
             { garminConnect.uploadFile(multipartBody) },
             { _ -> Result.Success(Unit)}

@@ -89,8 +89,8 @@ class GarminConnectTest {
         val res = api.getLatestActivity(limit = 3)
 
         val expected = listOf(
-            Activity(activityId = 17363361721, activityName = "Commute to home", activityType = ActivityType(typeId = 10, typeKey = "road_biking")),
-            Activity(activityId = 17359938034, activityName = "Commute to work", activityType = ActivityType(typeId = 10, typeKey = "road_biking"))
+            Activity(activityId = 1, activityName = "Activity 1", activityType = ActivityType(typeId = 10, typeKey = "road_biking")),
+            Activity(activityId = 2, activityName = "Activity 2", activityType = ActivityType(typeId = 10, typeKey = "road_biking"))
         )
 
         assertThat(res.isSuccessful).isTrue()
