@@ -30,7 +30,7 @@ class GetLatestActivitiesUseCaseTest{
     }
 
     @Test
-    fun `Get latest activities use-case`() = runTest{
+    fun `Get latest activities use-case`() = runTest {
         val activities = listOf(
             Activity(id = 1, name = "name", type = ActivityType.Running)
         )
@@ -45,7 +45,7 @@ class GetLatestActivitiesUseCaseTest{
     }
 
     @Test
-    fun `Failed to get latest activities use-case`() = runTest{
+    fun `Failed to get latest activities use-case`() = runTest {
         coEvery { repo.getLatestActivities(any()) } returns Result.Failure("Failed")
         val res = useCase()
 

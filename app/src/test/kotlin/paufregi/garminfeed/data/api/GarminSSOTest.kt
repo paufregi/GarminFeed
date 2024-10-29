@@ -29,7 +29,7 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get CSRF`() = runTest{
+    fun `Get CSRF`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
             .setBody(htmlForCSRF)
@@ -46,7 +46,7 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get CSRF - failure`() = runTest{
+    fun `Get CSRF - failure`() = runTest {
         val response = MockResponse()
             .setResponseCode(400)
         server.enqueue(response)
@@ -58,7 +58,7 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get Ticket`() = runTest{
+    fun `Get Ticket`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
             .setBody(htmlForTicket)
@@ -76,7 +76,7 @@ class GarminSSOTest {
     }
 
     @Test
-    fun `Get Ticket - failure`() = runTest{
+    fun `Get Ticket - failure`() = runTest {
         val response = MockResponse()
             .setResponseCode(400)
         server.enqueue(response)

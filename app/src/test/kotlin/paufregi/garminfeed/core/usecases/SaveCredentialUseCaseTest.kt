@@ -29,7 +29,7 @@ class SaveCredentialUseCaseTest{
     }
 
     @Test
-    fun `Save credential use-case`() = runTest{
+    fun `Save credential use-case`() = runTest {
         val credential = Credential("user", "pass")
         coEvery { repo.saveCredential(any()) } returns Unit
         val res = useCase(credential)
@@ -40,7 +40,7 @@ class SaveCredentialUseCaseTest{
     }
 
     @Test
-    fun `Invalid - No username`() = runTest{
+    fun `Invalid - No username`() = runTest {
         val credential = Credential("", "pass")
         val res = useCase(credential)
 
@@ -48,7 +48,7 @@ class SaveCredentialUseCaseTest{
     }
 
     @Test
-    fun `Invalid - No pass`() = runTest{
+    fun `Invalid - No pass`() = runTest {
         val credential = Credential("user", "")
         val res = useCase(credential)
 
@@ -56,7 +56,7 @@ class SaveCredentialUseCaseTest{
     }
 
     @Test
-    fun `Invalid - all blank`() = runTest{
+    fun `Invalid - all blank`() = runTest {
         val credential = Credential("", "")
         val res = useCase(credential)
 

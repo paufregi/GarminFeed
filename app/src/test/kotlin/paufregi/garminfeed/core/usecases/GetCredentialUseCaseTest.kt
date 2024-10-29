@@ -31,7 +31,7 @@ class GetCredentialUseCaseTest{
     }
 
     @Test
-    fun `Get credentials use-case`() = runTest{
+    fun `Get credentials use-case`() = runTest {
         val credential = Credential("user", "pass")
         coEvery { repo.getCredential() } returns flowOf(credential)
         val res = useCase()
@@ -46,7 +46,7 @@ class GetCredentialUseCaseTest{
     }
 
     @Test
-    fun `No credentials use-case`() = runTest{
+    fun `No credentials use-case`() = runTest {
         coEvery { repo.getCredential() } returns flowOf(null)
         val res = useCase()
 

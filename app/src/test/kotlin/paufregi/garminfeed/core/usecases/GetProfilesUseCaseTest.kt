@@ -29,7 +29,7 @@ class GetProfilesUseCaseTest{
     }
 
     @Test
-    fun `Get profiles use-case`() = runTest{
+    fun `Get profiles use-case`() = runTest {
         val expected = listOf(
             Profile(
                 Course.home.name,

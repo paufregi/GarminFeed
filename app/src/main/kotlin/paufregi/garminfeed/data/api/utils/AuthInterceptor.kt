@@ -1,5 +1,6 @@
 package paufregi.garminfeed.data.api.utils
 
+import android.util.Log
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -36,7 +37,10 @@ class AuthInterceptor @Inject constructor(
         return if (cachedOauth2 != null && !cachedOauth2.isExpired()) {
             chain.proceed(newRequestWithAccessToken(cachedOauth2.accessToken, request))
         } else {
-            when (val oauth2 = runBlocking { authenticate() }){
+            val oauth2 = runBlocking { authenticate() }
+
+            Log.i("GarminFeed", "AuthInterceptor - success? ${oauth2.isSuccessful}")
+            when (oauth2){
                 is Result.Success -> chain.proceed(newRequestWithAccessToken(oauth2.data.accessToken, request))
                 is Result.Failure -> Response.Builder()
                     .request(request)
@@ -93,7 +97,10 @@ class AuthInterceptor @Inject constructor(
 
     private suspend fun signIn(): Result<Ticket> {
         val cred = garminDao.getCredential().firstOrNull()?.credential ?: return Result.Failure("No credentials")
-        return when(val csrf = getCSRF()) {
+        Log.i("GarminFeed", "AuthInterceptor - signIn - cred: $cred")
+        val csrf = getCSRF()
+        Log.i("GarminFeed", "AuthInterceptor - signIn - csrf: $csrf")
+        return when(csrf) {
             is Result.Success -> login(username = cred.username , password = cred.password, csrf = csrf.data)
             is Result.Failure -> Result.Failure(csrf.error)
         }
@@ -110,15 +117,20 @@ class AuthInterceptor @Inject constructor(
                 is Result.Failure -> return Result.Failure(res.error)
             }
 
+        Log.i("GarminFeed", "AuthInterceptor - consumer: $consumer")
+
         val cachedOAuth1 = tokenManager.getOauth1().firstOrNull()
         val oauth: OAuth1
         if (cachedOAuth1 != null && cachedOAuth1.isValid()) {
             oauth = cachedOAuth1
         } else {
+            Log.i("GarminFeed", "AuthInterceptor - signIn")
             val ticket = when (val res = signIn()) {
                 is Result.Success -> res.data
                 is Result.Failure -> return Result.Failure(res.error)
             }
+
+            Log.i("GarminFeed", "AuthInterceptor - ticket: $ticket")
 
             oauth = when (val res = getOAuthToken(ticket, consumer)) {
                 is Result.Success -> {

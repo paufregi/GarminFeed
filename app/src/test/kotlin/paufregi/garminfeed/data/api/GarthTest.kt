@@ -27,7 +27,7 @@ class GarthTest {
     }
 
     @Test
-    fun `Get OAuth consumer`() = runTest{
+    fun `Get OAuth consumer`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
             .setBody("""{"consumer_key":"KEY","consumer_secret":"SECRET"}""")
@@ -44,7 +44,7 @@ class GarthTest {
     }
 
     @Test
-    fun `Get OAuth consumer - failure`() = runTest{
+    fun `Get OAuth consumer - failure`() = runTest {
         val response = MockResponse()
             .setResponseCode(400)
         server.enqueue(response)

@@ -1,6 +1,7 @@
 package paufregi.garminfeed.data.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import android.util.Log
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -15,7 +16,13 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import paufregi.garminfeed.connectPort
+import paufregi.garminfeed.core.models.Activity as CoreActivity
+import paufregi.garminfeed.core.models.ActivityType as CoreActivityType
+import paufregi.garminfeed.core.models.Course
 import paufregi.garminfeed.core.models.Credential
+import paufregi.garminfeed.core.models.EventType
+import paufregi.garminfeed.core.models.Profile
+import paufregi.garminfeed.core.models.Result
 import paufregi.garminfeed.createOAuth2
 import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuthConsumer
@@ -26,6 +33,7 @@ import paufregi.garminfeed.garminSSOPort
 import paufregi.garminfeed.garthPort
 import paufregi.garminfeed.htmlForCSRF
 import paufregi.garminfeed.htmlForTicket
+import paufregi.garminfeed.latestActivitiesJson
 import paufregi.garminfeed.sslSocketFactory
 import paufregi.garminfeed.tomorrow
 import java.io.File
@@ -52,6 +60,62 @@ class GarminRepositoryTest {
     private val garminSSOServer = MockWebServer()
     private val garthServer = MockWebServer()
 
+
+    private  val cred = Credential(username = "user", password = "pass")
+    private  val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
+    private  val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
+    private  val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
+    private  val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
+    private  val oauth2 = createOAuth2(tomorrow)
+    private  val oauth2Body = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
+
+    private val connectDispatcher: Dispatcher = object : Dispatcher() {
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            val path = request.path ?: ""
+            print("Path: $path - Method: ${request.method}")
+            Log.i("TEST", "Path: $path - Method: ${request.method}")
+            return when {
+                path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
+                    MockResponse().setResponseCode(200).setBody(oauth1Body)
+                path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
+                    MockResponse().setResponseCode(200).setBody(oauth2Body)
+                path == "/upload-service/upload" && request.method == "POST" ->
+                    MockResponse().setResponseCode(200)
+                (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
+                    MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
+                (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
+                    MockResponse().setResponseCode(200)
+                else -> MockResponse().setResponseCode(404)
+            }
+        }
+    }
+
+    private val garthDispatcher: Dispatcher = object : Dispatcher() {
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            val path = request.path ?: ""
+            return when {
+                path == "/oauth_consumer.json" && request.method == "GET" ->
+                    MockResponse().setResponseCode(200).setBody(consumerBody)
+                else -> MockResponse().setResponseCode(404)
+            }
+        }
+    }
+
+    private val garminSSODispatcher: Dispatcher = object : Dispatcher() {
+        override fun dispatch(request: RecordedRequest): MockResponse {
+            val path = request.path ?: ""
+            return when {
+                path.startsWith("/sso/signin") && request.method == "GET" ->
+                    MockResponse().setResponseCode(200).setBody(htmlForCSRF)
+                path.startsWith("/sso/signin") && request.method == "POST" ->
+                    MockResponse().setResponseCode(200).setBody(htmlForTicket)
+                else -> MockResponse().setResponseCode(404)
+            }
+        }
+    }
+
+
+
     @Before
     fun setup() {
         hiltRule.inject()
@@ -61,6 +125,11 @@ class GarminRepositoryTest {
         garminSSOServer.start(garminSSOPort)
         garthServer.useHttps(sslSocketFactory, false)
         garthServer.start(garthPort)
+
+        connectServer.dispatcher = connectDispatcher
+        garthServer.dispatcher = garthDispatcher
+        garminSSOServer.dispatcher = garminSSODispatcher
+
         dao = database.garminDao()
     }
 
@@ -86,58 +155,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Upload file`() = runTest {
-        val cred = Credential(username = "user", password = "pass")
-        val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
-        val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
-        val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
-        val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
-        val oauth2 = createOAuth2(tomorrow)
-        val oauth2Body = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
-
         dao.saveCredential(CredentialEntity(credential = cred))
-
-        val connectDispatcher: Dispatcher = object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse {
-                val path = request.path ?: return MockResponse().setResponseCode(404)
-                if(path.startsWith("/oauth-service/oauth/preauthorized")){
-                    return when (request.method) {
-                        "GET" -> MockResponse().setResponseCode(200).setBody(oauth1Body)
-                        else -> MockResponse().setResponseCode(404)
-                    }
-                }
-                return when (request.method to request.path) {
-                    "POST" to "/oauth-service/oauth/exchange/user/2.0" -> MockResponse().setResponseCode(200).setBody(oauth2Body)
-                    "POST" to "/upload-service/upload" -> MockResponse().setResponseCode(200)
-                    else -> MockResponse().setResponseCode(404)
-                }
-            }
-        }
-        connectServer.dispatcher = connectDispatcher
-
-        val garthDispatcher: Dispatcher = object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse {
-                return when (request.method to request.path) {
-                    "GET" to "/oauth_consumer.json" -> MockResponse().setResponseCode(200).setBody(consumerBody)
-                    else -> MockResponse().setResponseCode(404)
-                }
-            }
-        }
-        garthServer.dispatcher = garthDispatcher
-
-        val garminSSODispatcher: Dispatcher = object : Dispatcher() {
-            override fun dispatch(request: RecordedRequest): MockResponse {
-                val path = request.path ?: return MockResponse().setResponseCode(404)
-                if (path.startsWith("/sso/signin")) {
-                    return when (request.method) {
-                        "GET" -> MockResponse().setResponseCode(200).setBody(htmlForCSRF)
-                        "POST" -> MockResponse().setResponseCode(200).setBody(htmlForTicket)
-                        else -> MockResponse().setResponseCode(404)
-                    }
-                }
-                return MockResponse().setResponseCode(404)
-            }
-        }
-        garminSSOServer.dispatcher = garminSSODispatcher
 
         val testFile = File.createTempFile("test", "test")
         testFile.deleteOnExit()
@@ -148,11 +166,29 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get latest activities`() = runTest {
-        //TODO: write test
+        dao.saveCredential(CredentialEntity(credential = cred))
+
+        val expected = listOf(
+            CoreActivity(id = 17363361721, name = "Commute to home", type = CoreActivityType.Cycling),
+            CoreActivity(id = 17359938034, name = "Commute to work", type = CoreActivityType.Cycling)
+        )
+
+        val res = repo.getLatestActivities(5)
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
     }
 
     @Test
     fun `Update activity`() = runTest {
-        //TODO: write test
+        dao.saveCredential(CredentialEntity(credential = cred))
+
+        val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
+        val profile = Profile(activityName = "newName", eventType = EventType.transportation, activityType = CoreActivityType.Cycling, course = Course.work, water = 1)
+
+        val res = repo.updateActivity(activity, profile)
+
+        assertThat(res.isSuccessful).isTrue()
     }
 }

@@ -29,7 +29,7 @@ class GarminConnectOAuth1Test {
     }
 
     @Test
-    fun `Get OAuth1`() = runTest{
+    fun `Get OAuth1`() = runTest {
         val response = MockResponse()
             .setResponseCode(200)
             .setBody("oauth_token=TOKEN&oauth_token_secret=SECRET")
@@ -54,7 +54,7 @@ class GarminConnectOAuth1Test {
     }
 
     @Test
-    fun `Get OAuth1 - failure`() = runTest{
+    fun `Get OAuth1 - failure`() = runTest {
         val response = MockResponse()
             .setResponseCode(400)
         server.enqueue(response)

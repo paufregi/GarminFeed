@@ -59,8 +59,8 @@ class QuickEditViewModel @Inject constructor(
                 loading = false
             )
         }
-
-        SnackbarController.sendEvent("Couldn't get ${errors.joinToString(" & ")}")
+        if (errors.isNotEmpty())
+            SnackbarController.sendEvent("Couldn't get ${errors.joinToString(" & ")}")
     }
 
     private fun saveActivity() = viewModelScope.launch {

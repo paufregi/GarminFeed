@@ -31,7 +31,7 @@ class CallApiTest {
     }
 
     @Test
-    fun `Successful call`() = runTest{
+    fun `Successful call`() = runTest {
         val result = callApi(
             { Response.success("ok") },
             { res -> res.body() }
@@ -43,7 +43,7 @@ class CallApiTest {
     }
 
     @Test
-    fun `Failed call`() = runTest{
+    fun `Failed call`() = runTest {
         val result = callApi(
             { Response.error<String>(400, "error".toResponseBody()) },
             { res -> res.body() }
@@ -53,7 +53,7 @@ class CallApiTest {
     }
 
     @Test
-    fun `Thrown exception`() = runTest{
+    fun `Thrown exception`() = runTest {
         val result = callApi<String, String>(
             { throw IllegalArgumentException("ops") },
             { res -> "nope" }

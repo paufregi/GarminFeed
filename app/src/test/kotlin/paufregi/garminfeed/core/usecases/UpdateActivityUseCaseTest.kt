@@ -43,7 +43,7 @@ class UpdateActivityUseCaseTest{
     }
 
     @Test
-    fun `Update activity use-case`() = runTest{
+    fun `Update activity use-case`() = runTest {
         coEvery { repo.updateActivity(any(), any()) } returns Result.Success(Unit)
         val res = useCase(activity, profile)
 
@@ -53,21 +53,21 @@ class UpdateActivityUseCaseTest{
     }
 
     @Test
-    fun `Invalid - no activity`() = runTest{
+    fun `Invalid - no activity`() = runTest {
         val res = useCase(null, profile)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
     }
 
     @Test
-    fun `Invalid - no profile`() = runTest{
+    fun `Invalid - no profile`() = runTest {
         val res = useCase(activity, null)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
     }
 
     @Test
-    fun `Invalid - both null`() = runTest{
+    fun `Invalid - both null`() = runTest {
         val res = useCase(null, null)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)

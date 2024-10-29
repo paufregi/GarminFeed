@@ -1,13 +1,10 @@
 package paufregi.garminfeed.data.api
 
-import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
-import io.mockk.clearStaticMockk
 import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import io.mockk.slot
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
@@ -58,7 +55,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Upload file`() = runTest{
+    fun `Upload file`() = runTest {
         val response = MockResponse().setResponseCode(200)
         server.enqueue(response)
 
@@ -73,7 +70,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Upload file - failure`() = runTest{
+    fun `Upload file - failure`() = runTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
 
@@ -85,7 +82,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Get latest activities`() = runTest{
+    fun `Get latest activities`() = runTest {
         val response = MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
         server.enqueue(response)
 
@@ -103,7 +100,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Get latest activities - empty`() = runTest{
+    fun `Get latest activities - empty`() = runTest {
         val response = MockResponse().setResponseCode(200).setBody("[]")
         server.enqueue(response)
 
@@ -116,7 +113,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Get latest activities - failure`() = runTest{
+    fun `Get latest activities - failure`() = runTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
 
@@ -128,7 +125,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Update activity`() = runTest{
+    fun `Update activity`() = runTest {
         val response = MockResponse().setResponseCode(200)
         server.enqueue(response)
         val updateActivityRequest = UpdateActivityRequest(
@@ -146,7 +143,7 @@ class GarminConnectTest {
     }
 
     @Test
-    fun `Update activity - failure`() = runTest{
+    fun `Update activity - failure`() = runTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
         val updateActivityRequest = UpdateActivityRequest(

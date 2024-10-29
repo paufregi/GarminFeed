@@ -47,7 +47,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Setup credential`() = runTest{
+    fun `Setup credential`() = runTest {
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithText("Setup").performClick()
 
@@ -64,14 +64,14 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Clear cache`() = runTest{
+    fun `Clear cache`() = runTest {
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithText("Clear cache").performClick()
         composeTestRule.onNodeWithText("Cache cleared").assertIsDisplayed()
     }
 
     @Test
-    fun `Update activity`() = runTest{
+    fun `Update activity`() = runTest {
         //TODO; write test
     }
 }
