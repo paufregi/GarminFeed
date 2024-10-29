@@ -1,11 +1,18 @@
 package paufregi.garminfeed
 
+import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.RecordedRequest
 import okhttp3.tls.HandshakeCertificates
 import okhttp3.tls.HeldCertificate
+import paufregi.garminfeed.core.models.Credential
+import paufregi.garminfeed.data.api.models.OAuth1
 import paufregi.garminfeed.data.api.models.OAuth2
+import paufregi.garminfeed.data.api.models.OAuthConsumer
 import paufregi.garminfeed.test.R
 import java.util.Date
 
@@ -22,6 +29,14 @@ fun createOAuth2(expiresAt: Date) = OAuth2(
 
 //1 Day  : 1000 * 60 * 60 * 24 milliseconds
 val tomorrow = Date(Date().time + (1000 * 60 * 60 * 24))
+
+val cred = Credential(username = "user", password = "pass")
+val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
+val consumerBody = """{"consumer_key":"${consumer.key}","consumer_secret":"${consumer.secret}"}"""
+val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
+val oauth1Body = "oauth_token=${oauth1.token}&oauth_token_secret=${oauth1.secret}"
+val oauth2 = createOAuth2(tomorrow)
+val oauth2Body = """{"scope": "${oauth2.scope}","jti": "${oauth2.jti}","access_token": "${oauth2.accessToken}","token_type": "${oauth2.tokenType}","refresh_token": "${oauth2.refreshToken}","expires_in": ${oauth2.expiresIn},"refresh_token_expires_in": ${oauth2.refreshTokenExpiresIn}}"""
 
 val htmlForCSRF = """
         <!DOCTYPE html>
@@ -128,22 +143,11 @@ val htmlForTicket = """
         </html>
     """.trimIndent()
 
-const val connectPort = 8081
-const val garminSSOPort = 8082
-const val garthPort = 8083
-
-fun loadRes(res: Int): String =
-    getInstrumentation().context.resources.openRawResource(res).bufferedReader().use { it.readText() }
-
-var sslSocketFactory = HandshakeCertificates.Builder()
-    .heldCertificate(HeldCertificate.decode(loadRes(R.raw.server)))
-    .build().sslSocketFactory()
-
 val latestActivitiesJson = """
     [
         {
-            "activityId": 17363361721,
-            "activityName": "Commute to home",
+            "activityId": 1,
+            "activityName": "Activity 1",
             "startTimeLocal": "2024-10-24 20:15:00",
             "startTimeGMT": "2024-10-24 07:15:00",
             "activityType": {
@@ -278,8 +282,8 @@ val latestActivitiesJson = """
             "parent": false
         },
         {
-            "activityId": 17359938034,
-            "activityName": "Commute to work",
+            "activityId": 2,
+            "activityName": "Activity 2",
             "startTimeLocal": "2024-10-24 06:52:48",
             "startTimeGMT": "2024-10-23 17:52:48",
             "activityType": {
@@ -414,3 +418,60 @@ val latestActivitiesJson = """
         }
     ]
 """.trimIndent()
+
+const val connectPort = 8081
+const val garminSSOPort = 8082
+const val garthPort = 8083
+
+fun loadRes(res: Int): String =
+    getInstrumentation().context.resources.openRawResource(res).bufferedReader().use { it.readText() }
+
+var sslSocketFactory = HandshakeCertificates.Builder()
+    .heldCertificate(HeldCertificate.decode(loadRes(R.raw.server)))
+    .build().sslSocketFactory()
+
+val connectDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.path ?: ""
+        return when {
+            path.startsWith("/oauth-service/oauth/preauthorized") && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(oauth1Body)
+            path == "/oauth-service/oauth/exchange/user/2.0" && request.method == "POST" ->
+                MockResponse().setResponseCode(200).setBody(oauth2Body)
+            path == "/upload-service/upload" && request.method == "POST" ->
+                MockResponse().setResponseCode(200)
+            (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
+                MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
+            (path.startsWith("/activity-service/activity") && request.method == "PUT") ->
+                MockResponse().setResponseCode(200)
+            else -> MockResponse().setResponseCode(404)
+        }
+    }
+}
+
+val garthDispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.path ?: ""
+        return when {
+            path == "/oauth_consumer.json" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(consumerBody)
+            else -> MockResponse().setResponseCode(404)
+        }
+    }
+}
+
+val garminSSODispatcher: Dispatcher = object : Dispatcher() {
+    override fun dispatch(request: RecordedRequest): MockResponse {
+        val path = request.path ?: ""
+        return when {
+            path.startsWith("/sso/signin") && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(htmlForCSRF)
+            path.startsWith("/sso/signin") && request.method == "POST" ->
+                MockResponse().setResponseCode(200).setBody(htmlForTicket)
+            else -> MockResponse().setResponseCode(404)
+        }
+    }
+}
+
+
+

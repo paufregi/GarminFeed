@@ -126,8 +126,8 @@ val htmlForTicket = """
 val latestActivitiesJson = """
     [
         {
-            "activityId": 17363361721,
-            "activityName": "Commute to home",
+            "activityId": 1,
+            "activityName": "Activity 1",
             "startTimeLocal": "2024-10-24 20:15:00",
             "startTimeGMT": "2024-10-24 07:15:00",
             "activityType": {
@@ -262,8 +262,8 @@ val latestActivitiesJson = """
             "parent": false
         },
         {
-            "activityId": 17359938034,
-            "activityName": "Commute to work",
+            "activityId": 2,
+            "activityName": "Activity 2",
             "startTimeLocal": "2024-10-24 06:52:48",
             "startTimeGMT": "2024-10-23 17:52:48",
             "activityType": {
