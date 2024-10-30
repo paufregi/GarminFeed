@@ -73,11 +73,10 @@ internal fun QuickEditScreen(
             ) {
                 ExposedDropdownMenuBox(
                     expanded = activityExpanded,
-                    onExpandedChange = { activityExpanded = it },
-                    modifier = Modifier.testTag("activityDropDown")
+                    onExpandedChange = { activityExpanded = it }
                 ) {
                     TextField(
-                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+                        modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).testTag("activityDropDown"),
                         label = { Text("Activity") },
                         value = state.selectedActivity?.name ?: "",
                         leadingIcon = { typeToIcon(state.selectedActivity?.type) },

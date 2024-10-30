@@ -2,6 +2,7 @@ package paufregi.garminfeed.presentation.main
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -115,17 +116,21 @@ class MainActivityTest {
 
     @Test
     fun `Update activity`() = runTest {
-        //FIXME: java.net.ConnectException: Failed to connect to localhost/127.0.0.1:8081
-        // Suppressed: okhttp3.internal.http2.StreamResetException: stream was reset: REFUSED_STREAM
         dao.saveCredential(CredentialEntity(credential = cred))
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithTag("quickedit").performClick()
+        composeTestRule.onNodeWithTag("loading").performClick()
+        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithTag("activityDropDown").isDisplayed() }
         composeTestRule.onNodeWithTag("activityDropDown").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithTag("profileDropDown").performClick()
         composeTestRule.onNodeWithText("Commute to work").performClick()
         composeTestRule.onNodeWithText("Save").performClick()
         composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
+
+        //FIXME: this final assertion can't be validate due to
+        // kotlinx.coroutines.JobCancellationException: Job was cancelled
+//        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 }
