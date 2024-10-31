@@ -142,10 +142,7 @@ internal fun QuickEditScreen(
                     Button(
                         text = "Save",
                         enabled = state.selectedActivity != null && state.selectedProfile != null,
-                        onClick = {
-                            onEvent(QuickEditEvent.Save)
-                            nav.navigateUp()
-                        }
+                        onClick = { onEvent(QuickEditEvent.Save({ nav.navigateUp() })) }
                     )
                 }
             }

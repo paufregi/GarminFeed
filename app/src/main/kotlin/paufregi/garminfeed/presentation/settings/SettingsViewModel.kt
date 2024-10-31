@@ -38,7 +38,7 @@ class SettingsViewModel @Inject constructor(
             is SettingsEvent.UpdateUsername -> _state.update { it.copy(credential = it.credential.copy(username = event.username)) }
             is SettingsEvent.UpdatePassword -> _state.update { it.copy(credential = it.credential.copy(password = event.password)) }
             is SettingsEvent.UpdateShowPassword -> _state.update { it.copy(showPassword = event.showPassword) }
-            is SettingsEvent.SaveCredential -> saveCredential()
+            is SettingsEvent.SaveCredential -> saveCredential(event.callback)
         }
     }
 
@@ -47,10 +47,11 @@ class SettingsViewModel @Inject constructor(
             _state.update { it.copy(credential = cred ?: it.credential) } }
         }
 
-    private fun saveCredential() = viewModelScope.launch {
-        when (saveCredentialUseCase(state.value.credential)) {
+    private fun saveCredential(callback: () -> Unit) = viewModelScope.launch {
+        when (saveCredentialUseCase(state.value.credential) ) {
             is Result.Success -> SnackbarController.sendEvent("Credential saved")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save credential")
         }
+        callback()
     }
 }

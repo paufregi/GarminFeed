@@ -77,10 +77,7 @@ internal fun SettingsScreen(
                 Button(
                     text = "Save",
                     enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                    onClick = {
-                        onEvent(SettingsEvent.SaveCredential)
-                        nav.navigateUp()
-                    }
+                    onClick = { onEvent(SettingsEvent.SaveCredential({ nav.navigateUp() })) }
                 )
             }
         }
