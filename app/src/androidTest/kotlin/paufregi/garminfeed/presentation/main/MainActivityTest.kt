@@ -128,8 +128,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Commute to work").performClick()
         composeTestRule.onNodeWithText("Save").performClick()
 
-        //FIXME: this final assertion can't be validate due to
-        // kotlinx.coroutines.JobCancellationException: Job was cancelled
-//        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
+        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
+        composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 }
