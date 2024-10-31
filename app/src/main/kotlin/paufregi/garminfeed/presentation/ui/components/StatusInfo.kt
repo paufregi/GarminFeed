@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import paufregi.garminfeed.presentation.syncweight.SyncWeightStatePreview
 
 sealed class StatusInfoType(
     val icon: ImageVector,
