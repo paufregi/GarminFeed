@@ -9,5 +9,6 @@ data class QuickEditState(
     val allProfiles: List<Profile> = emptyList(),
     val availableProfiles: List<Profile> = emptyList(),
     val selectedActivity: Activity? = null,
-    val selectedProfile: Profile? = null
+    val selectedProfile: Profile? = null,
+    val selectedEffort: Float = 0f
 )

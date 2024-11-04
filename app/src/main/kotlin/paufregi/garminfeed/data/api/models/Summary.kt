@@ -10,4 +10,8 @@ import paufregi.garminfeed.core.models.ActivityType as CoreActivityType
 data class Summary(
     @SerializedName("waterConsumed")
     val waterConsumed: Int,
+    @SerializedName("directWorkoutFeel")
+    val feel: Int, // 0-25-50-75-100
+    @SerializedName("directWorkoutRpe")
+    val effort: Int, // 10-100 (step 10)
 )

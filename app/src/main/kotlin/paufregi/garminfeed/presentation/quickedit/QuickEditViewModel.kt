@@ -33,10 +33,11 @@ class QuickEditViewModel @Inject constructor(
             it.copy(
                 selectedActivity = event.activity,
                 selectedProfile = if (it.selectedProfile?.activityType != event.activity.type) null else it.selectedProfile,
-                availableProfiles = it.allProfiles.filter { it.activityType == event.activity.type }
+                availableProfiles = it.allProfiles.filter { it.activityType == event.activity.type },
             )
         }
         is QuickEditEvent.SelectProfile -> _state.update { it.copy( selectedProfile = event.profile ) }
+        is QuickEditEvent.SelectEffort -> _state.update { it.copy( selectedEffort = event.effort ) }
         is QuickEditEvent.Save -> saveActivity(event.callback)
     }
 
