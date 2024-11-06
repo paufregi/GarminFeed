@@ -6,15 +6,15 @@ import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
-data class UpdateActivityRequest(
+data class UpdateActivity(
     @SerializedName("activityId")
-    val activityId: Long,
+    val id: Long,
     @SerializedName("activityName")
-    val activityName: String,
+    val name: String,
     @SerializedName("eventTypeDTO")
-    val eventTypeDTO: EventType,
+    val eventType: EventType,
     @SerializedName("metadataDTO")
-    val metadataDTO: Metadata?,
+    val metadata: Metadata?,
     @SerializedName("summaryDTO")
-    val summaryDTO: Summary?
+    val summary: Summary?
 )

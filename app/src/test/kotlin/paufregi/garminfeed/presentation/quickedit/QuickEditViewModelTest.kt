@@ -136,7 +136,7 @@ class QuickEditViewModelTest {
         viewModel.state.test {
             viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
             viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
-            viewModel.onEvent(QuickEditEvent.Save)
+            viewModel.onEvent(QuickEditEvent.Save({}))
             cancelAndIgnoreRemainingEvents()
         }
 

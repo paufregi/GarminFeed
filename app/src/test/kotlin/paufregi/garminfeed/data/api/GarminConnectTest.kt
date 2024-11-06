@@ -21,7 +21,7 @@ import paufregi.garminfeed.data.api.models.ActivityType
 import paufregi.garminfeed.data.api.models.EventType
 import paufregi.garminfeed.data.api.models.Metadata
 import paufregi.garminfeed.data.api.models.Summary
-import paufregi.garminfeed.data.api.models.UpdateActivityRequest
+import paufregi.garminfeed.data.api.models.UpdateActivity
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import paufregi.garminfeed.latestActivitiesJson
 import java.io.File
@@ -89,8 +89,8 @@ class GarminConnectTest {
         val res = api.getLatestActivity(limit = 3)
 
         val expected = listOf(
-            Activity(activityId = 1, activityName = "Activity 1", activityType = ActivityType(typeId = 10, typeKey = "road_biking")),
-            Activity(activityId = 2, activityName = "Activity 2", activityType = ActivityType(typeId = 10, typeKey = "road_biking"))
+            Activity(id = 1, name = "Activity 1", type = ActivityType(id = 10, key = "road_biking")),
+            Activity(id = 2, name = "Activity 2", type = ActivityType(id = 10, key = "road_biking"))
         )
 
         assertThat(res.isSuccessful).isTrue()
@@ -128,14 +128,14 @@ class GarminConnectTest {
     fun `Update activity`() = runTest {
         val response = MockResponse().setResponseCode(200)
         server.enqueue(response)
-        val updateActivityRequest = UpdateActivityRequest(
-            activityId = 1,
-            activityName = "newName",
-            eventTypeDTO = EventType(typeId = 1, typeKey = "key"),
-            metadataDTO = Metadata(courseId = 1),
-            summaryDTO = Summary(500),
+        val updateActivity = UpdateActivity(
+            id = 1,
+            name = "newName",
+            eventType = EventType(typeId = 1, typeKey = "key"),
+            metadata = Metadata(courseId = 1),
+            summary = Summary(500, null, null),
         )
-        val res = api.updateActivity(id = 1, updateActivityRequest = updateActivityRequest)
+        val res = api.updateActivity(id = 1, updateActivity = updateActivity)
 
         assertThat(res.isSuccessful).isTrue()
         verify { authInterceptor.intercept(any()) }
@@ -146,14 +146,14 @@ class GarminConnectTest {
     fun `Update activity - failure`() = runTest {
         val response = MockResponse().setResponseCode(400)
         server.enqueue(response)
-        val updateActivityRequest = UpdateActivityRequest(
-            activityId = 1,
-            activityName = "newName",
-            eventTypeDTO = EventType(typeId = 1, typeKey = "key"),
-            metadataDTO = Metadata(courseId = 1),
-            summaryDTO = Summary(500),
+        val updateActivity = UpdateActivity(
+            id = 1,
+            name = "newName",
+            eventType = EventType(typeId = 1, typeKey = "key"),
+            metadata = Metadata(courseId = 1),
+            summary = Summary(500, null, null),
         )
-        val res = api.updateActivity(id = 1, updateActivityRequest = updateActivityRequest)
+        val res = api.updateActivity(id = 1, updateActivity = updateActivity)
 
         assertThat(res.isSuccessful).isFalse()
         verify { authInterceptor.intercept(any()) }

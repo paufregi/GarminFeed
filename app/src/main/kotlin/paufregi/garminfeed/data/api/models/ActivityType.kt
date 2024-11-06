@@ -9,17 +9,13 @@ import paufregi.garminfeed.core.models.ActivityType as CoreActivityType
 @Serializable
 data class ActivityType(
     @SerializedName("typeId")
-    val typeId: Long,
+    val id: Long,
     @SerializedName("typeKey")
-    val typeKey: String
+    val key: String
 ) {
-    fun toCore(): CoreActivityType = when (this.typeId) {
+    fun toCore(): CoreActivityType = when (this.id) {
         1L -> CoreActivityType.Running
         10L -> CoreActivityType.Cycling
         else -> CoreActivityType.Unknown
-    }
-
-    override fun toString(): String {
-        return "ActivityType(typeId: $typeId, typeKey: $typeKey)"
     }
 }

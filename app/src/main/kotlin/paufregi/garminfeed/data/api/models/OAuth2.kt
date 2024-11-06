@@ -27,10 +27,6 @@ data class OAuth2(
     fun isExpired(date: Date = Date()): Boolean {
         return accessToken.isBlank() || JWT.decode(accessToken).expiresAt.before(date)
     }
-
-    override fun toString(): String {
-        return "Oauth2(scope: $scope, jti: $jti, accessToken: $accessToken, tokenType: $tokenType, refreshToken: $refreshToken, expiresIn: $expiresIn, refreshTokenExpiresIn: $refreshTokenExpiresIn)"
-    }
 }
 
 

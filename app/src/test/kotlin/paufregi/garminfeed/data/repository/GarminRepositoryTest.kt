@@ -31,7 +31,7 @@ import paufregi.garminfeed.data.api.models.ActivityType
 import paufregi.garminfeed.data.api.models.EventType
 import paufregi.garminfeed.data.api.models.Metadata
 import paufregi.garminfeed.data.api.models.Summary
-import paufregi.garminfeed.data.api.models.UpdateActivityRequest
+import paufregi.garminfeed.data.api.models.UpdateActivity
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.entities.CredentialEntity
 import paufregi.garminfeed.data.datastore.TokenManager
@@ -118,8 +118,8 @@ class GarminRepositoryTest {
     @Test
     fun `Get latest activities`() = runTest {
         val activities = listOf(
-            Activity(activityId = 1, activityName = "activity_1", activityType = ActivityType(typeId = 1, typeKey = "running")),
-            Activity(activityId = 2, activityName = "activity_2", activityType = ActivityType(typeId = 10, typeKey = "road_biking"))
+            Activity(id = 1, name = "activity_1", type = ActivityType(id = 1, key = "running")),
+            Activity(id = 2, name = "activity_2", type = ActivityType(id = 10, key = "road_biking"))
         )
         coEvery { garminConnect.getLatestActivity(any()) } returns Response.success(activities)
 
@@ -177,12 +177,12 @@ class GarminRepositoryTest {
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
         val profile = Profile(activityName = "newName", eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = Course(1, "course"), water = 2)
 
-        val expectedRequest = UpdateActivityRequest(
-            activityId = 1,
-            activityName = "newName",
-            eventTypeDTO = EventType(5, "transportation"),
-            metadataDTO = Metadata(1),
-            summaryDTO = Summary(2)
+        val expectedRequest = UpdateActivity(
+            id = 1,
+            name = "newName",
+            eventType = EventType(5, "transportation"),
+            metadata = Metadata(1),
+            summary = Summary(2, null, null)
         )
 
         val res = repo.updateActivity(activity, profile)
@@ -198,12 +198,12 @@ class GarminRepositoryTest {
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
         val profile = Profile(activityName = "newName", eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = Course(1, "course"), water = 2)
 
-        val expectedRequest = UpdateActivityRequest(
-            activityId = 1,
-            activityName = "newName",
-            eventTypeDTO = EventType(5, "transportation"),
-            metadataDTO = Metadata(1),
-            summaryDTO = Summary(2)
+        val expectedRequest = UpdateActivity(
+            id = 1,
+            name = "newName",
+            eventType = EventType(5, "transportation"),
+            metadata = Metadata(1),
+            summary = Summary(2, null, null)
         )
 
         val res = repo.updateActivity(activity, profile)

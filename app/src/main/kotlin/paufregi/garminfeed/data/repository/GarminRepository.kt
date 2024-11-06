@@ -1,6 +1,5 @@
 package paufregi.garminfeed.data.repository
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -13,7 +12,7 @@ import paufregi.garminfeed.data.api.GarminConnect
 import paufregi.garminfeed.data.api.models.EventType
 import paufregi.garminfeed.data.api.models.Metadata
 import paufregi.garminfeed.data.api.models.Summary
-import paufregi.garminfeed.data.api.models.UpdateActivityRequest
+import paufregi.garminfeed.data.api.models.UpdateActivity
 import paufregi.garminfeed.data.api.utils.callApi
 import paufregi.garminfeed.data.database.GarminDao
 import paufregi.garminfeed.data.database.entities.CredentialEntity
@@ -45,12 +44,12 @@ class GarminRepository @Inject constructor(
     }
 
     suspend fun updateActivity(activity: Activity, profile: Profile): Result<Unit> {
-        val request = UpdateActivityRequest(
-            activityId = activity.id,
-            activityName = profile.activityName,
-            eventTypeDTO = EventType(profile.eventType.id, profile.eventType.name.lowercase()),
-            metadataDTO = Metadata(profile.course.id),
-            summaryDTO = Summary(profile.water)
+        val request = UpdateActivity(
+            id = activity.id,
+            name = profile.activityName,
+            eventType = EventType(profile.eventType.id, profile.eventType.name.lowercase()),
+            metadata = Metadata(profile.course.id),
+            summary = Summary(profile.water, null, null)
         )
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },

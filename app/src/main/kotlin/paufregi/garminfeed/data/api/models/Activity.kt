@@ -9,20 +9,16 @@ import paufregi.garminfeed.core.models.Activity as CoreActivity
 @Serializable
 data class Activity(
     @SerializedName("activityId")
-    val activityId: Long,
+    val id: Long,
     @SerializedName("activityName")
-    val activityName: String,
+    val name: String,
     @SerializedName("activityType")
-    val activityType: ActivityType
+    val type: ActivityType
 ) {
     fun toCore(): CoreActivity =
         CoreActivity(
-            id = this.activityId,
-            name = this.activityName,
-            type = this.activityType.toCore()
+            id = this.id,
+            name = this.name,
+            type = this.type.toCore()
         )
-
-    override fun toString(): String {
-        return "Activity(activityId: $activityId, activityName: $activityName, activityType: $activityType)"
-    }
 }

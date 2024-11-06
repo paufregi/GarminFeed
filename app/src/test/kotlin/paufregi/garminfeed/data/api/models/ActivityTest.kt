@@ -10,9 +10,9 @@ class ActivityTest {
     @Test
     fun `To Core activity`() {
         val activity = Activity(
-            activityId = 1,
-            activityName = "name",
-            activityType = ActivityType(typeId = 1, typeKey = "running")
+            id = 1,
+            name = "name",
+            type = ActivityType(id = 1, key = "running")
         )
 
         val coreActivity = CoreActivity(
@@ -22,16 +22,5 @@ class ActivityTest {
         )
 
         assertThat(activity.toCore()).isEqualTo(coreActivity)
-    }
-
-    @Test
-    fun `To string`() {
-        val activity = Activity(
-            activityId = 1,
-            activityName = "name",
-            activityType = ActivityType(typeId = 1, typeKey = "running")
-        )
-
-        assertThat(activity.toString()).isEqualTo("Activity(activityId: 1, activityName: name, activityType: ActivityType(typeId: 1, typeKey: running))")
     }
 }

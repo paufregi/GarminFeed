@@ -4,7 +4,7 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import paufregi.garminfeed.data.api.converters.GarminConverterFactory
 import paufregi.garminfeed.data.api.models.Activity
-import paufregi.garminfeed.data.api.models.UpdateActivityRequest
+import paufregi.garminfeed.data.api.models.UpdateActivity
 import paufregi.garminfeed.data.api.utils.AuthInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -34,7 +34,7 @@ interface GarminConnect {
     @PUT("/activity-service/activity/{id}")
     suspend fun updateActivity(
         @Path("id") id: Long,
-        @Body updateActivityRequest: UpdateActivityRequest,
+        @Body updateActivity: UpdateActivity,
     ): Response<Unit>
 
     companion object {
