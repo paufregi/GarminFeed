@@ -120,7 +120,7 @@ class QuickEditViewModelTest {
             awaitItem() // Initial state
             viewModel.onEvent(QuickEditEvent.SelectEffort(50f))
             val state = awaitItem()
-            assertThat(state.selectedProfile).isEqualTo(50f)
+            assertThat(state.selectedEffort).isEqualTo(50f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -136,7 +136,7 @@ class QuickEditViewModelTest {
             awaitItem() // Initial state
             viewModel.onEvent(QuickEditEvent.SelectFeel(50f))
             val state = awaitItem()
-            assertThat(state.selectedProfile).isEqualTo(50f)
+            assertThat(state.selectedFeel).isEqualTo(50f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -168,8 +168,8 @@ class QuickEditViewModelTest {
         viewModel.state.test {
             viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
             viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
-            viewModel.onEvent(QuickEditEvent.SelectEffort(50f))
-            viewModel.onEvent(QuickEditEvent.SelectFeel(80f))
+            viewModel.onEvent(QuickEditEvent.SelectFeel(50F))
+            viewModel.onEvent(QuickEditEvent.SelectEffort(80f))
             viewModel.onEvent(QuickEditEvent.Save({}))
             cancelAndIgnoreRemainingEvents()
         }
