@@ -70,8 +70,8 @@ class QuickEditViewModel @Inject constructor(
         val res = updateActivityUseCase(
             activity = state.value.selectedActivity,
             profile = state.value.selectedProfile,
-            effort = state.value.selectedEffort,
             feel = state.value.selectedFeel,
+            effort = state.value.selectedEffort
         )
         when (res) {
             is Result.Success -> SnackbarController.sendEvent("Activity updated")
