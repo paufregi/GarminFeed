@@ -17,7 +17,9 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
         ),
         QuickEditState(
             selectedActivity = Activity(1, "activity", ActivityType.Cycling),
-            selectedProfile = Profile("name", EventType.transportation, ActivityType.Cycling, Course.home, 1)
+            selectedProfile = Profile("name", EventType.transportation, ActivityType.Cycling, Course.home, 1),
+            selectedFeel = 50f,
+            selectedEffort = 50f,
         )
     )
 }

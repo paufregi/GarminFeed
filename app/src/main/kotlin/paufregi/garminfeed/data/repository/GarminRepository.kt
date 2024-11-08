@@ -43,13 +43,18 @@ class GarminRepository @Inject constructor(
         )
     }
 
-    suspend fun updateActivity(activity: Activity, profile: Profile): Result<Unit> {
+    suspend fun updateActivity(
+        activity: Activity,
+        profile: Profile,
+        effort: Float?,
+        feel: Float?,
+    ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
             name = profile.activityName,
             eventType = EventType(profile.eventType.id, profile.eventType.name.lowercase()),
             metadata = Metadata(profile.course.id),
-            summary = Summary(profile.water, null, null)
+            summary = Summary(profile.water, effort, feel)
         )
         return callApi(
             { garminConnect.updateActivity(activity.id, request) },

@@ -29,7 +29,7 @@ class QuickEditScreenTest {
 
     val activities = listOf(
         Activity(1L, "Running", ActivityType.Running),
-        Activity(2L, "Running", ActivityType.Running)
+        Activity(2L, "Cycling", ActivityType.Cycling)
     )
 
     val profiles = listOf(
@@ -66,18 +66,36 @@ class QuickEditScreenTest {
     }
 
     @Test
-    fun `Values selected`() {
+    fun `Values selected - running`() {
         composeTestRule.setContent {
             QuickEditScreen(state = QuickEditState(
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles,
                 selectedActivity = activities[0],
-                selectedProfile = profiles[0]
+                selectedProfile = profiles[0],
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].activityName)
-        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+    }
+
+    @Test
+    fun `Values selected - cycling`() {
+        composeTestRule.setContent {
+            QuickEditScreen(state = QuickEditState(
+                activities = activities,
+                allProfiles = profiles,
+                availableProfiles = profiles,
+                selectedActivity = activities[1],
+                selectedProfile = profiles[1],
+                selectedEffort = 50f,
+                selectedFeel = 50f,
+            ))
+        }
+        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[1].name)
+        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[1].activityName)
+        composeTestRule.onNodeWithText("5 - Hard").isDisplayed()
+        composeTestRule.onNodeWithText("Normal").isDisplayed()
     }
 }

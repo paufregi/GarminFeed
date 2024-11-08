@@ -122,7 +122,7 @@ class GarminRepositoryTest {
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
         val profile = Profile(activityName = "newName", eventType = EventType.transportation, activityType = CoreActivityType.Cycling, course = Course.work, water = 1)
 
-        val res = repo.updateActivity(activity, profile)
+        val res = repo.updateActivity(activity, profile, 50f, 90f)
 
         assertThat(res.isSuccessful).isTrue()
     }

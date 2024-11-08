@@ -110,6 +110,38 @@ class QuickEditViewModelTest {
     }
 
     @Test
+    fun `Select effort`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
+        every { getProfiles.invoke() } returns profiles
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.onEvent(QuickEditEvent.SelectEffort(50f))
+            val state = awaitItem()
+            assertThat(state.selectedProfile).isEqualTo(50f)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Select feel`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
+        every { getProfiles.invoke() } returns profiles
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.onEvent(QuickEditEvent.SelectFeel(50f))
+            val state = awaitItem()
+            assertThat(state.selectedProfile).isEqualTo(50f)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Select profile`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns profiles
@@ -129,18 +161,20 @@ class QuickEditViewModelTest {
     fun `Save activity`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
         every { getProfiles.invoke() } returns profiles
-        coEvery { updateActivity.invoke(any(), any()) } returns Result.Success(Unit)
+        coEvery { updateActivity.invoke(any(), any(), any(), any()) } returns Result.Success(Unit)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
             viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
+            viewModel.onEvent(QuickEditEvent.SelectEffort(50f))
+            viewModel.onEvent(QuickEditEvent.SelectFeel(80f))
             viewModel.onEvent(QuickEditEvent.Save({}))
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { updateActivity.invoke(activities[0], profiles[0]) }
+        coVerify { updateActivity.invoke(activities[0], profiles[0], 50f, 80f) }
         confirmVerified( updateActivity )
     }
 }

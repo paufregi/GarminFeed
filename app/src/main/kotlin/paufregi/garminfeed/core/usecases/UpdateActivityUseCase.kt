@@ -10,10 +10,12 @@ import javax.inject.Inject
 class UpdateActivityUseCase @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun invoke(
         activity: Activity?,
-        profile: Profile?
+        profile: Profile?,
+        feel: Float?,
+        effort: Float?
     ):Result<Unit>{
         if (activity != null && profile != null) {
-            return garminRepository.updateActivity(activity, profile)
+            return garminRepository.updateActivity(activity, profile, feel, effort)
         }
         return Result.Failure("Validation error")
     }

@@ -44,31 +44,31 @@ class UpdateActivityUseCaseTest{
 
     @Test
     fun `Update activity use-case`() = runTest {
-        coEvery { repo.updateActivity(any(), any()) } returns Result.Success(Unit)
-        val res = useCase(activity, profile)
+        coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
+        val res = useCase(activity, profile, 50f, 90f)
 
         assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
-        coVerify { repo.updateActivity(activity, profile) }
+        coVerify { repo.updateActivity(activity, profile, 50f, 90f) }
         confirmVerified(repo)
     }
 
     @Test
     fun `Invalid - no activity`() = runTest {
-        val res = useCase(null, profile)
+        val res = useCase(null, profile, null, null)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
     }
 
     @Test
     fun `Invalid - no profile`() = runTest {
-        val res = useCase(activity, null)
+        val res = useCase(activity, null, null, null)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
     }
 
     @Test
     fun `Invalid - both null`() = runTest {
-        val res = useCase(null, null)
+        val res = useCase(null, null, null, null)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
     }

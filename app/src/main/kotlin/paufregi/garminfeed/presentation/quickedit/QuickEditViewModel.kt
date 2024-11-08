@@ -38,6 +38,7 @@ class QuickEditViewModel @Inject constructor(
         }
         is QuickEditEvent.SelectProfile -> _state.update { it.copy( selectedProfile = event.profile ) }
         is QuickEditEvent.SelectEffort -> _state.update { it.copy( selectedEffort = event.effort ) }
+        is QuickEditEvent.SelectFeel -> _state.update { it.copy( selectedFeel = event.feel ) }
         is QuickEditEvent.Save -> saveActivity(event.callback)
     }
 
@@ -66,7 +67,12 @@ class QuickEditViewModel @Inject constructor(
 
     private fun saveActivity(callback: () -> Unit) = viewModelScope.launch {
         _state.update { it.copy(loading = true) }
-        val res = updateActivityUseCase(state.value.selectedActivity, state.value.selectedProfile)
+        val res = updateActivityUseCase(
+            activity = state.value.selectedActivity,
+            profile = state.value.selectedProfile,
+            effort = state.value.selectedEffort,
+            feel = state.value.selectedFeel,
+        )
         when (res) {
             is Result.Success -> SnackbarController.sendEvent("Activity updated")
             is Result.Failure -> SnackbarController.sendEvent("Unable to update activity")

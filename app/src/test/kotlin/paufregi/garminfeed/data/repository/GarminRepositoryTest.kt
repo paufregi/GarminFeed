@@ -182,10 +182,10 @@ class GarminRepositoryTest {
             name = "newName",
             eventType = EventType(5, "transportation"),
             metadata = Metadata(1),
-            summary = Summary(2, null, null)
+            summary = Summary(2, 50f, 80f)
         )
 
-        val res = repo.updateActivity(activity, profile)
+        val res = repo.updateActivity(activity, profile, 50f, 80f)
 
         assertThat(res.isSuccessful).isTrue()
         coVerify { garminConnect.updateActivity(1, expectedRequest) }
@@ -206,7 +206,7 @@ class GarminRepositoryTest {
             summary = Summary(2, null, null)
         )
 
-        val res = repo.updateActivity(activity, profile)
+        val res = repo.updateActivity(activity, profile, null, null)
 
         assertThat(res.isSuccessful).isFalse()
         coVerify { garminConnect.updateActivity(1, expectedRequest) }
