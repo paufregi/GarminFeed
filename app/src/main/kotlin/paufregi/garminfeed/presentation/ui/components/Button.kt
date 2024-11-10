@@ -47,6 +47,5 @@ private class ButtonTextPreview : PreviewParameterProvider<String> {
 private class ButtonIconPreview : PreviewParameterProvider<ImageVector> {
     override val values = sequenceOf(
         Icons.Default.Visibility, Icons.Default.VisibilityOff
-
     )
 }

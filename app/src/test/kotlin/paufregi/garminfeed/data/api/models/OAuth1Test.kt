@@ -25,11 +25,4 @@ class OAuth1Test {
 
         assertThat(oauth1.isValid()).isFalse()
     }
-
-    @Test
-    fun `To string`() {
-        val oauth1 = OAuth1(token = "TOKEN", secret = "SECRET")
-
-        assertThat(oauth1.toString()).isEqualTo("Oauth1(token: TOKEN, secret: SECRET)")
-    }
 }

@@ -34,7 +34,7 @@ class TokenManagerTest {
     }
 
     @Test
-    fun `Save retrieve and delete OAuth1`() = runTest{
+    fun `Save retrieve and delete OAuth1`() = runTest {
         assertThat(dataStore.getOauth1().first()).isNull()
 
         val token = OAuth1(token = "TOKEN", secret = "SECRET")
@@ -49,7 +49,7 @@ class TokenManagerTest {
     }
 
     @Test
-    fun `Save retrieve and delete OAuth2`() = runTest{
+    fun `Save retrieve and delete OAuth2`() = runTest {
         assertThat(dataStore.getOauth2().first()).isNull()
 
         val token = OAuth2(
@@ -72,7 +72,7 @@ class TokenManagerTest {
     }
 
     @Test
-    fun `Save retrieve and delete OAuthConsumer`() = runTest{
+    fun `Save retrieve and delete OAuthConsumer`() = runTest {
         assertThat(dataStore.getOAuthConsumer().first()).isNull()
 
         val consumer = OAuthConsumer(key = "KEY", secret = "SECRET")

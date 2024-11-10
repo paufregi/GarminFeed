@@ -56,20 +56,4 @@ class OAuth2Test {
 
         assertThat(oauth2.isExpired(date)).isTrue()
     }
-
-    @Test
-    fun `To string` () {
-        val oauth2 = OAuth2(
-            scope =  "SCOPE",
-            jti = "JTI",
-            accessToken = "ACCESS",
-            tokenType = "TYPE",
-            refreshToken = "REFRESH",
-            expiresIn = 1,
-            refreshTokenExpiresIn = 1
-        )
-
-        assertThat(oauth2.toString()).isEqualTo("Oauth2(scope: SCOPE, jti: JTI, accessToken: ACCESS, tokenType: TYPE, refreshToken: REFRESH, expiresIn: 1, refreshTokenExpiresIn: 1)")
-    }
-
 }

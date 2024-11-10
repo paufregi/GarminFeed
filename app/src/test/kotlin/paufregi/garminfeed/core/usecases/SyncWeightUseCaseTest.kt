@@ -53,7 +53,7 @@ class SyncWeightUseCaseTest {
     }
 
     @Test
-    fun `Upload file use-case`() = runTest{
+    fun `Upload file use-case`() = runTest {
         val csvText = """
             Time of Measurement,Weight(kg),BMI,Body Fat(%),Fat-Free Mass(kg),Subcutaneous Fat(%),Visceral Fat,Body Water(%),Skeletal Muscle(%),Muscle Mass(kg),Bone Mass(kg),Protein(%),BMR(kcal),Metabolic Age,Optimal weight(kg),Target to optimal weight(kg),Target to optimal fat mass(kg),Target to optimal muscle mass(kg),Body Type,Remarks
             2024-01-01 10:20:30,76.15,23.8,23.2,58.48,20.9,7.0,55.4,49.5,55.59,2.89,17.5,1618,35,,,,,,
@@ -93,7 +93,7 @@ class SyncWeightUseCaseTest {
     }
 
     @Test
-    fun `Upload empty file use-case`() = runTest{
+    fun `Upload empty file use-case`() = runTest {
         val csvText = ""
 
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")
@@ -117,7 +117,7 @@ class SyncWeightUseCaseTest {
     }
 
     @Test
-    fun `Failed upload use-case`() = runTest{
+    fun `Failed upload use-case`() = runTest {
         val csvText = ""
 
         val stubInputStream = IOUtils.toInputStream(csvText, "UTF-8")

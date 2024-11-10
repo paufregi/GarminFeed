@@ -12,10 +12,6 @@ data class OAuth1(
     fun isValid(): Boolean {
         return token.isNotBlank() && secret.isNotBlank()
     }
-
-    override fun toString(): String {
-        return "Oauth1(token: $token, secret: $secret)"
-    }
 }
 
 

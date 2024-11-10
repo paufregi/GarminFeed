@@ -23,8 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
-import paufregi.garminfeed.presentation.syncweight.SyncWeightStatePreview
 
 sealed class StatusInfoType(
     val icon: ImageVector,
@@ -32,7 +32,7 @@ sealed class StatusInfoType(
 ){
     object Success: StatusInfoType(Icons.Default.CheckCircleOutline, Color.Green)
     object Failure: StatusInfoType(Icons.Default.WarningAmber, Color.Red)
-    object Waiting: StatusInfoType(Icons.Default.Timelapse, Color.Green)
+    object Waiting: StatusInfoType(Icons.Default.Timelapse, Color.Cyan)
     object Unknown: StatusInfoType(Icons.Default.WarningAmber, Color.DarkGray)
 }
 
@@ -40,7 +40,7 @@ sealed class StatusInfoType(
 @Composable
 @ExperimentalMaterial3Api
 fun StatusInfo(
-    @PreviewParameter(SyncWeightStatePreview ::class) type: StatusInfoType,
+    @PreviewParameter(StatusInfoTypePreview ::class) type: StatusInfoType,
     text: String = "",
     onClick: () -> Unit = {},
     contentPadding: PaddingValues = PaddingValues()
@@ -63,4 +63,13 @@ fun StatusInfo(
         Spacer(modifier = Modifier.height(50.dp))
         Button(text = "Done", onClick = onClick)
     }
+}
+
+private class StatusInfoTypePreview : PreviewParameterProvider<StatusInfoType> {
+    override val values = sequenceOf(
+        StatusInfoType.Success,
+        StatusInfoType.Failure,
+        StatusInfoType.Waiting,
+        StatusInfoType.Unknown,
+    )
 }
