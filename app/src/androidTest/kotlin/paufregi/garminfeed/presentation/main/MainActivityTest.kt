@@ -111,6 +111,7 @@ class MainActivityTest {
     fun `Clear cache`() = runTest {
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithText("Clear cache").performClick()
+        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Cache cleared").isDisplayed() }
         composeTestRule.onNodeWithText("Cache cleared").assertIsDisplayed()
     }
 
