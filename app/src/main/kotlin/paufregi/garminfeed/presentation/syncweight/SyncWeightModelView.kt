@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SyncWeightModelView @Inject constructor(
-    private val syncWeightUseCase: SyncWeightUseCase
+    val syncWeightUseCase: SyncWeightUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState.Idle)
