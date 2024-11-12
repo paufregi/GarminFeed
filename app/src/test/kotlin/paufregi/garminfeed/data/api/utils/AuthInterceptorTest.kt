@@ -8,7 +8,6 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import okhttp3.OkHttpClient
@@ -69,7 +68,7 @@ class AuthInterceptorTest {
             {_ -> connectOAuth1},
             {_, _ -> connectOAuth2},
         )
-        server.enqueue(MockResponse().setResponseCode(HttpURLConnection.HTTP_OK))
+        server.enqueue(MockResponse().setResponseCode(200))
         api = Retrofit.Builder()
             .baseUrl(server.url("/"))
             .addConverterFactory(GsonConverterFactory.create())

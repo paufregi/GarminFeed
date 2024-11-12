@@ -27,7 +27,7 @@ class ClearCacheUseCaseTest {
     }
 
     @Test
-    fun `Clear cache use-case`() = runTest{
+    fun `Clear cache use-case`() = runTest {
         coEvery { repo.clearCache() } returns Unit
         useCase()
         coVerify { repo.clearCache() }

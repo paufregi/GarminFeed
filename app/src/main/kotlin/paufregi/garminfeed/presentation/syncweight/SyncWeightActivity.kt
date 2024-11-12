@@ -9,8 +9,10 @@ import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dagger.hilt.android.AndroidEntryPoint
 import paufregi.garminfeed.presentation.ui.theme.Theme
 
+@AndroidEntryPoint
 @ExperimentalMaterial3Api
 class SyncWeightActivity : ComponentActivity() {
 

@@ -11,8 +11,4 @@ data class OAuthConsumer(
     val key: String,
     @SerializedName("consumer_secret")
     val secret: String
-) {
-    override fun toString(): String {
-        return "OAuthConsumer(key: $key, secret: $secret)"
-    }
-}
+)

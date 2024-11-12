@@ -1,10 +1,7 @@
 package paufregi.garminfeed.data.api.utils
 
 import android.util.Log
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.last
-import kotlinx.coroutines.flow.lastOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Protocol
@@ -36,7 +33,7 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val cachedOauth2 = runBlocking { tokenManager.getOauth2().first() }
+        val cachedOauth2 = runBlocking { tokenManager.getOauth2().firstOrNull() }
         return if (cachedOauth2 != null && !cachedOauth2.isExpired()) {
             chain.proceed(newRequestWithAccessToken(cachedOauth2.accessToken, request))
         } else {
@@ -97,16 +94,16 @@ class AuthInterceptor @Inject constructor(
 
     private suspend fun signIn(): Result<Ticket> {
         val cred = garminDao.getCredential().firstOrNull()?.credential ?: return Result.Failure("No credentials")
-        return when(val csfr = getCSRF()) {
-            is Result.Success -> login(username = cred.username , password = cred.password, csrf = csfr.data)
-            is Result.Failure -> Result.Failure(csfr.error)
+        return when(val csrf = getCSRF()) {
+            is Result.Success -> login(username = cred.username , password = cred.password, csrf = csrf.data)
+            is Result.Failure -> Result.Failure(csrf.error)
         }
     }
 
     private suspend fun authenticate(): Result<OAuth2> {
 
         val consumer =
-            tokenManager.getOAuthConsumer().first() ?: when (val res = getOAuthConsumer()) {
+            tokenManager.getOAuthConsumer().firstOrNull() ?: when (val res = getOAuthConsumer()) {
                 is Result.Success -> {
                     tokenManager.saveOAuthConsumer(res.data)
                     res.data
@@ -114,7 +111,7 @@ class AuthInterceptor @Inject constructor(
                 is Result.Failure -> return Result.Failure(res.error)
             }
 
-        val cachedOAuth1 = tokenManager.getOauth1().first()
+        val cachedOAuth1 = tokenManager.getOauth1().firstOrNull()
         val oauth: OAuth1
         if (cachedOAuth1 != null && cachedOAuth1.isValid()) {
             oauth = cachedOAuth1
