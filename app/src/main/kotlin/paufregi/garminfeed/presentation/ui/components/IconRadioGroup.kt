@@ -59,7 +59,7 @@ fun <T>IconRadioGroup(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .animateContentSize(alignment = Alignment.Center)
-                        .size(if (selected) 48.dp else 40.dp)
+                        .size(if (selected) 46.dp else 38.dp)
                         .alpha(if (selected) 1f else 0.5f)
                 )
             }
