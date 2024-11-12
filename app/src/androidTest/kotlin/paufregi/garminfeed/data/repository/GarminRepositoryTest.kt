@@ -120,7 +120,7 @@ class GarminRepositoryTest {
         dao.saveCredential(CredentialEntity(credential = cred))
 
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(activityName = "newName", eventType = EventType.transportation, activityType = CoreActivityType.Cycling, course = Course.work, water = 1)
+        val profile = Profile(activityName = "newName", eventType = EventType.transportation, activityType = CoreActivityType.Cycling, course = Course.commuteWork, water = 1)
 
         val res = repo.updateActivity(activity, profile, 50f, 90f)
 

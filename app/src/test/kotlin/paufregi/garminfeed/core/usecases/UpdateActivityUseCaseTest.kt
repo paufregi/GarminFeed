@@ -13,7 +13,6 @@ import org.junit.Test
 import paufregi.garminfeed.core.models.Activity
 import paufregi.garminfeed.core.models.ActivityType
 import paufregi.garminfeed.core.models.Course
-import paufregi.garminfeed.core.models.Credential
 import paufregi.garminfeed.core.models.EventType
 import paufregi.garminfeed.core.models.Profile
 import paufregi.garminfeed.core.models.Result
@@ -28,7 +27,7 @@ class UpdateActivityUseCaseTest{
         activityName = "newName",
         eventType = EventType.transportation,
         activityType = ActivityType.Running,
-        course = Course.home,
+        course = Course.commuteHome,
         water = 500
     )
 

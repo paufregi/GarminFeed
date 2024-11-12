@@ -12,7 +12,6 @@ import paufregi.garminfeed.core.models.Course
 import paufregi.garminfeed.core.models.EventType
 import paufregi.garminfeed.core.models.Profile
 import paufregi.garminfeed.data.repository.GarminRepository
-import kotlin.math.exp
 
 class GetProfilesUseCaseTest{
     private val repo = mockk<GarminRepository>()
@@ -32,16 +31,16 @@ class GetProfilesUseCaseTest{
     fun `Get profiles use-case`() = runTest {
         val expected = listOf(
             Profile(
-                Course.home.name,
+                Course.commuteHome.name,
                 EventType.transportation,
                 ActivityType.Cycling,
-                Course.home,
+                Course.commuteHome,
                 500),
             Profile(
-                Course.work.name,
+                Course.commuteWork.name,
                 EventType.transportation,
                 ActivityType.Cycling,
-                Course.work,
+                Course.commuteWork,
                 500),
         )
 

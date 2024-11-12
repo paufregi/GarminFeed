@@ -1,7 +1,6 @@
 package paufregi.garminfeed.presentation.quickedit
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
@@ -33,9 +32,9 @@ class QuickEditScreenTest {
     )
 
     val profiles = listOf(
-        Profile("profile1", EventType.transportation, ActivityType.Running, Course.home, 1),
-        Profile("profile2", EventType.transportation, ActivityType.Cycling, Course.work, 1),
-        Profile("profile3", EventType.transportation, ActivityType.Running, Course.home, 1)
+        Profile("profile1", EventType.transportation, ActivityType.Running, Course.commuteHome, 1),
+        Profile("profile2", EventType.transportation, ActivityType.Cycling, Course.commuteWork, 1),
+        Profile("profile3", EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
     )
 
     @Test

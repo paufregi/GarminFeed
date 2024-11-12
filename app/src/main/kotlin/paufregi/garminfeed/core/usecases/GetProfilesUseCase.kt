@@ -11,17 +11,22 @@ class GetProfilesUseCase @Inject constructor (private val garminRepository: Garm
     operator fun invoke(): List<Profile> {
         return listOf(
             Profile(
-                activityName = Course.home.name,
+                activityName = Course.commuteHome.name,
                 eventType = EventType.transportation,
                 activityType = ActivityType.Cycling,
-                course = Course.home,
+                course = Course.commuteHome,
                 water = 500),
             Profile(
-                activityName = Course.work.name,
+                activityName = Course.commuteWork.name,
                 eventType = EventType.transportation,
                 activityType = ActivityType.Cycling,
-                course = Course.work,
+                course = Course.commuteWork,
                 water = 500),
+            Profile(
+                activityName = "Ponsonby/Westhaven",
+                eventType = EventType.training,
+                activityType = ActivityType.Running,
+                course = Course.ponsonbyWesthaven),
         )
     }
 }
