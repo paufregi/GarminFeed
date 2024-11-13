@@ -18,8 +18,8 @@ android {
         applicationId = "paufregi.garminfeed"
         minSdk = 33
         targetSdk = 34
-        versionCode = 2
-        versionName = "1.2"
+        versionCode = 3
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "paufregi.garminfeed.TestRunner"
         vectorDrawables {
