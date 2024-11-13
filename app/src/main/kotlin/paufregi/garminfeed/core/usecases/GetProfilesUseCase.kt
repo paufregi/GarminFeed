@@ -27,6 +27,11 @@ class GetProfilesUseCase @Inject constructor (private val garminRepository: Garm
                 eventType = EventType.training,
                 activityType = ActivityType.Running,
                 course = Course.ponsonbyWesthaven),
+            Profile(
+                activityName = "Auckland CBD",
+                eventType = EventType.training,
+                activityType = ActivityType.Running,
+                course = Course.aucklandCBD),
         )
     }
 }
