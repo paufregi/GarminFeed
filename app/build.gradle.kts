@@ -21,8 +21,7 @@ android {
         versionCode = 2
         versionName = "1.2"
 
-        testInstrumentationRunner =
-            "paufregi.garminfeed.TestRunner" //"com.noteapp.app.HiltTestRunner"
+        testInstrumentationRunner = "paufregi.garminfeed.TestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }

@@ -6,5 +6,6 @@ data class EventType(
 ) {
     companion object {
         val transportation = EventType(5, "Transportation")
+        val training = EventType(4, "Training")
     }
 }

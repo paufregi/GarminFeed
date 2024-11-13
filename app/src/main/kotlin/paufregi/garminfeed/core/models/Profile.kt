@@ -5,5 +5,5 @@ data class Profile(
     val eventType: EventType,
     val activityType: ActivityType,
     val course: Course,
-    val water: Int?
+    val water: Int? = null
 )

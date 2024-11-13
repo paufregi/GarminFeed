@@ -43,9 +43,9 @@ class QuickEditViewModelTest {
     )
 
     val profiles = listOf(
-        Profile("profile1", EventType.transportation, ActivityType.Running, Course.home, 1),
-        Profile("profile2", EventType.transportation, ActivityType.Cycling, Course.work, 1),
-        Profile("profile3", EventType.transportation, ActivityType.Running, Course.home, 1)
+        Profile("profile1", EventType.transportation, ActivityType.Running, Course.commuteHome, 1),
+        Profile("profile2", EventType.transportation, ActivityType.Cycling, Course.commuteWork, 1),
+        Profile("profile3", EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
     )
 
     @Before
