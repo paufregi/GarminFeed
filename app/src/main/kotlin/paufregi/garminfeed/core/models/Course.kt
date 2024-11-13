@@ -7,6 +7,6 @@ data class Course(
     companion object {
         val commuteWork = Course(303050449, "Commute to work")
         val commuteHome = Course(303050823, "Commute to home")
-        val ponsonbyWesthaven  = Course(314630804, "Ponsonby/Westhaven ")
+        val ponsonbyWesthaven  = Course(314630804, "Movio - Ponsonby/Westhaven")
     }
 }
