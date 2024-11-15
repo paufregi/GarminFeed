@@ -1,4 +1,4 @@
-# GarminFeed
+# Garmin Connect Feed
 
 [![Build](https://github.com/paufregi/GarminFeed/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/paufregi/GarminFeed/actions/workflows/build.yaml)
 [![CodeQL](https://github.com/paufregi/GarminFeed/actions/workflows/codeql.yaml/badge.svg?branch=main)](https://github.com/paufregi/GarminFeed/actions/workflows/codeql.yaml)
@@ -10,6 +10,7 @@
 <br><br>
 
 ## Build
+
 ```
 ./gradlew build
 ```
@@ -17,11 +18,13 @@
 ## Test
 
 #### Unit tests
+
 ```
 ./gradlew test
 ```
 
 #### Android tests
+
 ```
 ./gradlew pixel9ProDebugAndroidTest
 ```
