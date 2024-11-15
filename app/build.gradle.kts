@@ -11,17 +11,17 @@ plugins {
 }
 
 android {
-    namespace = "paufregi.garminfeed"
+    namespace = "paufregi.connectfeed"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "paufregi.garminfeed"
+        applicationId = "paufregi.connectfeed"
         minSdk = 33
         targetSdk = 34
         versionCode = 3
         versionName = "1.2.1"
 
-        testInstrumentationRunner = "paufregi.garminfeed.TestRunner"
+        testInstrumentationRunner = "paufregi.connectfeed.TestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
