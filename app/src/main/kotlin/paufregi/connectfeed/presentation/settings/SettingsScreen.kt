@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -26,14 +27,34 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.home.HomeViewModel
 import paufregi.connectfeed.presentation.ui.components.Button
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun SettingsScreen(
+    paddingValues: PaddingValues = PaddingValues(),
+    nav: NavController = rememberNavController()
+) {
+    val viewModel = hiltViewModel<SettingsViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    SettingsContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        paddingValues = paddingValues,
+        nav = nav
+    )
+}
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun SettingsScreen(
+internal fun SettingsContent(
     @PreviewParameter(SettingsStatePreview::class) state: SettingsState,
     onEvent: (SettingsEvent) -> Unit = {  },
     paddingValues: PaddingValues = PaddingValues(),

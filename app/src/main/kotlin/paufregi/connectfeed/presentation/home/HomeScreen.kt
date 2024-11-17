@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -24,16 +25,37 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.main.Routes
 import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.main.MainRoutes
+
+@Composable
+@ExperimentalMaterial3Api
+internal fun HomeScreen(
+    paddingValues: PaddingValues = PaddingValues(),
+    nav: NavController = rememberNavController()
+) {
+    val viewModel = hiltViewModel<HomeViewModel>()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    HomeScreenContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        paddingValues = paddingValues,
+        nav = nav
+    )
+
+}
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun HomeScreen(
+internal fun HomeScreenContent(
     @PreviewParameter(HomeStatePreview::class) state: HomeState,
     onEvent: (HomeEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
@@ -43,7 +65,7 @@ internal fun HomeScreen(
         modifier = Modifier.padding(paddingValues),
         floatingActionButton = { if (state.setupDone) {
             FloatingActionButton(
-                onClick = { nav.navigate(MainRoutes.QUICKEDIT) },
+                onClick = { nav.navigate(Routes.QuickEdit) },
                 modifier = Modifier.testTag("quickedit")
             ) {
                 Icon(Icons.AutoMirrored.Default.DirectionsRun, "Edit activities")
@@ -78,10 +100,9 @@ internal fun HomeScreen(
                 Text(text = "Setup credential")
             }
             Spacer(modifier = Modifier.height(75.dp))
-            Button(text = "Setup", onClick = { nav.navigate(MainRoutes.SETTINGS) })
+            Button(text = "Setup", onClick = { nav.navigate(Routes.Settings) })
             Spacer(modifier = Modifier.height(30.dp))
             Button(text = "Clear cache", onClick = { onEvent(HomeEvent.CleanCache) } )
         }
     }
 }
-
