@@ -42,7 +42,7 @@ sealed class StatusInfoType(
 fun StatusInfo(
     @PreviewParameter(StatusInfoTypePreview ::class) type: StatusInfoType,
     text: String = "",
-    onClick: () -> Unit = {},
+    actionButton: @Composable () -> Unit = { },
     contentPadding: PaddingValues = PaddingValues()
 ) {
     Column(
@@ -61,7 +61,7 @@ fun StatusInfo(
         Spacer(modifier = Modifier.height(20.dp))
         Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer)
         Spacer(modifier = Modifier.height(50.dp))
-        Button(text = "Done", onClick = onClick)
+        actionButton()
     }
 }
 
