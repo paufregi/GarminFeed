@@ -6,11 +6,12 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.utils.ProcessState
 
 class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
     override val values = sequenceOf(
-        QuickEditState(true),
-        QuickEditState(false),
+        QuickEditState(ProcessState.Processing),
+        QuickEditState(ProcessState.Idle),
         QuickEditState(
             selectedActivity = Activity(1, "activity", ActivityType.Running),
             selectedProfile = Profile("name", EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
