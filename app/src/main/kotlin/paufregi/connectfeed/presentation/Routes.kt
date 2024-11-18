@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.main
+package paufregi.connectfeed.presentation
 
 import kotlinx.serialization.Serializable
 
