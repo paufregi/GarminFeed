@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,16 +28,12 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.presentation.home.HomeViewModel
 import paufregi.connectfeed.presentation.ui.components.Button
 
 @Composable
 @ExperimentalMaterial3Api
 internal fun SettingsScreen(
     paddingValues: PaddingValues = PaddingValues(),
-    nav: NavController = rememberNavController()
 ) {
     val viewModel = hiltViewModel<SettingsViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -47,7 +42,6 @@ internal fun SettingsScreen(
         state = state,
         onEvent = viewModel::onEvent,
         paddingValues = paddingValues,
-        nav = nav
     )
 }
 
@@ -58,7 +52,6 @@ internal fun SettingsContent(
     @PreviewParameter(SettingsStatePreview::class) state: SettingsState,
     onEvent: (SettingsEvent) -> Unit = {  },
     paddingValues: PaddingValues = PaddingValues(),
-    nav: NavController = rememberNavController()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
@@ -92,13 +85,14 @@ internal fun SettingsContent(
                     )
                 }
             )
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Button(text = "Cancel", onClick = { nav.navigateUp() })
-                Spacer(modifier = Modifier.weight(1f))
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Button(
                     text = "Save",
                     enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                    onClick = { onEvent(SettingsEvent.SaveCredential({ nav.navigateUp() })) }
+                    onClick = { onEvent(SettingsEvent.SaveCredential) }
                 )
             }
         }
