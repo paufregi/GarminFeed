@@ -2,7 +2,6 @@ package paufregi.connectfeed.presentation.syncweight
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
-import io.mockk.awaits
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -25,14 +24,14 @@ class SyncWeightViewModelTest {
 
     private val syncWeight = mockk<SyncWeightUseCase>()
 
-    private lateinit var viewModel: SyncWeightModelView
+    private lateinit var viewModel: SyncWeightViewModel
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
     @Before
     fun setup(){
-        viewModel = SyncWeightModelView(syncWeight)
+        viewModel = SyncWeightViewModel(syncWeight)
     }
 
     @After

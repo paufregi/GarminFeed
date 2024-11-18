@@ -14,7 +14,7 @@ import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class SyncWeightModelView @Inject constructor(
+class SyncWeightViewModel @Inject constructor(
     val syncWeightUseCase: SyncWeightUseCase
 ) : ViewModel() {
 
