@@ -25,7 +25,6 @@ import androidx.navigation.compose.rememberNavController
 @ExperimentalMaterial3Api
 internal fun ProfilesScreen(
     paddingValues: PaddingValues = PaddingValues(),
-    nav: NavController = rememberNavController()
 ) {
     val viewModel = hiltViewModel<ProfilesViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -34,7 +33,6 @@ internal fun ProfilesScreen(
         state = state,
         onEvent = viewModel::onEvent,
         paddingValues = paddingValues,
-        nav = nav
     )
 }
 
@@ -45,7 +43,6 @@ internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
     onEvent: (ProfilesEvent) -> Unit = {  },
     paddingValues: PaddingValues = PaddingValues(),
-    nav: NavController = rememberNavController()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
