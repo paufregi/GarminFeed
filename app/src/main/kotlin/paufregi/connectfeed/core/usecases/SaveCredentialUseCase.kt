@@ -11,6 +11,7 @@ class SaveCredentialUseCase @Inject constructor (private val garminRepository: G
     ):Result<Unit> {
         if (credential.username.isNotBlank() && credential.password.isNotBlank()) {
             garminRepository.saveCredential(credential)
+            garminRepository.clearCache()
             return Result.Success(Unit)
         }
         return Result.Failure("Validation error")
