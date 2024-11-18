@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
     alias(libs.plugins.test.logger)
+    alias(libs.plugins.dependency.analysis)
 }
 
 android {
@@ -82,42 +83,35 @@ composeCompiler {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.androidx.runtime.livedata)
-    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.hilt.android)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.okhttp)
     implementation(libs.okhttp.signpost)
-    implementation(libs.signpost.core)
     implementation(libs.java.jwt)
     implementation(libs.fit)
     implementation(libs.commons.csv)
-    implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.hilt.navigation)
-    implementation(libs.androidx.hilt.navigation.compose)
 
     ksp(libs.androidx.room.compiler)
-    ksp(libs.hilt.compiler)
     ksp(libs.androidx.hilt.compiler)
-
+    ksp(libs.hilt.compiler)
 
     debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
+    debugRuntimeOnly(libs.androidx.ui.test.manifest)
 
+    testRuntimeOnly(libs.androidx.test.core)
     testRuntimeOnly(libs.junit.platform.launcher)
-    testImplementation(libs.androidx.test.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.junit)
     testImplementation(libs.truth)
@@ -125,12 +119,10 @@ dependencies {
     testImplementation(libs.okhttp.mockwebserver)
     testImplementation(libs.turbine)
 
+    androidTestImplementation(libs.android.core.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
-    androidTestImplementation(libs.androidx.test.rules)
-    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.android.core.testing)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.hilt.testing)
