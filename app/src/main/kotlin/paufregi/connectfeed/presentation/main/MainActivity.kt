@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,13 +45,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
             setContent {
+                val setupDone by viewModel.state.collectAsStateWithLifecycle()
+                installSplashScreen().setKeepOnScreenCondition({ setupDone == null })
+
                 val scope = rememberCoroutineScope()
                 val snackState = remember { SnackbarHostState() }
                 val nav = rememberNavController()
 
                 Theme {
-                    val setupDone by viewModel.state.collectAsStateWithLifecycle()
-
                     SnackbarObserver(snackState, scope)
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
@@ -68,8 +70,7 @@ class MainActivity : ComponentActivity() {
                         composable<Routes.Home> {
                             when (setupDone)   {
                                 true -> QuickEditScreen(pv)
-                                false -> SetupScreen(pv)
-                                else -> Loading(pv)
+                                else -> SetupScreen(pv)
                             }
                         }
                         composable<Routes.Profiles> { ProfilesScreen(pv) }

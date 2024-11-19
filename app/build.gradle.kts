@@ -102,6 +102,10 @@ dependencies {
     implementation(libs.fit)
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.core.splashscreen)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.hilt.compiler)
