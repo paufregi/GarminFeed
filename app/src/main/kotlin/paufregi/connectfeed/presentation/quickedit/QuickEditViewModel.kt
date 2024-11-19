@@ -13,7 +13,6 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivitiesUseCase
 import paufregi.connectfeed.core.usecases.GetProfilesUseCase
 import paufregi.connectfeed.core.usecases.UpdateActivityUseCase
-import paufregi.connectfeed.presentation.utils.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,10 +21,10 @@ class QuickEditViewModel @Inject constructor(
     val getProfilesUseCase: GetProfilesUseCase,
     val updateActivityUseCase: UpdateActivityUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(QuickEditState(loading = ProcessState.Processing))
+    private val _state = MutableStateFlow(QuickEditState())
     val state = _state
         .onStart { loadData() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), QuickEditState(loading = ProcessState.Processing))
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), QuickEditState())
 
     fun onEvent(event: QuickEditEvent) = when (event) {
         is QuickEditEvent.SelectActivity -> _state.update {
@@ -36,17 +35,17 @@ class QuickEditViewModel @Inject constructor(
             )
         }
         is QuickEditEvent.SelectProfile -> _state.update { it.copy( selectedProfile = event.profile ) }
-        is QuickEditEvent.SelectEffort -> _state.update { it.copy( selectedEffort = event.effort ) }
+        is QuickEditEvent.SelectEffort -> _state.update { it.copy( selectedEffort = if (event.effort == 0f) null else event.effort ) }
         is QuickEditEvent.SelectFeel -> _state.update { it.copy( selectedFeel = event.feel ) }
         is QuickEditEvent.Save -> saveActivity()
         is QuickEditEvent.Restart -> {
-            _state.update { QuickEditState(loading = ProcessState.Processing) }
+            _state.update { QuickEditState() }
             loadData()
         }
     }
 
     private fun loadData() = viewModelScope.launch {
-        _state.update { it.copy(loading = ProcessState.Processing) }
+        _state.update { it.copy(processing = ProcessState.Processing) }
         var errors = mutableListOf<String>()
         val activities = when (val res = getLatestActivitiesUseCase()) {
             is Result.Success -> res.data
@@ -64,13 +63,13 @@ class QuickEditViewModel @Inject constructor(
             )
         }
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(loading = ProcessState.Failure) }
-            false -> _state.update { it.copy(loading = ProcessState.Idle) }
+            true -> _state.update { it.copy(processing = ProcessState.FailureLoading) }
+            false -> _state.update { it.copy(processing = ProcessState.Idle) }
         }
     }
 
     private fun saveActivity() = viewModelScope.launch {
-        _state.update { it.copy(updating = ProcessState.Failure) }
+        _state.update { it.copy(processing = ProcessState.Processing) }
         val res = updateActivityUseCase(
             activity = state.value.selectedActivity,
             profile = state.value.selectedProfile,
@@ -78,9 +77,8 @@ class QuickEditViewModel @Inject constructor(
             effort = state.value.selectedEffort
         )
         when (res) {
-            is Result.Success -> _state.update { it.copy(updating = ProcessState.Success) }
-            is Result.Failure -> _state.update { it.copy(updating = ProcessState.Failure) }
+            is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }
+            is Result.Failure -> _state.update { it.copy(processing = ProcessState.FailureUpdating) }
         }
-
     }
 }

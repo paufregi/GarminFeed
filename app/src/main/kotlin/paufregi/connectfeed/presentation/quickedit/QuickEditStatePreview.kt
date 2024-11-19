@@ -6,7 +6,6 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.presentation.utils.ProcessState
 
 class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
     override val values = sequenceOf(

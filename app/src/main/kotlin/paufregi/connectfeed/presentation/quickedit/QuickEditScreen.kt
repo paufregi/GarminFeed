@@ -41,7 +41,6 @@ import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import paufregi.connectfeed.presentation.ui.components.TextEffort
 import paufregi.connectfeed.presentation.ui.components.TextFeel
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
-import paufregi.connectfeed.presentation.utils.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
@@ -62,29 +61,24 @@ internal fun QuickEditContent(
     onEvent: (QuickEditEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
-    when (state.loading) {
-        ProcessState.Processing -> Loading(paddingValues)
-        ProcessState.Failure -> StatusInfo(
+    when (state.processing) {
+        is ProcessState.Processing -> Loading(paddingValues)
+        is ProcessState.FailureLoading -> StatusInfo(
             type = StatusInfoType.Failure,
             text = "Couldn't load activities",
             actionButton = { Button(text = "Retry", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
             contentPadding = paddingValues)
-        else -> {
-            when (state.updating) {
-                ProcessState.Processing -> Loading(paddingValues)
-                ProcessState.Failure -> StatusInfo(
-                        type = StatusInfoType.Failure,
-                        text = "Couldn't update the activity",
-                        actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
-                        contentPadding = paddingValues)
-                ProcessState.Success -> StatusInfo(
-                    type = StatusInfoType.Success,
-                    text = "Activity updated",
-                    actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
-                    contentPadding = paddingValues)
-                else -> QuickEditForm(state, onEvent, paddingValues)
-            }
-        }
+        is ProcessState.FailureUpdating -> StatusInfo(
+            type = StatusInfoType.Failure,
+            text = "Couldn't update activity",
+            actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
+            contentPadding = paddingValues)
+        is ProcessState.Success -> StatusInfo(
+            type = StatusInfoType.Success,
+            text = "Activity updated",
+            actionButton = { Button(text = "Ok", onClick = { onEvent(QuickEditEvent.Restart) }) } ,
+            contentPadding = paddingValues)
+        else -> QuickEditForm(state, onEvent, paddingValues)
     }
 }
 
@@ -158,14 +152,8 @@ internal fun QuickEditForm(
                 }
                 Column {
                     Slider(
-                        value = state.selectedEffort,
-                        onValueChange = {
-                            onEvent(
-                                QuickEditEvent.SelectEffort(
-                                    it.toInt().toFloat()
-                                )
-                            )
-                        },
+                        value = state.selectedEffort ?: 0f,
+                        onValueChange = { onEvent(QuickEditEvent.SelectEffort(it.toInt().toFloat())) },
                         valueRange = 0f..100f,
                         steps = 9,
                         interactionSource = interactionSource,
@@ -173,7 +161,7 @@ internal fun QuickEditForm(
                         thumb = CustomSlider.thumb(interactionSource)
                     )
                     TextEffort(
-                        state.selectedEffort,
+                        state.selectedEffort?: 0f,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
