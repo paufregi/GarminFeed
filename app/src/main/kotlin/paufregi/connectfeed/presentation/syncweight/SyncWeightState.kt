@@ -1,7 +1,8 @@
 package paufregi.connectfeed.presentation.syncweight
 
-import paufregi.connectfeed.presentation.utils.ProcessState
-
-data class SyncWeightState(
-    val loading: ProcessState = ProcessState.Idle
-)
+sealed interface SyncWeightState {
+    data object Idle : SyncWeightState
+    data object Uploading : SyncWeightState
+    data object Success : SyncWeightState
+    data object Failure : SyncWeightState
+}

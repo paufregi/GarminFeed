@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.SyncWeightUseCase
-import paufregi.connectfeed.presentation.utils.ProcessState
 import java.io.InputStream
 import javax.inject.Inject
 
@@ -18,18 +17,18 @@ class SyncWeightViewModel @Inject constructor(
     val syncWeightUseCase: SyncWeightUseCase
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState())
+    private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState.Idle)
     val state = _state.asStateFlow()
 
     fun syncWeight(inputStream: InputStream?) = viewModelScope.launch {
-        _state.update { it.copy(loading = ProcessState.Processing) }
+        _state.update { SyncWeightState.Uploading }
         if (inputStream == null) {
-            _state.update { it.copy(loading = ProcessState.Failure) }
+            _state.update { SyncWeightState.Failure }
             return@launch
         }
         when (syncWeightUseCase(inputStream)) {
-            is Result.Success -> _state.update { it.copy(loading = ProcessState.Success) }
-            is Result.Failure -> _state.update { it.copy(loading = ProcessState.Failure) }
+            is Result.Success -> _state.update { SyncWeightState.Success }
+            is Result.Failure -> _state.update { SyncWeightState.Failure }
         }
     }
 }
