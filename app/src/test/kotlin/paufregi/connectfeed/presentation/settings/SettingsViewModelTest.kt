@@ -102,7 +102,7 @@ class SettingsViewModelTest {
         viewModel.state.test{
             viewModel.onEvent(SettingsEvent.UpdateUsername(cred.username))
             viewModel.onEvent(SettingsEvent.UpdatePassword(cred.password))
-            viewModel.onEvent(SettingsEvent.SaveCredential({}))
+            viewModel.onEvent(SettingsEvent.SaveCredential)
 
             cancelAndIgnoreRemainingEvents()
         }
