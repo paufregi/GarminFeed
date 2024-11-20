@@ -31,7 +31,7 @@ class SyncWeightScreenTest {
         composeTestRule.setContent {
             SyncWeightScreen(state = SyncWeightState.Idle)
         }
-        composeTestRule.onNodeWithText("Waiting").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Don't know what to do").assertIsDisplayed()
     }
 
     @Test

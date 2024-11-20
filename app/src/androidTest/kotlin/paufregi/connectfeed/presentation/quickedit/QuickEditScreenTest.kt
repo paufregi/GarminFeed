@@ -32,15 +32,15 @@ class QuickEditScreenTest {
     )
 
     val profiles = listOf(
-        Profile("profile1", EventType.transportation, ActivityType.Running, Course.commuteHome, 1),
-        Profile("profile2", EventType.transportation, ActivityType.Cycling, Course.commuteWork, 1),
-        Profile("profile3", EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
+        Profile("profile1", true, EventType.transportation, ActivityType.Running, Course.commuteHome, 1),
+        Profile("profile2", true, EventType.transportation, ActivityType.Cycling, Course.commuteWork, 1),
+        Profile("profile3", true, EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
     )
 
     @Test
     fun `Default values`() {
         composeTestRule.setContent {
-            QuickEditScreen(state = QuickEditState(
+            QuickEditContent(state = QuickEditState(
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles
@@ -54,8 +54,8 @@ class QuickEditScreenTest {
     @Test
     fun `Loading spinner`() {
         composeTestRule.setContent {
-            QuickEditScreen(state = QuickEditState(
-                loading = true,
+            QuickEditContent(state = QuickEditState(
+                processing = ProcessState.Processing,
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles
@@ -67,7 +67,7 @@ class QuickEditScreenTest {
     @Test
     fun `Values selected - running`() {
         composeTestRule.setContent {
-            QuickEditScreen(state = QuickEditState(
+            QuickEditContent(state = QuickEditState(
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles,
@@ -76,13 +76,13 @@ class QuickEditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].activityName)
+        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
     }
 
     @Test
     fun `Values selected - cycling`() {
         composeTestRule.setContent {
-            QuickEditScreen(state = QuickEditState(
+            QuickEditContent(state = QuickEditState(
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles,
@@ -93,7 +93,7 @@ class QuickEditScreenTest {
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[1].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[1].activityName)
+        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[1].name)
         composeTestRule.onNodeWithText("5 - Hard").isDisplayed()
         composeTestRule.onNodeWithText("Normal").isDisplayed()
     }
