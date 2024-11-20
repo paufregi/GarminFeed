@@ -31,7 +31,7 @@ fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 
 @ExperimentalMaterial3Api
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
-    text = this.activityName,
+    text = this.name,
     leadingIcon = { ActivityIcon(this.activityType) },
     onClick = onClick
 )

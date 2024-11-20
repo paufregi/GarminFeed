@@ -1,9 +1,43 @@
 package paufregi.connectfeed.presentation.profiles
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Profile
 
 class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
     override val values = sequenceOf(
-        ProfilesState("test"),
+        ProfilesState(profiles = emptyList()),
+        ProfilesState(
+            profiles = listOf(
+                Profile(
+                    name = "Commute to home",
+                    updateName = true,
+                    eventType = EventType.transportation,
+                    activityType = ActivityType.Cycling,
+                    course = Course.commuteHome,
+                    water = 550),
+                Profile(
+                    name = "Commute to work",
+                    updateName = true,
+                    eventType = EventType.transportation,
+                    activityType = ActivityType.Cycling,
+                    course = Course.commuteWork,
+                    water = 550),
+                Profile(
+                    name = "Ponsonby/Westhaven",
+                    updateName = true,
+                    eventType = EventType.training,
+                    activityType = ActivityType.Running,
+                    course = Course.ponsonbyWesthaven),
+                Profile(
+                    name = "Auckland CBD",
+                    updateName = true,
+                    eventType = EventType.training,
+                    activityType = ActivityType.Running,
+                    course = Course.aucklandCBD),
+            )
+        )
     )
 }

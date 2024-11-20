@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -47,20 +48,20 @@ class QuickEditViewModel @Inject constructor(
     private fun loadData() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
         var errors = mutableListOf<String>()
-        val activities = when (val res = getLatestActivitiesUseCase()) {
-            is Result.Success -> res.data
+        when (val res = getLatestActivitiesUseCase()) {
+            is Result.Success -> _state.update { it.copy(activities = res.data) }
             is Result.Failure -> {
                 errors.add("activities")
-                emptyList()
             }
         }
-        val profiles = getProfilesUseCase()
-        _state.update {
-            it.copy(
-                activities = activities,
-                allProfiles = profiles,
-                availableProfiles = profiles,
-            )
+
+        getProfilesUseCase().collect { profiles ->
+            _state.update {
+                it.copy(
+                    allProfiles = profiles,
+                    availableProfiles = profiles,
+                )
+            }
         }
         when (errors.isNotEmpty()) {
             true -> _state.update { it.copy(processing = ProcessState.FailureLoading) }
