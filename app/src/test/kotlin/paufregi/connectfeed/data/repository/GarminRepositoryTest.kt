@@ -20,7 +20,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
-import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Profile
@@ -28,6 +28,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.api.GarminConnect
 import paufregi.connectfeed.data.api.models.Activity
 import paufregi.connectfeed.data.api.models.ActivityType
+import paufregi.connectfeed.data.api.models.Course
 import paufregi.connectfeed.data.api.models.EventType
 import paufregi.connectfeed.data.api.models.Metadata
 import paufregi.connectfeed.data.api.models.Summary
@@ -172,10 +173,128 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get courses`() = runTest {
+        val courses = listOf(
+            Course(id = 1, name = "course 1", type = ActivityType(id = 1, key = "running")),
+            Course(id = 2, name = "course 2", type = ActivityType(id = 10, key = "road_biking"))
+        )
+        coEvery { garminConnect.getCourses() } returns Response.success(courses)
+
+        val expected = listOf(
+            CoreCourse(id = 1, name = "course 1", type = CoreActivityType.Running),
+            CoreCourse(id = 2, name = "course 2", type = CoreActivityType.Cycling),
+        )
+
+        val res = repo.getCourses()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+        coVerify { garminConnect.getCourses() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get courses - empty list`() = runTest {
+        coEvery { garminConnect.getCourses() } returns Response.success(emptyList())
+
+        val res = repo.getCourses()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
+        coVerify { garminConnect.getCourses() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get courses - null`() = runTest {
+        coEvery { garminConnect.getCourses() } returns Response.success(null)
+
+        val res = repo.getCourses()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreCourse>())
+        coVerify { garminConnect.getCourses() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get courses - failure`() = runTest {
+        coEvery { garminConnect.getCourses() } returns Response.error<List<Course>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getCourses()
+
+        assertThat(res.isSuccessful).isFalse()
+        coVerify { garminConnect.getCourses() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get event types`() = runTest {
+        val eventTypes = listOf(
+            EventType(id = 1, key = "race"),
+            EventType(id = 2, key = "training")
+        )
+        coEvery { garminConnect.getEventTypes() } returns Response.success(eventTypes)
+
+        val expected = listOf(
+            CoreEventType(id = 1, name = "Race"),
+            CoreEventType(id = 2, name = "Training"),
+        )
+
+        val res = repo.getEventTypes()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+        coVerify { garminConnect.getEventTypes() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get event types - empty list`() = runTest {
+        coEvery { garminConnect.getEventTypes() } returns Response.success(emptyList())
+
+        val res = repo.getEventTypes()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
+        coVerify { garminConnect.getEventTypes() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get event types - null`() = runTest {
+        coEvery { garminConnect.getEventTypes() } returns Response.success(null)
+
+        val res = repo.getEventTypes()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(emptyList<CoreEventType>())
+        coVerify { garminConnect.getEventTypes() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
+    fun `Get event types - failure`() = runTest {
+        coEvery { garminConnect.getEventTypes() } returns Response.error<List<EventType>>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.getEventTypes()
+
+        assertThat(res.isSuccessful).isFalse()
+        coVerify { garminConnect.getEventTypes() }
+        confirmVerified(garminConnect)
+    }
+
+    @Test
     fun `Update activity`() = runTest {
         coEvery { garminConnect.updateActivity(any(), any()) } returns Response.success(Unit)
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(activityName = "newName", eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = Course(1, "course"), water = 2)
+        val profile = Profile(name = "newName", updateName = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
 
         val expectedRequest = UpdateActivity(
             id = 1,
@@ -196,7 +315,7 @@ class GarminRepositoryTest {
     fun `Update activity - failure`() = runTest {
         coEvery { garminConnect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(activityName = "newName", eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = Course(1, "course"), water = 2)
+        val profile = Profile(name = "newName", updateName = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
 
         val expectedRequest = UpdateActivity(
             id = 1,

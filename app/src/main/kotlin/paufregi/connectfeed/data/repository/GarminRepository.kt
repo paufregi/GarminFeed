@@ -5,11 +5,13 @@ import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Credential
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.api.GarminConnect
-import paufregi.connectfeed.data.api.models.EventType
+import paufregi.connectfeed.data.api.models.EventType as DataEventType
 import paufregi.connectfeed.data.api.models.Metadata
 import paufregi.connectfeed.data.api.models.Summary
 import paufregi.connectfeed.data.api.models.UpdateActivity
@@ -43,6 +45,20 @@ class GarminRepository @Inject constructor(
         )
     }
 
+    suspend fun getCourses(): Result<List<Course>> {
+        return callApi (
+            { garminConnect.getCourses() },
+            { res -> res.body()?.map { it.toCore() } ?: emptyList() }
+        )
+    }
+
+    suspend fun getEventTypes(): Result<List<EventType>> {
+        return callApi (
+            { garminConnect.getEventTypes() },
+            { res -> res.body()?.map { it.toCore() } ?: emptyList() }
+        )
+    }
+
     suspend fun updateActivity(
         activity: Activity,
         profile: Profile,
@@ -51,8 +67,8 @@ class GarminRepository @Inject constructor(
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
-            name = profile.activityName,
-            eventType = EventType(profile.eventType.id, profile.eventType.name.lowercase()),
+            name = profile.name,
+            eventType = DataEventType(profile.eventType.id, profile.eventType.name.lowercase()),
             metadata = Metadata(profile.course.id),
             summary = Summary(profile.water, effort, feel)
         )
