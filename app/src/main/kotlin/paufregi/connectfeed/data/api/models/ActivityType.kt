@@ -18,4 +18,10 @@ data class ActivityType(
         10L -> CoreActivityType.Cycling
         else -> CoreActivityType.Unknown
     }
+
+    fun fromCore(type: CoreActivityType): ActivityType = when (type) {
+        CoreActivityType.Running -> ActivityType(1L, "running")
+        CoreActivityType.Cycling -> ActivityType(10L, "cycling")
+        else -> ActivityType(0L, "unknown")
+    }
 }
