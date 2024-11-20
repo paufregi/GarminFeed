@@ -1,5 +1,6 @@
 package paufregi.connectfeed.core.usecases
 
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.mockk
@@ -29,33 +30,39 @@ class GetProfilesUseCaseTest{
 
     @Test
     fun `Get profiles use-case`() = runTest {
-        val expected = listOf(
+        val profiles = listOf(
             Profile(
                 "Commute to home",
+                true,
                 EventType.transportation,
                 ActivityType.Cycling,
                 Course.commuteHome,
                 550),
             Profile(
                 "Commute to work",
+                true,
                 EventType.transportation,
                 ActivityType.Cycling,
                 Course.commuteWork,
                 550),
             Profile(
                 "Ponsonby/Westhaven",
+                true,
                 EventType.training,
                 ActivityType.Running,
                 Course.ponsonbyWesthaven),
             Profile(
                 "Auckland CBD",
+                true,
                 EventType.training,
                 ActivityType.Running,
                 Course.aucklandCBD),
         )
 
         val res = useCase()
-
-        assertThat(res).isEqualTo(expected)
+        res.test {
+            assertThat(awaitItem()).isEqualTo(profiles)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }
