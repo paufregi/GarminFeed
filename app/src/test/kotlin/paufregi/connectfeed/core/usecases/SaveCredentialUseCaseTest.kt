@@ -32,10 +32,14 @@ class SaveCredentialUseCaseTest{
     fun `Save credential use-case`() = runTest {
         val credential = Credential("user", "pass")
         coEvery { repo.saveCredential(any()) } returns Unit
+        coEvery { repo.clearCache() } returns Unit
         val res = useCase(credential)
 
         assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
-        coVerify { repo.saveCredential(credential) }
+        coVerify {
+            repo.saveCredential(credential)
+            repo.clearCache()
+        }
         confirmVerified(repo)
     }
 
