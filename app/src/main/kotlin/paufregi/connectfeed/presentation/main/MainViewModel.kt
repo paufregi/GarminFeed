@@ -14,5 +14,5 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
     val state = getSetupDoneUseCase()
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), null)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
 }
