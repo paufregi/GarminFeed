@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.database.entities
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import paufregi.connectfeed.core.models.ActivityType
 
 @Entity(tableName="profiles")
 data class ProfileEntity(
@@ -10,10 +11,9 @@ data class ProfileEntity(
 
     val name: String,
     val updateName: Boolean,
+    val activityType: ActivityType,
     val eventTypeId: Long?,
     val eventTypeKey: String?,
-    val activityTypeId: Long?,
-    val activityTypeKey: String?,
     val courseId: Long?,
     val courseName: String?,
     val water: Int?

@@ -9,5 +9,5 @@ import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 @Serializable
 data class Metadata(
     @SerializedName("associatedCourseId")
-    val courseId: Long,
+    val courseId: Long?,
 )

@@ -14,6 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 
 data class DropdownItem(
@@ -24,15 +27,35 @@ data class DropdownItem(
 
 @ExperimentalMaterial3Api
 fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
-    text = this.name,
+    text = name,
     leadingIcon = { ActivityIcon(this.type) },
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
+fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    leadingIcon = { ActivityIcon(this) },
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
+fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
+fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    leadingIcon = { ActivityIcon(type) },
     onClick = onClick
 )
 
 @ExperimentalMaterial3Api
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
     text = this.name,
-    leadingIcon = { ActivityIcon(this.activityType) },
+    leadingIcon = { ActivityIcon(activityType) },
     onClick = onClick
 )
 

@@ -18,9 +18,11 @@ import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.CredentialEntity
+import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.TokenManager
 import java.io.File
 import javax.inject.Inject
+import kotlin.Int
 
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
@@ -29,6 +31,20 @@ class GarminRepository @Inject constructor(
 ) {
     suspend fun saveCredential(credential: Credential) =
         garminDao.saveCredential(CredentialEntity(credential = credential))
+
+    suspend fun saveProfile(profile: Profile) = garminDao.saveProfile(
+        ProfileEntity(
+            id = profile.id ?: 0,
+            name = profile.name,
+            updateName = profile.updateName,
+            activityType = profile.activityType,
+            eventTypeId = profile.eventType?.id,
+            eventTypeKey = profile.eventType?.name,
+            courseId = profile.course?.id,
+            courseName = profile.course?.name,
+            water = profile.water
+        )
+    )
 
     fun getCredential(): Flow<Credential?> =
         garminDao.getCredential().map { it?.credential }
@@ -55,7 +71,7 @@ class GarminRepository @Inject constructor(
     suspend fun getEventTypes(): Result<List<EventType>> {
         return callApi (
             { garminConnect.getEventTypes() },
-            { res -> res.body()?.map { it.toCore() } ?: emptyList() }
+            { res -> res.body()?.map { it.toCore() }?.filterNotNull() ?: emptyList() }
         )
     }
 
@@ -68,8 +84,8 @@ class GarminRepository @Inject constructor(
         val request = UpdateActivity(
             id = activity.id,
             name = profile.name,
-            eventType = DataEventType(profile.eventType.id, profile.eventType.name.lowercase()),
-            metadata = Metadata(profile.course.id),
+            eventType = DataEventType(profile.eventType?.id, profile.eventType?.name?.lowercase()),
+            metadata = Metadata(profile.course?.id),
             summary = Summary(profile.water, effort, feel)
         )
         return callApi(

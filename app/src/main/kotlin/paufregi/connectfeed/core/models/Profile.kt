@@ -1,10 +1,11 @@
 package paufregi.connectfeed.core.models
 
 data class Profile(
-    val name: String,
-    val updateName: Boolean,
-    val eventType: EventType,
-    val activityType: ActivityType,
-    val course: Course,
+    val id: Int? = null,
+    val name: String = "",
+    val updateName: Boolean = true,
+    val activityType: ActivityType = ActivityType.Any,
+    val eventType: EventType? = null,
+    val course: Course? = null,
     val water: Int? = null
 )

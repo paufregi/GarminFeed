@@ -11,12 +11,16 @@ import paufregi.connectfeed.core.models.EventType as CoreEventType
 @Serializable
 data class EventType(
     @SerializedName("typeId")
-    val id: Long,
+    val id: Long?,
     @SerializedName("typeKey")
-    val key: String,
+    val key: String?,
 ) {
-    fun toCore() = CoreEventType(
-        id = id,
-        name = key.replaceFirstChar { it.uppercase() }
-    )
+    fun toCore(): CoreEventType? {
+        if (id == null || key == null) return null
+
+        return CoreEventType(
+            id = id,
+            name = key.replaceFirstChar { it.uppercase() }
+        )
+    }
 }

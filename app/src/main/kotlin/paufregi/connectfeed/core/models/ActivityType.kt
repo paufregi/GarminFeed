@@ -1,7 +1,8 @@
 package paufregi.connectfeed.core.models
 
-sealed interface ActivityType{
-    object Running : ActivityType
-    object Cycling : ActivityType
-    object Unknown : ActivityType
+sealed class ActivityType(val name: String) {
+    object Running : ActivityType("Running")
+    object Cycling : ActivityType("Cycling")
+    object Any : ActivityType("Any")
+    object Unknown : ActivityType("Unknown")
 }
