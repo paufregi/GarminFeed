@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "66bf875ff3535385f61a45244649d951",
+    "identityHash": "66d9cc7270b40c78b0cf774e86963798",
     "entities": [
       {
         "tableName": "credentials",
@@ -38,71 +38,65 @@
       },
       {
         "tableName": "profiles",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `updateName` INTEGER NOT NULL, `eventTypeId` INTEGER, `eventTypeKey` TEXT, `activityTypeId` INTEGER, `activityTypeKey` TEXT, `courseId` INTEGER, `courseName` TEXT, `water` INTEGER)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `eventType` TEXT, `course` TEXT, `water` INTEGER, `renameActivity` INTEGER NOT NULL, `customizableWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
-            "fieldPath": "id",
+            "fieldPath": "profile.id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
-            "fieldPath": "name",
+            "fieldPath": "profile.name",
             "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "updateName",
-            "columnName": "updateName",
+            "fieldPath": "profile.activityType",
+            "columnName": "activityType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profile.eventType",
+            "columnName": "eventType",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profile.course",
+            "columnName": "course",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profile.water",
+            "columnName": "water",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "profile.renameActivity",
+            "columnName": "renameActivity",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "eventTypeId",
-            "columnName": "eventTypeId",
+            "fieldPath": "profile.customizableWater",
+            "columnName": "customizableWater",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
-            "fieldPath": "eventTypeKey",
-            "columnName": "eventTypeKey",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "activityTypeId",
-            "columnName": "activityTypeId",
+            "fieldPath": "profile.feelAndEffort",
+            "columnName": "feelAndEffort",
             "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "activityTypeKey",
-            "columnName": "activityTypeKey",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "courseId",
-            "columnName": "courseId",
-            "affinity": "INTEGER",
-            "notNull": false
-          },
-          {
-            "fieldPath": "courseName",
-            "columnName": "courseName",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
-            "fieldPath": "water",
-            "columnName": "water",
-            "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
@@ -114,7 +108,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '66bf875ff3535385f61a45244649d951')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '66d9cc7270b40c78b0cf774e86963798')"
     ]
   }
 }

@@ -32,19 +32,8 @@ class GarminRepository @Inject constructor(
     suspend fun saveCredential(credential: Credential) =
         garminDao.saveCredential(CredentialEntity(credential = credential))
 
-    suspend fun saveProfile(profile: Profile) = garminDao.saveProfile(
-        ProfileEntity(
-            id = profile.id ?: 0,
-            name = profile.name,
-            updateName = profile.updateName,
-            activityType = profile.activityType,
-            eventTypeId = profile.eventType?.id,
-            eventTypeKey = profile.eventType?.name,
-            courseId = profile.course?.id,
-            courseName = profile.course?.name,
-            water = profile.water
-        )
-    )
+    suspend fun saveProfile(profile: Profile) =
+        garminDao.saveProfile(ProfileEntity(profile = profile))
 
     fun getCredential(): Flow<Credential?> =
         garminDao.getCredential().map { it?.credential }

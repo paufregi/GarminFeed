@@ -1,20 +1,14 @@
 package paufregi.connectfeed.data.database.entities
 
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Profile
 
-@Entity(tableName="profiles")
+@Entity(tableName="profiles", primaryKeys = ["id"])
 data class ProfileEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
-    val name: String,
-    val updateName: Boolean,
-    val activityType: ActivityType,
-    val eventTypeId: Long?,
-    val eventTypeKey: String?,
-    val courseId: Long?,
-    val courseName: String?,
-    val water: Int?
+    @Embedded()
+    val profile: Profile
 )
