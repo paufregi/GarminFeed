@@ -294,7 +294,7 @@ class GarminRepositoryTest {
     fun `Update activity`() = runTest {
         coEvery { garminConnect.updateActivity(any(), any()) } returns Response.success(Unit)
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(name = "newName", renameActivity = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
+        val profile = Profile(name = "newName", rename = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
 
         val expectedRequest = UpdateActivity(
             id = 1,
@@ -315,7 +315,7 @@ class GarminRepositoryTest {
     fun `Update activity - failure`() = runTest {
         coEvery { garminConnect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(name = "newName", renameActivity = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
+        val profile = Profile(name = "newName", rename = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
 
         val expectedRequest = UpdateActivity(
             id = 1,

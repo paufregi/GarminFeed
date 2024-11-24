@@ -13,8 +13,8 @@ sealed class ActivityType(val name: String, val order: Int) {
             "any" -> Any
             "running" -> Running
             "trail_running" -> TrailRunning
-            "Cycling" -> Cycling
-            "strength" -> Strength
+            "cycling" -> Cycling
+            "strength_training" -> Strength
             else -> Unknown
         }
     }

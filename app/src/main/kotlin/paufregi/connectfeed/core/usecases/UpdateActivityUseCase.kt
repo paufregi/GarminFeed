@@ -1,6 +1,5 @@
 package paufregi.connectfeed.core.usecases
 
-import android.util.Log
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
