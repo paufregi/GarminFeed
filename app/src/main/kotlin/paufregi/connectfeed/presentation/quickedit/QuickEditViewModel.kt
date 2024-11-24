@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,28 +23,28 @@ class QuickEditViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickEditState())
     val state = _state
-        .onStart { loadData() }
+        .onStart { load() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), QuickEditState())
 
     fun onEvent(event: QuickEditEvent) = when (event) {
-        is QuickEditEvent.SelectActivity -> _state.update {
+        is QuickEditEvent.SetActivity -> _state.update {
             it.copy(
-                selectedActivity = event.activity,
-                selectedProfile = if (it.selectedProfile?.activityType != event.activity.type) null else it.selectedProfile,
+                activity = event.activity,
+                profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
                 availableProfiles = it.allProfiles.filter { it.activityType == event.activity.type },
             )
         }
-        is QuickEditEvent.SelectProfile -> _state.update { it.copy( selectedProfile = event.profile ) }
-        is QuickEditEvent.SelectEffort -> _state.update { it.copy( selectedEffort = if (event.effort == 0f) null else event.effort ) }
-        is QuickEditEvent.SelectFeel -> _state.update { it.copy( selectedFeel = event.feel ) }
+        is QuickEditEvent.SetProfile -> _state.update { it.copy( profile = event.profile ) }
+        is QuickEditEvent.SetEffort -> _state.update { it.copy( effort = if (event.effort == 0f) null else event.effort ) }
+        is QuickEditEvent.SetFeel -> _state.update { it.copy( feel = event.feel ) }
         is QuickEditEvent.Save -> saveActivity()
         is QuickEditEvent.Restart -> {
             _state.update { QuickEditState() }
-            loadData()
+            load()
         }
     }
 
-    private fun loadData() = viewModelScope.launch {
+    private fun load() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
         var errors = mutableListOf<String>()
         when (val res = getLatestActivitiesUseCase()) {
@@ -72,10 +71,10 @@ class QuickEditViewModel @Inject constructor(
     private fun saveActivity() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
         val res = updateActivityUseCase(
-            activity = state.value.selectedActivity,
-            profile = state.value.selectedProfile,
-            feel = state.value.selectedFeel,
-            effort = state.value.selectedEffort
+            activity = state.value.activity,
+            profile = state.value.profile,
+            feel = state.value.feel,
+            effort = state.value.effort
         )
         when (res) {
             is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }

@@ -8,10 +8,10 @@ data class QuickEditState(
     val activities: List<Activity> = emptyList(),
     val allProfiles: List<Profile> = emptyList(),
     val availableProfiles: List<Profile> = emptyList(),
-    val selectedActivity: Activity? = null,
-    val selectedProfile: Profile? = null,
-    val selectedEffort: Float? = null,
-    val selectedFeel: Float? = null
+    val activity: Activity? = null,
+    val profile: Profile? = null,
+    val effort: Float? = null,
+    val feel: Float? = null
 )
 
 sealed interface ProcessState {

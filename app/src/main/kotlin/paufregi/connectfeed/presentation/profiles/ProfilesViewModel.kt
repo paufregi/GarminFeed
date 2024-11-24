@@ -11,9 +11,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfilesViewModel @Inject constructor(
-    getProfilesUseCase: GetProfilesUseCase
+    getProfiles: GetProfilesUseCase
 ) : ViewModel() {
-    val state = getProfilesUseCase()
+    val state = getProfiles()
         .map {  ProfilesState(profiles = it) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), ProfilesState())
 }

@@ -10,9 +10,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getSetupDoneUseCase: GetSetupDoneUseCase
+    getSetupDone: GetSetupDoneUseCase
 ) : ViewModel() {
 
-    val state = getSetupDoneUseCase()
+    val state = getSetupDone()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), null)
 }

@@ -3,11 +3,11 @@ package paufregi.connectfeed.presentation.quickedit
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Profile
 
-sealed class QuickEditEvent {
-    data class SelectActivity(val activity: Activity): QuickEditEvent()
-    data class SelectProfile(val profile: Profile): QuickEditEvent()
-    data class SelectEffort(val effort: Float?): QuickEditEvent()
-    data class SelectFeel(val feel: Float?): QuickEditEvent()
-    data object Save: QuickEditEvent()
-    data object Restart: QuickEditEvent()
+sealed interface QuickEditEvent {
+    data class SetActivity(val activity: Activity): QuickEditEvent
+    data class SetProfile(val profile: Profile): QuickEditEvent
+    data class SetEffort(val effort: Float?): QuickEditEvent
+    data class SetFeel(val feel: Float?): QuickEditEvent
+    data object Save: QuickEditEvent
+    data object Restart: QuickEditEvent
 }

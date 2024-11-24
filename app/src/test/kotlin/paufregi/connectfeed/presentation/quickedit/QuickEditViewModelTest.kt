@@ -102,9 +102,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
+            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
-            assertThat(state.selectedActivity).isEqualTo(activities[0])
+            assertThat(state.activity).isEqualTo(activities[0])
             assertThat(state.availableProfiles.count()).isEqualTo(2)
             cancelAndIgnoreRemainingEvents()
         }
@@ -119,9 +119,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectEffort(50f))
+            viewModel.onEvent(QuickEditEvent.SetEffort(50f))
             val state = awaitItem()
-            assertThat(state.selectedEffort).isEqualTo(50f)
+            assertThat(state.effort).isEqualTo(50f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -135,9 +135,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectFeel(50f))
+            viewModel.onEvent(QuickEditEvent.SetFeel(50f))
             val state = awaitItem()
-            assertThat(state.selectedFeel).isEqualTo(50f)
+            assertThat(state.feel).isEqualTo(50f)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -151,9 +151,9 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
             val state = awaitItem()
-            assertThat(state.selectedProfile).isEqualTo(profiles[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -167,10 +167,10 @@ class QuickEditViewModelTest {
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
-            viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
-            viewModel.onEvent(QuickEditEvent.SelectFeel(50F))
-            viewModel.onEvent(QuickEditEvent.SelectEffort(80f))
+            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            viewModel.onEvent(QuickEditEvent.SetFeel(50F))
+            viewModel.onEvent(QuickEditEvent.SetEffort(80f))
             viewModel.onEvent(QuickEditEvent.Save)
             cancelAndIgnoreRemainingEvents()
         }

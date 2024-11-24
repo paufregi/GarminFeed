@@ -17,8 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val getCredentialUseCase: GetCredentialUseCase,
-    private val saveCredentialUseCase: SaveCredentialUseCase,
+    private val getCredential: GetCredentialUseCase,
+    private val saveCredential: SaveCredentialUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())
@@ -29,20 +29,20 @@ class SettingsViewModel @Inject constructor(
 
     fun onEvent(event: SettingsEvent) {
         when (event) {
-            is SettingsEvent.UpdateUsername -> _state.update { it.copy(credential = it.credential.copy(username = event.username)) }
-            is SettingsEvent.UpdatePassword -> _state.update { it.copy(credential = it.credential.copy(password = event.password)) }
-            is SettingsEvent.UpdateShowPassword -> _state.update { it.copy(showPassword = event.showPassword) }
-            is SettingsEvent.SaveCredential -> saveCredential()
+            is SettingsEvent.SetUsername -> _state.update { it.copy(credential = it.credential.copy(username = event.username)) }
+            is SettingsEvent.SetPassword -> _state.update { it.copy(credential = it.credential.copy(password = event.password)) }
+            is SettingsEvent.SetShowPassword -> _state.update { it.copy(showPassword = event.showPassword) }
+            is SettingsEvent.Save -> save()
         }
     }
 
     private fun loadCredential() = viewModelScope.launch {
-        getCredentialUseCase().collect { cred ->
+        getCredential().collect { cred ->
             _state.update { it.copy(credential = cred ?: it.credential) } }
         }
 
-    private fun saveCredential() = viewModelScope.launch {
-        when (saveCredentialUseCase(state.value.credential) ) {
+    private fun save() = viewModelScope.launch {
+        when (saveCredential(state.value.credential) ) {
             is Result.Success -> SnackbarController.sendEvent("Credential saved")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save credential")
         }

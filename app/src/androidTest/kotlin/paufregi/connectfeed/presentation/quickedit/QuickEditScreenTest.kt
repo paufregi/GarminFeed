@@ -14,8 +14,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 
 @HiltAndroidTest
@@ -71,8 +69,8 @@ class QuickEditScreenTest {
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles,
-                selectedActivity = activities[0],
-                selectedProfile = profiles[0],
+                activity = activities[0],
+                profile = profiles[0],
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
@@ -86,10 +84,10 @@ class QuickEditScreenTest {
                 activities = activities,
                 allProfiles = profiles,
                 availableProfiles = profiles,
-                selectedActivity = activities[1],
-                selectedProfile = profiles[1],
-                selectedEffort = 50f,
-                selectedFeel = 50f,
+                activity = activities[1],
+                profile = profiles[1],
+                effort = 50f,
+                feel = 50f,
             ))
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[1].name)

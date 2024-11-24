@@ -67,19 +67,19 @@ internal fun SettingsContent(
             TextField(
                 label = { Text("Username") },
                 value = state.credential.username,
-                onValueChange = { onEvent(SettingsEvent.UpdateUsername(it)) },
+                onValueChange = { onEvent(SettingsEvent.SetUsername(it)) },
                 isError = state.credential.username.isBlank(),
             )
             TextField(
                 label = { Text("Password") },
                 value = state.credential.password,
-                onValueChange =  { onEvent(SettingsEvent.UpdatePassword(it)) },
+                onValueChange =  { onEvent(SettingsEvent.SetPassword(it)) },
                 isError = state.credential.password.isBlank(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     Button(
-                        onClick = { onEvent(SettingsEvent.UpdateShowPassword(!state.showPassword)) },
+                        onClick = { onEvent(SettingsEvent.SetShowPassword(!state.showPassword)) },
                         icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                         description = if (state.showPassword) "Hide password" else "Show password"
                     )
@@ -92,7 +92,7 @@ internal fun SettingsContent(
                 Button(
                     text = "Save",
                     enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                    onClick = { onEvent(SettingsEvent.SaveCredential) }
+                    onClick = { onEvent(SettingsEvent.Save) }
                 )
             }
         }

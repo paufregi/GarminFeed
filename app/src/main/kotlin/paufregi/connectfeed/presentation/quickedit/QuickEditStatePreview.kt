@@ -10,14 +10,14 @@ class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
         QuickEditState(ProcessState.Processing),
         QuickEditState(ProcessState.Idle),
         QuickEditState(
-            selectedActivity = Activity(id = 1, name = "activity", type = ActivityType.Running),
-            selectedProfile = Profile(name = "name", activityType = ActivityType.Running)
+            activity = Activity(id = 1, name = "activity", type = ActivityType.Running),
+            profile = Profile(name = "name", activityType = ActivityType.Running)
         ),
         QuickEditState(
-            selectedActivity = Activity(id = 2, name = "activity", type = ActivityType.Cycling),
-            selectedProfile = Profile(name = "name", activityType = ActivityType.Cycling),
-            selectedFeel = 50f,
-            selectedEffort = 50f,
+            activity = Activity(id = 2, name = "activity", type = ActivityType.Cycling),
+            profile = Profile(name = "name", activityType = ActivityType.Cycling),
+            feel = 50f,
+            effort = 50f,
         )
     )
 }

@@ -7,6 +7,11 @@ import javax.inject.Inject
 
 class GetCoursesUseCase @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun  invoke(): Result<List<Course>> {
-        return garminRepository.getCourses()
+        return when (val res = garminRepository.getCourses()) {
+            is Result.Success -> Result.Success(
+                res.data.sortedWith(compareBy({ it.type.order }, { it.name}))
+            )
+            is Result.Failure -> res
+        }
     }
 }

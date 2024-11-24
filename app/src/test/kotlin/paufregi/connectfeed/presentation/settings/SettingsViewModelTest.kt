@@ -50,9 +50,9 @@ class SettingsViewModelTest {
 
         viewModel.state.test {
             assertThat(awaitItem().credential.username).isEqualTo("")
-            viewModel.onEvent(SettingsEvent.UpdateUsername("user"))
+            viewModel.onEvent(SettingsEvent.SetUsername("user"))
             assertThat(awaitItem().credential.username).isEqualTo("user")
-            viewModel.onEvent(SettingsEvent.UpdateUsername("user2"))
+            viewModel.onEvent(SettingsEvent.SetUsername("user2"))
             assertThat(awaitItem().credential.username).isEqualTo("user2")
             cancelAndIgnoreRemainingEvents()
         }
@@ -66,9 +66,9 @@ class SettingsViewModelTest {
 
         viewModel.state.test {
             assertThat(awaitItem().credential.password).isEqualTo("")
-            viewModel.onEvent(SettingsEvent.UpdatePassword("password"))
+            viewModel.onEvent(SettingsEvent.SetPassword("password"))
             assertThat(awaitItem().credential.password).isEqualTo("password")
-            viewModel.onEvent(SettingsEvent.UpdatePassword("password2"))
+            viewModel.onEvent(SettingsEvent.SetPassword("password2"))
             assertThat(awaitItem().credential.password).isEqualTo("password2")
             cancelAndIgnoreRemainingEvents()
         }
@@ -82,9 +82,9 @@ class SettingsViewModelTest {
 
         viewModel.state.test {
             assertThat(awaitItem().showPassword).isFalse()
-            viewModel.onEvent(SettingsEvent.UpdateShowPassword(true))
+            viewModel.onEvent(SettingsEvent.SetShowPassword(true))
             assertThat(awaitItem().showPassword).isTrue()
-            viewModel.onEvent(SettingsEvent.UpdateShowPassword(false))
+            viewModel.onEvent(SettingsEvent.SetShowPassword(false))
             assertThat(awaitItem().showPassword).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
@@ -100,9 +100,9 @@ class SettingsViewModelTest {
         coEvery { saveCredential.invoke(any()) } returns Result.Success(Unit)
 
         viewModel.state.test{
-            viewModel.onEvent(SettingsEvent.UpdateUsername(cred.username))
-            viewModel.onEvent(SettingsEvent.UpdatePassword(cred.password))
-            viewModel.onEvent(SettingsEvent.SaveCredential)
+            viewModel.onEvent(SettingsEvent.SetUsername(cred.username))
+            viewModel.onEvent(SettingsEvent.SetPassword(cred.password))
+            viewModel.onEvent(SettingsEvent.Save)
 
             cancelAndIgnoreRemainingEvents()
         }

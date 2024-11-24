@@ -105,11 +105,11 @@ internal fun QuickEditForm(
 
             Dropdown(
                 label = { Text("Activity") },
-                selected = state.selectedActivity?.toDropdownItem { },
+                selected = state.activity?.toDropdownItem { },
                 items = state.activities.map {
                     it.toDropdownItem {
                         onEvent(
-                            QuickEditEvent.SelectActivity(
+                            QuickEditEvent.SetActivity(
                                 it
                             )
                         )
@@ -119,11 +119,11 @@ internal fun QuickEditForm(
 
             Dropdown(
                 label = { Text("Profile") },
-                selected = state.selectedProfile?.toDropdownItem { },
+                selected = state.profile?.toDropdownItem { },
                 items = state.availableProfiles.map {
                     it.toDropdownItem {
                         onEvent(
-                            QuickEditEvent.SelectProfile(
+                            QuickEditEvent.SetProfile(
                                 it
                             )
                         )
@@ -131,7 +131,7 @@ internal fun QuickEditForm(
                 }
             )
 
-            if (state.selectedActivity?.type == ActivityType.Cycling) {
+            if (state.activity?.type == ActivityType.Cycling) {
                 Column {
                     IconRadioGroup(
                         options = listOf(
@@ -141,19 +141,19 @@ internal fun QuickEditForm(
                             IconRadioItem(75f, Icons.Filled.SentimentSatisfiedAlt),
                             IconRadioItem(100f, Icons.Filled.Mood),
                         ),
-                        selected = state.selectedFeel,
-                        onClick = { onEvent(QuickEditEvent.SelectFeel(it)) }
+                        selected = state.feel,
+                        onClick = { onEvent(QuickEditEvent.SetFeel(it)) }
                     )
                     TextFeel(
-                        state.selectedFeel,
+                        state.feel,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                             .padding(vertical = 10.dp)
                     )
                 }
                 Column {
                     Slider(
-                        value = state.selectedEffort ?: 0f,
-                        onValueChange = { onEvent(QuickEditEvent.SelectEffort(it.toInt().toFloat())) },
+                        value = state.effort ?: 0f,
+                        onValueChange = { onEvent(QuickEditEvent.SetEffort(it.toInt().toFloat())) },
                         valueRange = 0f..100f,
                         steps = 9,
                         interactionSource = interactionSource,
@@ -161,7 +161,7 @@ internal fun QuickEditForm(
                         thumb = CustomSlider.thumb(interactionSource)
                     )
                     TextEffort(
-                        state.selectedEffort?: 0f,
+                        state.effort?: 0f,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
@@ -173,7 +173,7 @@ internal fun QuickEditForm(
             ) {
                 Button(
                     text = "Save",
-                    enabled = state.selectedActivity != null && state.selectedProfile != null,
+                    enabled = state.activity != null && state.profile != null,
                     onClick = { onEvent(QuickEditEvent.Save) }
                 )
             }
