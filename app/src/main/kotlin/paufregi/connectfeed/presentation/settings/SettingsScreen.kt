@@ -20,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -53,6 +55,9 @@ internal fun SettingsContent(
     onEvent: (SettingsEvent) -> Unit = {  },
     paddingValues: PaddingValues = PaddingValues(),
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -68,7 +73,7 @@ internal fun SettingsContent(
                 label = { Text("Username") },
                 value = state.credential.username,
                 onValueChange = { onEvent(SettingsEvent.SetUsername(it)) },
-                isError = state.credential.username.isBlank(),
+                    isError = state.credential.username.isBlank(),
             )
             TextField(
                 label = { Text("Password") },
@@ -92,7 +97,11 @@ internal fun SettingsContent(
                 Button(
                     text = "Save",
                     enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                    onClick = { onEvent(SettingsEvent.Save) }
+                    onClick = {
+                        onEvent(SettingsEvent.Save)
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
                 )
             }
         }
