@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "66d9cc7270b40c78b0cf774e86963798",
+    "identityHash": "a266e5c3e9f6e29fbb5a055628c69b80",
     "entities": [
       {
         "tableName": "credentials",
@@ -38,13 +38,13 @@
       },
       {
         "tableName": "profiles",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `eventType` TEXT, `course` TEXT, `water` INTEGER, `renameActivity` INTEGER NOT NULL, `customizableWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `eventType` TEXT, `course` TEXT, `water` INTEGER, `rename` INTEGER NOT NULL, `customWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "profile.id",
             "columnName": "id",
             "affinity": "INTEGER",
-            "notNull": false
+            "notNull": true
           },
           {
             "fieldPath": "profile.name",
@@ -77,14 +77,14 @@
             "notNull": false
           },
           {
-            "fieldPath": "profile.renameActivity",
-            "columnName": "renameActivity",
+            "fieldPath": "profile.rename",
+            "columnName": "rename",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "profile.customizableWater",
-            "columnName": "customizableWater",
+            "fieldPath": "profile.customWater",
+            "columnName": "customWater",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -108,7 +108,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '66d9cc7270b40c78b0cf774e86963798')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a266e5c3e9f6e29fbb5a055628c69b80')"
     ]
   }
 }

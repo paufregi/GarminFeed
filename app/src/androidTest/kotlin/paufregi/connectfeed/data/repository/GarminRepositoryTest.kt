@@ -122,7 +122,7 @@ class GarminRepositoryTest {
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
         val profile = Profile(
             name = "newName",
-            renameActivity = true,
+            rename = true,
             eventType = EventType.transportation,
             activityType = CoreActivityType.Cycling,
             course = Course.commuteWork,
