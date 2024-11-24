@@ -25,7 +25,6 @@ class UpdateActivityUseCaseTest{
     val activity = Activity(id = 1, name = "name", type = ActivityType.Running)
     val profile = Profile(
         name = "newName",
-        updateName = true,
         eventType = EventType.transportation,
         activityType = ActivityType.Running,
         course = Course.commuteHome,

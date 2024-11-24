@@ -32,31 +32,31 @@ class GetProfilesUseCaseTest{
     fun `Get profiles use-case`() = runTest {
         val profiles = listOf(
             Profile(
-                "Commute to home",
-                true,
-                EventType.transportation,
-                ActivityType.Cycling,
-                Course.commuteHome,
-                550),
+                name = "Commute to home",
+                renameActivity = true,
+                eventType = EventType.transportation,
+                activityType = ActivityType.Cycling,
+                course = Course.commuteHome,
+                water = 550),
             Profile(
-                "Commute to work",
-                true,
-                EventType.transportation,
-                ActivityType.Cycling,
-                Course.commuteWork,
-                550),
+                name = "Commute to work",
+                renameActivity = true,
+                eventType = EventType.transportation,
+                activityType = ActivityType.Cycling,
+                course = Course.commuteWork,
+                water = 550),
             Profile(
-                "Ponsonby/Westhaven",
-                true,
-                EventType.training,
-                ActivityType.Running,
-                Course.ponsonbyWesthaven),
+                name = "Ponsonby/Westhaven",
+                renameActivity = true,
+                eventType = EventType.training,
+                activityType = ActivityType.Running,
+                course = Course.ponsonbyWesthaven),
             Profile(
-                "Auckland CBD",
-                true,
-                EventType.training,
-                ActivityType.Running,
-                Course.aucklandCBD),
+                name = "Auckland CBD",
+                renameActivity = true,
+                eventType = EventType.training,
+                activityType = ActivityType.Running,
+                course = Course.aucklandCBD),
         )
 
         val res = useCase()

@@ -13,27 +13,27 @@ class ProfilesStatePreview : PreviewParameterProvider<ProfilesState> {
             profiles = listOf(
                 Profile(
                     name = "Commute to home",
-                    updateName = true,
+                    renameActivity = true,
                     eventType = EventType.transportation,
                     activityType = ActivityType.Cycling,
                     course = Course.commuteHome,
                     water = 550),
                 Profile(
                     name = "Commute to work",
-                    updateName = true,
+                    renameActivity = true,
                     eventType = EventType.transportation,
                     activityType = ActivityType.Cycling,
                     course = Course.commuteWork,
                     water = 550),
                 Profile(
                     name = "Ponsonby/Westhaven",
-                    updateName = true,
+                    renameActivity = true,
                     eventType = EventType.training,
                     activityType = ActivityType.Running,
                     course = Course.ponsonbyWesthaven),
                 Profile(
                     name = "Auckland CBD",
-                    updateName = true,
+                    renameActivity = true,
                     eventType = EventType.training,
                     activityType = ActivityType.Running,
                     course = Course.aucklandCBD),

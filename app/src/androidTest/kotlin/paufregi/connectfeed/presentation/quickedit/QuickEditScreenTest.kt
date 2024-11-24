@@ -32,9 +32,9 @@ class QuickEditScreenTest {
     )
 
     val profiles = listOf(
-        Profile("profile1", true, EventType.transportation, ActivityType.Running, Course.commuteHome, 1),
-        Profile("profile2", true, EventType.transportation, ActivityType.Cycling, Course.commuteWork, 1),
-        Profile("profile3", true, EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
+        Profile(name = "profile1", activityType = ActivityType.Running),
+        Profile(name = "profile2", activityType = ActivityType.Cycling),
+        Profile(name = "profile3", activityType = ActivityType.Running)
     )
 
     @Test
