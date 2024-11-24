@@ -1,7 +1,5 @@
 package paufregi.connectfeed.core.models
 
-import paufregi.connectfeed.data.api.models.EventType
-
 data class Course(
     val id: Long,
     val name: String,
