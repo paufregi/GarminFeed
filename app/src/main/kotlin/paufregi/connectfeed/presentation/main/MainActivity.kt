@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.Routes
+import paufregi.connectfeed.presentation.editprofile.EditProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.settings.SettingsScreen
@@ -73,7 +74,8 @@ class MainActivity : ComponentActivity() {
                                 else -> SetupScreen(pv)
                             }
                         }
-                        composable<Routes.Profiles> { ProfilesScreen(pv) }
+                        composable<Routes.Profiles> { ProfilesScreen(pv, nav) }
+                        composable<Routes.EditProfile> { EditProfileScreen(pv, nav) }
                         composable<Routes.Settings> { SettingsScreen(pv) }
                     }
                 }

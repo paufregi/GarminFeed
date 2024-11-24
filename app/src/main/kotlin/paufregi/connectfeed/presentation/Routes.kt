@@ -14,4 +14,7 @@ sealed interface Routes {
 
     @Serializable
     object Profiles : Routes
+
+    @Serializable
+    object EditProfile : Routes
 }
