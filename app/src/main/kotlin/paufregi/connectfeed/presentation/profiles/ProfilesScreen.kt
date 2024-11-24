@@ -2,16 +2,12 @@ package paufregi.connectfeed.presentation.profiles
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,12 +30,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.Routes
 import paufregi.connectfeed.presentation.ui.components.ActivityIcon
 
 @Composable
 @ExperimentalMaterial3Api
 internal fun ProfilesScreen(
     paddingValues: PaddingValues = PaddingValues(),
+    nav: NavHostController,
 ) {
     val viewModel = hiltViewModel<ProfilesViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -47,6 +47,7 @@ internal fun ProfilesScreen(
     ProfilesContent(
         state = state,
         paddingValues = paddingValues,
+        nav = nav
     )
 }
 
@@ -56,12 +57,13 @@ internal fun ProfilesScreen(
 internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
     paddingValues: PaddingValues = PaddingValues(),
+    nav: NavHostController = rememberNavController(),
 ) {
     Scaffold(
         modifier = Modifier.padding(paddingValues),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { },
+                onClick = { nav.navigate(Routes.EditProfile) },
                 modifier = Modifier.testTag("addProfile")
             ) {
                 Icon(Icons.Default.Add, "Create profile")
