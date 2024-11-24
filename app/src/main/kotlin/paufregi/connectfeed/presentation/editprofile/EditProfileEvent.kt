@@ -6,11 +6,13 @@ import paufregi.connectfeed.core.models.EventType
 
 
 sealed interface EditProfileEvent {
-    data class UpdateName(val name: String): EditProfileEvent
-    data class UpdateUpdateName(val updateName: Boolean): EditProfileEvent
-    data class UpdateCourse(val course: Course?): EditProfileEvent
-    data class UpdateEventType(val eventType: EventType?): EditProfileEvent
-    data class UpdateActivityType(val activityType: ActivityType): EditProfileEvent
-    data class UpdateWater(val water: Int?): EditProfileEvent
+    data class SetName(val name: String): EditProfileEvent
+    data class SetActivityType(val activityType: ActivityType): EditProfileEvent
+    data class SetEventType(val eventType: EventType?): EditProfileEvent
+    data class SetCourse(val course: Course?): EditProfileEvent
+    data class SetWater(val water: Int?): EditProfileEvent
+    data class SetRename(val rename: Boolean): EditProfileEvent
+    data class SetCustomWater(val customWater: Boolean): EditProfileEvent
+    data class SetFeelAndEffort(val feelAndEffort: Boolean): EditProfileEvent
     data object Save: EditProfileEvent
 }

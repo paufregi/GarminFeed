@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -22,22 +19,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import paufregi.connectfeed.presentation.quickedit.QuickEditEvent
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
+import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.StatusInfo
+import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditProfileScreen(
     paddingValues: PaddingValues = PaddingValues(),
+    nav: NavHostController = rememberNavController()
 ) {
     val viewModel = hiltViewModel<EditProfileViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -46,6 +47,7 @@ internal fun EditProfileScreen(
         state = state,
         onEvent = viewModel::onEvent,
         paddingValues = paddingValues,
+        nav = nav
     )
 }
 
@@ -53,8 +55,38 @@ internal fun EditProfileScreen(
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditProfileContent(
+    @PreviewParameter(EditProfileStatePreview ::class) state: EditProfileState,
+    onEvent: (EditProfileEvent) -> Unit = {},
+    paddingValues: PaddingValues = PaddingValues(),
+    nav: NavHostController = rememberNavController()
+) {
+    when (state.processing) {
+        is ProcessState.Processing -> Loading(paddingValues)
+        is ProcessState.FailureLoading -> StatusInfo(
+            type = StatusInfoType.Failure,
+            text = state.processing.reason,
+            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
+            contentPadding = paddingValues)
+        is ProcessState.FailureUpdating -> StatusInfo(
+            type = StatusInfoType.Failure,
+            text = "Couldn't save profile",
+            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
+            contentPadding = paddingValues)
+        is ProcessState.Success -> StatusInfo(
+            type = StatusInfoType.Success,
+            text = "Profile saved",
+            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
+            contentPadding = paddingValues)
+        else -> EditProfileForm(state, onEvent, paddingValues)
+    }
+}
+
+@Preview
+@Composable
+@ExperimentalMaterial3Api
+internal fun EditProfileForm(
     @PreviewParameter(EditProfileStatePreview::class) state: EditProfileState,
-    onEvent: (EditProfileEvent) -> Unit = {  },
+    onEvent: (EditProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     Column(
@@ -68,28 +100,18 @@ internal fun EditProfileContent(
             verticalArrangement = Arrangement.spacedBy(20.dp),
             modifier = Modifier.width(IntrinsicSize.Min)
         ) {
-            Row {
-                TextField(
-                    label = { Text("Name") },
-                    value = state.profile.name,
-                    onValueChange = { onEvent(EditProfileEvent.UpdateName(it)) },
-                    isError = state.profile.name.isBlank(),
-                )
-                Column {
-                    Checkbox(
-                        checked = state.profile.updateName,
-                        onCheckedChange = { onEvent(EditProfileEvent.UpdateUpdateName(it)) },
-                    )
-                    Text("Update name")
-                }
-            }
+            TextField(
+                label = { Text("Name") },
+                value = state.profile.name,
+                onValueChange = { onEvent(EditProfileEvent.SetName(it)) },
+                isError = state.profile.name.isBlank(),
+            )
+
             Dropdown(
-                label = { Text("Activity") },
+                label = { Text("Activity Type") },
                 selected = state.profile.activityType.toDropdownItem { },
                 items = state.availableActivityType.map {
-                    it.toDropdownItem {
-                        onEvent(EditProfileEvent.UpdateActivityType(it))
-                    }
+                    it.toDropdownItem { onEvent(EditProfileEvent.SetActivityType(it)) }
                 }
             )
             Dropdown(
@@ -97,7 +119,7 @@ internal fun EditProfileContent(
                 selected = state.profile.eventType?.toDropdownItem { },
                 items = state.availableEventType.map {
                     it.toDropdownItem {
-                        onEvent(EditProfileEvent.UpdateEventType(it))
+                        onEvent(EditProfileEvent.SetEventType(it))
                     }
                 }
             )
@@ -106,40 +128,53 @@ internal fun EditProfileContent(
                 selected = state.profile.course?.toDropdownItem { },
                 items = state.availableCourses.map {
                     it.toDropdownItem {
-                        onEvent(EditProfileEvent.UpdateCourse(it))
+                        onEvent(EditProfileEvent.SetCourse(it))
                     }
                 }
             )
             TextField(
                 label = { Text("Water") },
-                value = state.profile.water.toString(),
-                onValueChange = { onEvent(EditProfileEvent.UpdateWater(it.toInt())) },
-
+                value = state.profile.water?.toString() ?: "",
+                onValueChange = { if (it.isDigitsOnly()) onEvent(EditProfileEvent.SetWater(it.toInt())) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
             )
-
-            TextField(
-                label = { Text("Password") },
-                value = state.credential.password,
-                onValueChange =  { onEvent(EditProfileEvent.UpdatePassword(it)) },
-                isError = state.credential.password.isBlank(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    Button(
-                        onClick = { onEvent(EditProfileEvent.UpdateShowPassword(!state.showPassword)) },
-                        icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        description = if (state.showPassword) "Hide password" else "Show password"
-                    )
-                }
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = state.profile.rename,
+                    onCheckedChange = { onEvent(EditProfileEvent.SetRename(it)) },
+                )
+                Text("Rename activity")
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = state.profile.customWater,
+                    onCheckedChange = { onEvent(EditProfileEvent.SetCustomWater(it)) },
+                )
+                Text("Customizable water")
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Checkbox(
+                    checked = state.profile.feelAndEffort,
+                    onCheckedChange = { onEvent(EditProfileEvent.SetFeelAndEffort(it)) },
+                )
+                Text("Feel & Effort")
+            }
             Row(
                 horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
                     text = "Save",
-                    enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                    onClick = { onEvent(EditProfileEvent.SaveCredential) }
+                    onClick = { onEvent(EditProfileEvent.Save) }
                 )
             }
         }
