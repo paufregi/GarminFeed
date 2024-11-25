@@ -128,6 +128,7 @@ internal fun EditProfileForm(
             )
             Dropdown(
                 label = { Text("Course") },
+                enabled = state.profile.activityType != ActivityType.Strength,
                 selected = state.profile.course?.toDropdownItem { },
                 items = state.availableCourses.map {
                     it.toDropdownItem {

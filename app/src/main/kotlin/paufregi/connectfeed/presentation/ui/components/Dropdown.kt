@@ -65,13 +65,14 @@ fun Dropdown(
     label: @Composable (() -> Unit)? = null,
     selected: DropdownItem? = null,
     items: List<DropdownItem> = emptyList(),
+    enabled: Boolean = true,
     isError: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox (
         expanded = expanded,
-        onExpandedChange = { expanded = it }
+        onExpandedChange = { if (enabled) expanded = it }
     ) {
         TextField(
             modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
@@ -83,6 +84,7 @@ fun Dropdown(
             singleLine = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            enabled = enabled,
             isError = isError,
         )
         ExposedDropdownMenu(

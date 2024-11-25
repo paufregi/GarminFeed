@@ -9,12 +9,14 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetActivityTypesUseCase
 import paufregi.connectfeed.core.usecases.GetCoursesUseCase
 import paufregi.connectfeed.core.usecases.GetEventTypesUseCase
 import paufregi.connectfeed.core.usecases.SaveProfileUseCase
 import paufregi.connectfeed.core.usecases.ValidateProfileUseCase
+import paufregi.connectfeed.presentation.ui.components.ActivityIcon
 import paufregi.connectfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
@@ -48,7 +50,6 @@ class EditProfileViewModel @Inject constructor(
             is Result.Failure -> errors.add("courses")
         }
 
-
         when (errors.isNotEmpty()) {
             true -> _state.update { it.copy(processing = ProcessState.FailureLoading("Couldn't load ${errors.joinToString(", ")}")) }
             false -> _state.update { it.copy(processing = ProcessState.Idle) }
@@ -58,7 +59,15 @@ class EditProfileViewModel @Inject constructor(
     fun onEvent(event: EditProfileEvent) {
         when (event) {
             is EditProfileEvent.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
-            is EditProfileEvent.SetActivityType -> _state.update { it.copy(profile = it.profile.copy(activityType = event.activityType)) }
+            is EditProfileEvent.SetActivityType -> _state.update {
+                it.copy(
+                    profile = it.profile.copy(
+                        activityType = event.activityType,
+                        course = if (event.activityType == ActivityType.Strength) null else it.profile.course
+                    ),
+                    availableCourses = it.allCourses.filter { it.type == event.activityType || event.activityType == ActivityType.Any }
+                )
+            }
             is EditProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
             is EditProfileEvent.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
             is EditProfileEvent.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
