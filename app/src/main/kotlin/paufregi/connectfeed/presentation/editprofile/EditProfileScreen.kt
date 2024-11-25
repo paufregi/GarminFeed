@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.Loading
@@ -121,7 +122,9 @@ internal fun EditProfileForm(
                     it.toDropdownItem {
                         onEvent(EditProfileEvent.SetEventType(it))
                     }
-                }
+                },
+                isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
+
             )
             Dropdown(
                 label = { Text("Course") },
@@ -174,6 +177,8 @@ internal fun EditProfileForm(
             ) {
                 Button(
                     text = "Save",
+                    enabled = state.profile.name.isNotBlank() &&
+                            (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
                     onClick = { onEvent(EditProfileEvent.Save) }
                 )
             }
