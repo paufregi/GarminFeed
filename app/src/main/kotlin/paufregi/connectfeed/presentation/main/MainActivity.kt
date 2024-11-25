@@ -29,12 +29,13 @@ import paufregi.connectfeed.presentation.editprofile.EditProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.settings.SettingsScreen
-import paufregi.connectfeed.presentation.setup.SetupScreen
-import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.NavBar
 import paufregi.connectfeed.presentation.ui.components.NavItem
 import paufregi.connectfeed.presentation.ui.theme.Theme
 import paufregi.connectfeed.presentation.ui.components.SnackbarObserver
+import paufregi.connectfeed.presentation.ui.components.StatusInfo
+import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -71,11 +72,25 @@ class MainActivity : ComponentActivity() {
                         composable<Routes.Home> {
                             when (setupDone)   {
                                 true -> QuickEditScreen(pv)
-                                else -> SetupScreen(pv)
+                                else -> StatusInfo(
+                                    type = StatusInfoType.Failure,
+                                    text = "Please setup your credential",
+                                    contentPadding = pv
+                                )
                             }
                         }
                         composable<Routes.Profiles> { ProfilesScreen(pv, nav) }
-                        composable<Routes.EditProfile> { EditProfileScreen(pv, nav) }
+                        composable<Routes.EditProfile> {
+                            when (setupDone)   {
+                                true -> EditProfileScreen(pv, nav)
+                                else -> StatusInfo(
+                                    type = StatusInfoType.Failure,
+                                    text = "Please setup your credential",
+                                    actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() }) },
+                                    contentPadding = pv
+                                )
+                            }
+                        }
                         composable<Routes.Settings> { SettingsScreen(pv) }
                     }
                 }
