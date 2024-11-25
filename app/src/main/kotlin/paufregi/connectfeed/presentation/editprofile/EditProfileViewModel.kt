@@ -14,6 +14,7 @@ import paufregi.connectfeed.core.usecases.GetActivityTypesUseCase
 import paufregi.connectfeed.core.usecases.GetCoursesUseCase
 import paufregi.connectfeed.core.usecases.GetEventTypesUseCase
 import paufregi.connectfeed.core.usecases.SaveProfileUseCase
+import paufregi.connectfeed.core.usecases.ValidateProfileUseCase
 import paufregi.connectfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
@@ -23,7 +24,8 @@ class EditProfileViewModel @Inject constructor(
     val getEventTypes: GetEventTypesUseCase,
     val getCourses: GetCoursesUseCase,
 
-    val saveProfileUseCase: SaveProfileUseCase,
+    val validateProfile: ValidateProfileUseCase,
+    val saveProfile: SaveProfileUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditProfileState())
@@ -68,7 +70,7 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        when (saveProfileUseCase(state.value.profile) ) {
+        when (saveProfile(state.value.profile) ) {
             is Result.Success -> SnackbarController.sendEvent("Profile saved")
             is Result.Failure -> SnackbarController.sendEvent("Unable to save profile")
         }
