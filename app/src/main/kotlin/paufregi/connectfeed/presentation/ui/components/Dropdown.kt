@@ -64,7 +64,8 @@ fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 fun Dropdown(
     label: @Composable (() -> Unit)? = null,
     selected: DropdownItem? = null,
-    items: List<DropdownItem> = emptyList()
+    items: List<DropdownItem> = emptyList(),
+    isError: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -82,6 +83,7 @@ fun Dropdown(
             singleLine = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            isError = isError,
         )
         ExposedDropdownMenu(
             expanded = expanded,
