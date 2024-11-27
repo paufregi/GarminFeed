@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.ui.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -65,17 +66,18 @@ fun Dropdown(
     label: @Composable (() -> Unit)? = null,
     selected: DropdownItem? = null,
     items: List<DropdownItem> = emptyList(),
-    enabled: Boolean = true,
-    isError: Boolean = false
+    isError: Boolean = false,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox (
         expanded = expanded,
-        onExpandedChange = { if (enabled) expanded = it }
+        onExpandedChange = { expanded = it },
+        modifier = modifier
     ) {
         TextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
             leadingIcon = selected?.leadingIcon,
@@ -84,7 +86,6 @@ fun Dropdown(
             singleLine = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
-            enabled = enabled,
             isError = isError,
         )
         ExposedDropdownMenu(

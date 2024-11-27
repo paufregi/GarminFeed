@@ -43,14 +43,14 @@ fun StatusInfo(
     @PreviewParameter(StatusInfoTypePreview ::class) type: StatusInfoType,
     text: String = "",
     actionButton: @Composable () -> Unit = { },
-    contentPadding: PaddingValues = PaddingValues()
+    paddingValues: PaddingValues = PaddingValues()
 ) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(contentPadding)
+            .padding(paddingValues)
     ) {
         Icon(
             imageVector = type.icon,
