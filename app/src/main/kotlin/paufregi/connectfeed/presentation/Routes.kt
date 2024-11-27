@@ -4,17 +4,14 @@ import kotlinx.serialization.Serializable
 
 sealed interface Routes {
     @Serializable
-    object Home : Routes
+    data object Home : Routes
 
     @Serializable
-    object Settings : Routes
+    data object Settings : Routes
 
     @Serializable
-    object QuickEdit : Routes
+    data object Profiles : Routes
 
     @Serializable
-    object Profiles : Routes
-
-    @Serializable
-    object EditProfile : Routes
+    data class EditProfile(val id: Long = 0L) : Routes
 }
