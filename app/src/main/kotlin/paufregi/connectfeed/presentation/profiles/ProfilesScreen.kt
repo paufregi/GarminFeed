@@ -1,12 +1,12 @@
 package paufregi.connectfeed.presentation.profiles
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +34,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.Routes
 import paufregi.connectfeed.presentation.ui.components.ActivityIcon
+import paufregi.connectfeed.presentation.ui.components.Button
 
 @Composable
 @ExperimentalMaterial3Api
@@ -46,6 +47,7 @@ internal fun ProfilesScreen(
 
     ProfilesContent(
         state = state,
+        onEvent = viewModel::onEvent,
         paddingValues = paddingValues,
         nav = nav
     )
@@ -56,6 +58,7 @@ internal fun ProfilesScreen(
 @ExperimentalMaterial3Api
 internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
+    onEvent: (ProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
     nav: NavHostController = rememberNavController(),
 ) {
@@ -63,7 +66,7 @@ internal fun ProfilesContent(
         modifier = Modifier.padding(paddingValues),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { nav.navigate(Routes.EditProfile) },
+                onClick = { nav.navigate(Routes.EditProfile()) },
                 modifier = Modifier.testTag("addProfile")
             ) {
                 Icon(Icons.Default.Add, "Create profile")
@@ -77,11 +80,14 @@ internal fun ProfilesContent(
                 .padding(pv)
                 .verticalScroll(rememberScrollState())
         ) {
+            if (state.profiles.isEmpty()) {
+                Text("No profiles found")
+            }
             state.profiles.fastForEachIndexed { index, it ->
                 Card(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(horizontal = 20.dp)
+                        .clickable(onClick = { nav.navigate(Routes.EditProfile(it.id)) })
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -91,14 +97,13 @@ internal fun ProfilesContent(
                         ActivityIcon(it.activityType)
                         Text(it.name)
                         Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete"
+                        Button(
+                            icon = Icons.Default.Delete,
+                            onClick = { onEvent(ProfileEvent.Delete(it)) }
                         )
                     }
                 }
             }
         }
     }
-    
 }
