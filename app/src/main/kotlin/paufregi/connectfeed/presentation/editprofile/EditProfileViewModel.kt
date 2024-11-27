@@ -1,34 +1,41 @@
 package paufregi.connectfeed.presentation.editprofile
 
+import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetActivityTypesUseCase
 import paufregi.connectfeed.core.usecases.GetCoursesUseCase
 import paufregi.connectfeed.core.usecases.GetEventTypesUseCase
+import paufregi.connectfeed.core.usecases.GetProfileUseCase
 import paufregi.connectfeed.core.usecases.SaveProfileUseCase
-import paufregi.connectfeed.core.usecases.ValidateProfileUseCase
-import paufregi.connectfeed.presentation.ui.components.ActivityIcon
+import paufregi.connectfeed.presentation.Routes
 import paufregi.connectfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
+    val getProfile: GetProfileUseCase,
     val getActivityTypes: GetActivityTypesUseCase,
     val getEventTypes: GetEventTypesUseCase,
     val getCourses: GetCoursesUseCase,
-
-    val validateProfile: ValidateProfileUseCase,
     val saveProfile: SaveProfileUseCase,
 ) : ViewModel() {
+
+    private val profileId: Long = savedStateHandle.toRoute<Routes.EditProfile>().id
 
     private val _state = MutableStateFlow(EditProfileState())
 
@@ -39,14 +46,20 @@ class EditProfileViewModel @Inject constructor(
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
         var errors = mutableListOf<String>()
-        _state.update { it.copy(availableActivityType = getActivityTypes()) }
+
+        val profile = getProfile(profileId) ?: Profile()
+
+        _state.update { it.copy(
+            profile = getProfile(profileId) ?: Profile(),
+            activityTypes = getActivityTypes()
+        ) }
 
         when (val res = getEventTypes()) {
-            is Result.Success -> _state.update { it.copy(availableEventType = res.data) }
+            is Result.Success -> _state.update { it.copy(eventTypes = res.data) }
             is Result.Failure -> errors.add("event types")
         }
         when (val res = getCourses()) {
-            is Result.Success -> _state.update { it.copy(allCourses = res.data, availableCourses = res.data) }
+            is Result.Success -> _state.update { it.copy(courses = res.data) }
             is Result.Failure -> errors.add("courses")
         }
 
@@ -63,9 +76,8 @@ class EditProfileViewModel @Inject constructor(
                 it.copy(
                     profile = it.profile.copy(
                         activityType = event.activityType,
-                        course = if (event.activityType == ActivityType.Strength) null else it.profile.course
+                        course = if (event.activityType == it.profile.course?.type) it.profile.course else null,
                     ),
-                    availableCourses = it.allCourses.filter { it.type == event.activityType || event.activityType == ActivityType.Any }
                 )
             }
             is EditProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
@@ -79,9 +91,13 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        when (saveProfile(state.value.profile) ) {
-            is Result.Success -> SnackbarController.sendEvent("Profile saved")
-            is Result.Failure -> SnackbarController.sendEvent("Unable to save profile")
+        _state.update { it.copy(processing = ProcessState.Processing) }
+        when (val res = saveProfile(state.value.profile) ) {
+            is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }
+            is Result.Failure -> {
+                Log.d("EditProfileViewModel", "error: ${res.error}")
+                _state.update { it.copy(processing = ProcessState.FailureUpdating) }
+            }
         }
     }
 }

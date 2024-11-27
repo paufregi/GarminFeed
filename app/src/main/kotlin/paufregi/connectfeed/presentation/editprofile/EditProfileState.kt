@@ -8,10 +8,9 @@ import paufregi.connectfeed.core.models.Profile
 data class EditProfileState(
     val processing: ProcessState = ProcessState.Processing,
     val profile: Profile = Profile(),
-    val availableActivityType: List<ActivityType> = emptyList(),
-    val availableEventType: List<EventType> = emptyList(),
-    val allCourses: List<Course> = emptyList(),
-    val availableCourses: List<Course> = emptyList(),
+    val activityTypes: List<ActivityType> = emptyList(),
+    val eventTypes: List<EventType> = emptyList(),
+    val courses: List<Course> = emptyList(),
 )
 
 sealed interface ProcessState {
