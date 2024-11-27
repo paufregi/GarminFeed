@@ -5,8 +5,8 @@ import paufregi.connectfeed.core.models.ActivityType
 
 class ActivityTypeConverter {
     @TypeConverter
-    fun fromString(type: String): ActivityType = ActivityType.fromName(type)
+    fun fromString(type: String?): ActivityType = ActivityType.fromName(type)
 
     @TypeConverter
-    fun toString(type: ActivityType): String = type.name
+    fun toString(type: ActivityType?): String? = type?.name
 }

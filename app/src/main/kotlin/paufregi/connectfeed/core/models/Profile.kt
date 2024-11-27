@@ -1,7 +1,7 @@
 package paufregi.connectfeed.core.models
 
 data class Profile(
-    val id: Int = 0,
+    val id: Long = 0,
     val name: String = "",
     val activityType: ActivityType = ActivityType.Any,
     val eventType: EventType? = null,
