@@ -70,7 +70,7 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.processing).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
-            assertThat(state.allProfiles).isEqualTo(profiles)
+            assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.availableProfiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
@@ -87,7 +87,7 @@ class QuickEditViewModelTest {
             val state = awaitItem()
             assertThat(state.processing).isEqualTo(ProcessState.FailureLoading)
             assertThat(state.activities).isEqualTo(emptyList<Activity>())
-            assertThat(state.allProfiles).isEqualTo(profiles)
+            assertThat(state.profiles).isEqualTo(profiles)
             assertThat(state.availableProfiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }

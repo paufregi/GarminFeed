@@ -2,13 +2,11 @@ package paufregi.connectfeed.presentation.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -59,51 +57,49 @@ internal fun SettingsContent(
     val focusManager = LocalFocusManager.current
 
     Column(
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues),
+            .padding(paddingValues)
+            .padding(horizontal = 20.dp)
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.width(IntrinsicSize.Min)
-        ) {
-            TextField(
-                label = { Text("Username") },
-                value = state.credential.username,
-                onValueChange = { onEvent(SettingsEvent.SetUsername(it)) },
-                    isError = state.credential.username.isBlank(),
-            )
-            TextField(
-                label = { Text("Password") },
-                value = state.credential.password,
-                onValueChange =  { onEvent(SettingsEvent.SetPassword(it)) },
-                isError = state.credential.password.isBlank(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-                trailingIcon = {
-                    Button(
-                        onClick = { onEvent(SettingsEvent.SetShowPassword(!state.showPassword)) },
-                        icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                        description = if (state.showPassword) "Hide password" else "Show password"
-                    )
-                }
-            )
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+        TextField(
+            label = { Text("Username") },
+            value = state.credential.username,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { onEvent(SettingsEvent.SetUsername(it)) },
+                isError = state.credential.username.isBlank(),
+        )
+        TextField(
+            label = { Text("Password") },
+            value = state.credential.password,
+            onValueChange =  { onEvent(SettingsEvent.SetPassword(it)) },
+            isError = state.credential.password.isBlank(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+            trailingIcon = {
                 Button(
-                    text = "Save",
-                    enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                    onClick = {
-                        onEvent(SettingsEvent.Save)
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                    }
+                    onClick = { onEvent(SettingsEvent.SetShowPassword(!state.showPassword)) },
+                    icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                    description = if (state.showPassword) "Hide password" else "Show password"
                 )
             }
+        )
+        Row(
+            horizontalArrangement = Arrangement.End,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Button(
+                text = "Save",
+                enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
+                onClick = {
+                    onEvent(SettingsEvent.Save)
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                }
+            )
         }
     }
 }

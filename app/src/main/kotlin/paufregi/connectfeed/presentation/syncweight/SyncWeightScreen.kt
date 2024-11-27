@@ -24,17 +24,17 @@ internal fun SyncWeightScreen(
                 type = StatusInfoType.Success,
                 text = "Sync succeeded",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
-                contentPadding = it)
+                paddingValues = it)
             is SyncWeightState.Failure -> StatusInfo(
                 type = StatusInfoType.Failure,
                 text = "Sync failed",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
-                contentPadding = it)
+                paddingValues = it)
             else -> StatusInfo(
                 type = StatusInfoType.Unknown,
                 text = "Don't know what to do",
                 actionButton = { Button(text = "Ok", onClick = onComplete) },
-                contentPadding = it)
+                paddingValues = it)
         }
     }
 }
