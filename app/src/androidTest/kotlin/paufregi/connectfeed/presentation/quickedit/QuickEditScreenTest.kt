@@ -40,7 +40,7 @@ class QuickEditScreenTest {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
                 activities = activities,
-                allProfiles = profiles,
+                profiles = profiles,
                 availableProfiles = profiles
             ))
         }
@@ -55,7 +55,7 @@ class QuickEditScreenTest {
             QuickEditContent(state = QuickEditState(
                 processing = ProcessState.Processing,
                 activities = activities,
-                allProfiles = profiles,
+                profiles = profiles,
                 availableProfiles = profiles
             ))
         }
@@ -67,7 +67,7 @@ class QuickEditScreenTest {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
                 activities = activities,
-                allProfiles = profiles,
+                profiles = profiles,
                 availableProfiles = profiles,
                 activity = activities[0],
                 profile = profiles[0],
@@ -82,7 +82,7 @@ class QuickEditScreenTest {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
                 activities = activities,
-                allProfiles = profiles,
+                profiles = profiles,
                 availableProfiles = profiles,
                 activity = activities[1],
                 profile = profiles[1],

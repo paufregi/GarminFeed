@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -17,24 +18,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class QuickEditViewModel @Inject constructor(
-    val getLatestActivitiesUseCase: GetLatestActivitiesUseCase,
-    val getProfilesUseCase: GetProfilesUseCase,
-    val updateActivityUseCase: UpdateActivityUseCase
+    val getLatestActivities: GetLatestActivitiesUseCase,
+    getProfiles: GetProfilesUseCase,
+    val updateActivity: UpdateActivityUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickEditState())
-    val state = _state
+    val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }
         .onStart { load() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000L), QuickEditState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), QuickEditState())
 
     fun onEvent(event: QuickEditEvent) = when (event) {
         is QuickEditEvent.SetActivity -> _state.update {
             it.copy(
                 activity = event.activity,
                 profile = if (it.profile?.activityType != event.activity.type) null else it.profile,
-                availableProfiles = it.allProfiles.filter { it.activityType == event.activity.type },
             )
         }
         is QuickEditEvent.SetProfile -> _state.update { it.copy( profile = event.profile ) }
+        is QuickEditEvent.SetWater -> _state.update { it.copy( profile = it.profile?.copy(water = event.water) ) }
         is QuickEditEvent.SetEffort -> _state.update { it.copy( effort = if (event.effort == 0f) null else event.effort ) }
         is QuickEditEvent.SetFeel -> _state.update { it.copy( feel = event.feel ) }
         is QuickEditEvent.Save -> saveActivity()
@@ -47,30 +48,22 @@ class QuickEditViewModel @Inject constructor(
     private fun load() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
         var errors = mutableListOf<String>()
-        when (val res = getLatestActivitiesUseCase()) {
+        when (val res = getLatestActivities()) {
             is Result.Success -> _state.update { it.copy(activities = res.data) }
             is Result.Failure -> {
                 errors.add("activities")
             }
         }
 
-        getProfilesUseCase().collect { profiles ->
-            _state.update {
-                it.copy(
-                    allProfiles = profiles,
-                    availableProfiles = profiles,
-                )
-            }
-        }
-        when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(processing = ProcessState.FailureLoading) }
-            false -> _state.update { it.copy(processing = ProcessState.Idle) }
+        when (errors.isEmpty()) {
+            true -> _state.update { it.copy(processing = ProcessState.Idle) }
+            false -> _state.update { it.copy(processing = ProcessState.FailureLoading) }
         }
     }
 
     private fun saveActivity() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
-        val res = updateActivityUseCase(
+        val res = updateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
             feel = state.value.feel,

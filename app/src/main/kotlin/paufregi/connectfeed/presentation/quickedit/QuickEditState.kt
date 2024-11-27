@@ -6,8 +6,7 @@ import paufregi.connectfeed.core.models.Profile
 data class QuickEditState(
     val processing: ProcessState = ProcessState.Processing,
     val activities: List<Activity> = emptyList(),
-    val allProfiles: List<Profile> = emptyList(),
-    val availableProfiles: List<Profile> = emptyList(),
+    val profiles: List<Profile> = emptyList(),
     val activity: Activity? = null,
     val profile: Profile? = null,
     val effort: Float? = null,
