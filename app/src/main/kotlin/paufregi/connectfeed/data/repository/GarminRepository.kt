@@ -1,5 +1,7 @@
 package paufregi.connectfeed.data.repository
 
+import android.util.Log
+import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -17,6 +19,8 @@ import paufregi.connectfeed.data.api.models.Summary
 import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
+import paufregi.connectfeed.data.database.coverters.toCore
+import paufregi.connectfeed.data.database.coverters.toEntity
 import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.TokenManager
@@ -33,10 +37,21 @@ class GarminRepository @Inject constructor(
         garminDao.saveCredential(CredentialEntity(credential = credential))
 
     suspend fun saveProfile(profile: Profile) =
-        garminDao.saveProfile(ProfileEntity(profile = profile))
+        garminDao.saveProfile(profile.toEntity())
+
+    suspend fun deleteProfile(profile: Profile) =
+        garminDao.deleteProfile(profile.toEntity())
+
 
     fun getCredential(): Flow<Credential?> =
         garminDao.getCredential().map { it?.credential }
+
+    fun getAllProfiles(): Flow<List<Profile>> =
+        garminDao.getAllProfiles().map { it.fastMap { it.toCore() } }
+
+    suspend fun getProfile(id: Long): Profile? =
+        garminDao.getProfile(id)?.toCore()
+
 
     suspend fun clearCache() {
         tokenManager.deleteOAuth1()
@@ -46,21 +61,21 @@ class GarminRepository @Inject constructor(
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> {
         return callApi (
             { garminConnect.getLatestActivity(limit) },
-            { res -> res.body()?.map { it.toCore() } ?: emptyList() }
+            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
     }
 
     suspend fun getCourses(): Result<List<Course>> {
         return callApi (
             { garminConnect.getCourses() },
-            { res -> res.body()?.map { it.toCore() } ?: emptyList() }
+            { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
     }
 
     suspend fun getEventTypes(): Result<List<EventType>> {
         return callApi (
             { garminConnect.getEventTypes() },
-            { res -> res.body()?.map { it.toCore() }?.filterNotNull() ?: emptyList() }
+            { res -> res.body()?.fastMap { it.toCore() }?.filterNotNull() ?: emptyList() }
         )
     }
 
@@ -72,7 +87,7 @@ class GarminRepository @Inject constructor(
     ): Result<Unit> {
         val request = UpdateActivity(
             id = activity.id,
-            name = profile.name,
+            name = if (profile.rename) profile.name else null ,
             eventType = DataEventType(profile.eventType?.id, profile.eventType?.name?.lowercase()),
             metadata = Metadata(profile.course?.id),
             summary = Summary(profile.water, effort, feel)

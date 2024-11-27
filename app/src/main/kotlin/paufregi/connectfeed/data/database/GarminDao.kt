@@ -1,6 +1,7 @@
 package paufregi.connectfeed.data.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -22,4 +23,9 @@ interface GarminDao {
     @Query("SELECT * FROM profiles ORDER BY activityType, name")
     fun getAllProfiles(): Flow<List<ProfileEntity>>
 
+    @Query("SELECT * FROM profiles WHERE ID = :id")
+    suspend fun getProfile(id: Long): ProfileEntity?
+
+    @Delete
+    suspend fun deleteProfile(profile: ProfileEntity)
 }
