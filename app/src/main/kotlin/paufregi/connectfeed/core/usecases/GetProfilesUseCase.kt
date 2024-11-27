@@ -10,34 +10,5 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class GetProfilesUseCase @Inject constructor (private val garminRepository: GarminRepository) {
-    operator fun invoke(): Flow<List<Profile>> {
-        return flowOf(listOf(
-            Profile(
-                name = "Commute to home",
-                rename = true,
-                eventType = EventType.transportation,
-                activityType = ActivityType.Cycling,
-                course = Course.commuteHome,
-                water = 550),
-            Profile(
-                name = "Commute to work",
-                rename = true,
-                eventType = EventType.transportation,
-                activityType = ActivityType.Cycling,
-                course = Course.commuteWork,
-                water = 550),
-            Profile(
-                name = "Ponsonby/Westhaven",
-                rename = true,
-                eventType = EventType.training,
-                activityType = ActivityType.Running,
-                course = Course.ponsonbyWesthaven),
-            Profile(
-                name = "Auckland CBD",
-                rename = true,
-                eventType = EventType.training,
-                activityType = ActivityType.Running,
-                course = Course.aucklandCBD),
-        ))
-    }
+    operator fun invoke(): Flow<List<Profile>> = garminRepository.getAllProfiles()
 }
