@@ -64,9 +64,9 @@ class MainActivity : ComponentActivity() {
                             navItems = listOf(
                                 NavItem(Routes.Home, "Home", Icons.Default.Home),
                                 NavItem(Routes.Profiles, "Profiles", Icons.Default.Tune),
-                            NavItem(Routes.Settings, "Settings", Icons.Default.Settings),
-                        ),
-                    ) }
+                                NavItem(Routes.Settings, "Settings", Icons.Default.Settings),
+                            ),
+                        ) }
                 ) { pv ->
                     NavHost(navController = nav, startDestination = Routes.Home) {
                         composable<Routes.Home> {
@@ -75,7 +75,7 @@ class MainActivity : ComponentActivity() {
                                 else -> StatusInfo(
                                     type = StatusInfoType.Failure,
                                     text = "Please setup your credential",
-                                    contentPadding = pv
+                                    paddingValues = pv
                                 )
                             }
                         }
@@ -87,7 +87,7 @@ class MainActivity : ComponentActivity() {
                                     type = StatusInfoType.Failure,
                                     text = "Please setup your credential",
                                     actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() }) },
-                                    contentPadding = pv
+                                    paddingValues = pv
                                 )
                             }
                         }
