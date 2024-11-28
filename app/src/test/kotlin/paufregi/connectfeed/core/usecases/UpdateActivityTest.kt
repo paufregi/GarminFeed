@@ -25,9 +25,9 @@ class UpdateActivityTest{
     val activity = Activity(id = 1, name = "name", type = ActivityType.Running)
     val profile = Profile(
         name = "newName",
-        eventType = EventType.transportation,
+        eventType = EventType(id = 1, name = "event 1"),
         activityType = ActivityType.Running,
-        course = Course.commuteHome,
+        course = Course(id = 1, name = "course 1", type = ActivityType.Running),
         water = 500
     )
 
@@ -42,7 +42,7 @@ class UpdateActivityTest{
     }
 
     @Test
-    fun `Update activity use-case`() = runTest {
+    fun `Update activity`() = runTest {
         coEvery { repo.updateActivity(any(), any(), any(), any()) } returns Result.Success(Unit)
         val res = useCase(activity, profile, 50f, 90f)
 

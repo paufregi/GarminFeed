@@ -9,16 +9,17 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class ClearCacheTest {
+class DeleteProfileTest {
 
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: ClearCache
+    private lateinit var useCase: DeleteProfile
 
     @Before
     fun setup(){
-        useCase = ClearCache(repo)
+        useCase = DeleteProfile(repo)
     }
 
     @After
@@ -27,10 +28,11 @@ class ClearCacheTest {
     }
 
     @Test
-    fun `Clear cache`() = runTest {
-        coEvery { repo.clearCache() } returns Unit
-        useCase()
-        coVerify { repo.clearCache() }
+    fun `Delete profile`() = runTest {
+        coEvery { repo.deleteProfile(any()) } returns Unit
+        val profile = Profile()
+        useCase(profile)
+        coVerify { repo.deleteProfile(profile) }
         confirmVerified(repo)
     }
 }

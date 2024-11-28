@@ -29,7 +29,7 @@ class SaveCredentialTest{
     }
 
     @Test
-    fun `Save credential use-case`() = runTest {
+    fun `Save credential`() = runTest {
         val credential = Credential("user", "pass")
         coEvery { repo.saveCredential(any()) } returns Unit
         coEvery { repo.clearCache() } returns Unit

@@ -3,7 +3,11 @@ package paufregi.connectfeed.core.usecases
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.confirmVerified
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -29,40 +33,46 @@ class GetProfilesTest{
     }
 
     @Test
-    fun `Get profiles use-case`() = runTest {
+    fun `Get profiles`() = runTest {
         val profiles = listOf(
             Profile(
-                name = "Commute to home",
+                id = 1,
+                name = "profile 1",
                 rename = true,
-                eventType = EventType.transportation,
+                eventType = EventType(id = 1, name = "event 1"),
                 activityType = ActivityType.Cycling,
-                course = Course.commuteHome,
+                course = Course(id = 1, name = "course 1", type = ActivityType.Cycling),
                 water = 550),
             Profile(
-                name = "Commute to work",
+                id = 2,
+                name = "profile 2",
                 rename = true,
-                eventType = EventType.transportation,
-                activityType = ActivityType.Cycling,
-                course = Course.commuteWork,
-                water = 550),
-            Profile(
-                name = "Ponsonby/Westhaven",
-                rename = true,
-                eventType = EventType.training,
+                eventType = EventType(id = 1, name = "event 2"),
                 activityType = ActivityType.Running,
-                course = Course.ponsonbyWesthaven),
-            Profile(
-                name = "Auckland CBD",
-                rename = true,
-                eventType = EventType.training,
-                activityType = ActivityType.Running,
-                course = Course.aucklandCBD),
+                course = Course(id = 2, name = "course 2", type = ActivityType.Running)),
         )
+
+        coEvery { repo.getAllProfiles() } returns flowOf(profiles)
 
         val res = useCase()
         res.test {
             assertThat(awaitItem()).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
+        coVerify { repo.getAllProfiles() }
+        confirmVerified(repo)
+    }
+
+    @Test
+    fun `Get profiles - empty list`() = runTest {
+        coEvery { repo.getAllProfiles() } returns flowOf(emptyList<Profile>())
+
+        val res = useCase()
+        res.test {
+            assertThat(awaitItem()).isEqualTo(emptyList<Profile>())
+            cancelAndIgnoreRemainingEvents()
+        }
+        coVerify { repo.getAllProfiles() }
+        confirmVerified(repo)
     }
 }
