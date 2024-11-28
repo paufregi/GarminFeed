@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import android.util.Log
 import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -22,7 +21,6 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
 import paufregi.connectfeed.data.database.entities.CredentialEntity
-import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.TokenManager
 import java.io.File
 import javax.inject.Inject
@@ -36,22 +34,20 @@ class GarminRepository @Inject constructor(
     suspend fun saveCredential(credential: Credential) =
         garminDao.saveCredential(CredentialEntity(credential = credential))
 
+    fun getCredential(): Flow<Credential?> =
+        garminDao.getCredential().map { it?.credential }
+
     suspend fun saveProfile(profile: Profile) =
         garminDao.saveProfile(profile.toEntity())
 
     suspend fun deleteProfile(profile: Profile) =
         garminDao.deleteProfile(profile.toEntity())
 
-
-    fun getCredential(): Flow<Credential?> =
-        garminDao.getCredential().map { it?.credential }
-
     fun getAllProfiles(): Flow<List<Profile>> =
         garminDao.getAllProfiles().map { it.fastMap { it.toCore() } }
 
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
-
 
     suspend fun clearCache() {
         tokenManager.deleteOAuth1()

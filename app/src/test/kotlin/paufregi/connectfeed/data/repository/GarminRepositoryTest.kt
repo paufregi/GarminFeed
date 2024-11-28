@@ -35,6 +35,7 @@ import paufregi.connectfeed.data.api.models.Summary
 import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.CredentialEntity
+import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.TokenManager
 import retrofit2.Response
 import java.io.File
@@ -63,7 +64,7 @@ class GarminRepositoryTest {
 
 
     @Test
-    fun `Save credentials`() = runTest {
+    fun `Save credential`() = runTest {
         val cred = Credential(username = "user", password = "pass")
 
         coEvery { garminDao.saveCredential(any()) } returns Unit
@@ -87,6 +88,164 @@ class GarminRepositoryTest {
         }
 
         coVerify { garminDao.getCredential() }
+        confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Save profile`() = runTest {
+        val profile = Profile(
+            name = "profile",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+            water = 2
+        )
+
+        val profileEntity  = ProfileEntity(
+            name = "profile",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+            water = 2
+        )
+
+        coEvery { garminDao.saveProfile(any()) } returns Unit
+
+        repo.saveProfile(profile)
+
+        coVerify { garminDao.saveProfile(profileEntity) }
+        confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Delete profile`() = runTest {
+        val profile = Profile(
+            id = 1,
+            name = "profile",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+        )
+
+        val profileEntity  = ProfileEntity(
+            id = 1,
+            name = "profile",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+        )
+
+        coEvery { garminDao.deleteProfile(any()) } returns Unit
+
+        repo.saveProfile(profile)
+
+        coVerify { garminDao.deleteProfile(profileEntity) }
+        confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Get profile`() = runTest {
+        val profile = Profile(
+            id = 1,
+            name = "profile",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+            water = 2
+        )
+        val profileEntity  = ProfileEntity(
+            id = 1,
+            name = "profile",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+            water = 2
+        )
+
+        coEvery { garminDao.getProfile(any()) } returns profileEntity
+
+        val res = repo.getProfile(1)
+
+        assertThat(res).isEqualTo(profile)
+
+        coVerify { garminDao.getProfile(1) }
+        confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Get profile - no result`() = runTest {
+                coEvery { garminDao.getProfile(any()) } returns null
+
+        val res = repo.getProfile(1)
+
+        assertThat(res).isNull()
+
+        coVerify { garminDao.getProfile(1) }
+        confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Get profiles`() = runTest {
+        val profiles = listOf(
+            Profile(
+                id = 1,
+                name = "profile 1",
+                eventType = CoreEventType(id = 1, name = "event 1"),
+                activityType = CoreActivityType.Cycling,
+                course = CoreCourse(1, "course 1", CoreActivityType.Cycling),
+                water = 2
+            ),
+            Profile(
+                id = 2,
+                name = "profile 2",
+                eventType = CoreEventType(id = 2, name = "event 2"),
+                activityType = CoreActivityType.Running,
+                course = CoreCourse(2, "course 2", CoreActivityType.Running),
+            )
+        )
+        val profileEntities = listOf(
+            ProfileEntity(
+                id = 1,
+                name = "profile 1",
+                eventType = CoreEventType(id = 1, name = "event 1"),
+                activityType = CoreActivityType.Cycling,
+                course = CoreCourse(1, "course 1", CoreActivityType.Cycling),
+                water = 2
+            ),
+            ProfileEntity(
+                id = 2,
+                name = "profile 2",
+                eventType = CoreEventType(id = 2, name = "event 2"),
+                activityType = CoreActivityType.Running,
+                course = CoreCourse(2, "course 2", CoreActivityType.Running),
+            )
+        )
+
+        coEvery { garminDao.getAllProfiles() } returns flowOf(profileEntities)
+
+        val res = repo.getAllProfiles()
+
+        res.test {
+            assertThat(awaitItem()).isEqualTo(profiles)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { garminDao.getAllProfiles() }
+        confirmVerified(garminDao, garminConnect)
+    }
+
+    @Test
+    fun `Get profiles - empty list`() = runTest {
+        coEvery { garminDao.getAllProfiles() } returns flowOf(emptyList<ProfileEntity>())
+
+        val res = repo.getAllProfiles()
+
+        res.test {
+            assertThat(awaitItem()).isEqualTo(emptyList<Profile>())
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { garminDao.getAllProfiles() }
         confirmVerified(garminDao, garminConnect)
     }
 
@@ -294,12 +453,18 @@ class GarminRepositoryTest {
     fun `Update activity`() = runTest {
         coEvery { garminConnect.updateActivity(any(), any()) } returns Response.success(Unit)
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(name = "newName", rename = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
+        val profile = Profile(
+            name = "newName",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+            water = 2
+        )
 
         val expectedRequest = UpdateActivity(
             id = 1,
             name = "newName",
-            eventType = EventType(5, "transportation"),
+            eventType = EventType(id = 1, key = "event"),
             metadata = Metadata(1),
             summary = Summary(2, 50f, 80f)
         )
@@ -315,7 +480,13 @@ class GarminRepositoryTest {
     fun `Update activity - failure`() = runTest {
         coEvery { garminConnect.updateActivity(any(), any()) } returns Response.error<Unit>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
-        val profile = Profile(name = "newName", rename = true, eventType = CoreEventType.transportation, activityType = CoreActivityType.Cycling, course = CoreCourse(1, "course", CoreActivityType.Cycling), water = 2)
+        val profile = Profile(
+            name = "newName",
+            eventType = CoreEventType(id = 1, name = "event"),
+            activityType = CoreActivityType.Cycling,
+            course = CoreCourse(1, "course", CoreActivityType.Cycling),
+            water = 2
+        )
 
         val expectedRequest = UpdateActivity(
             id = 1,
