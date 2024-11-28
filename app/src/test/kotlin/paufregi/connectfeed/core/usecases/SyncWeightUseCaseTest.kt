@@ -33,7 +33,7 @@ class SyncWeightUseCaseTest {
     var folder: TemporaryFolder = TemporaryFolder()
 
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: SyncWeightUseCase
+    private lateinit var useCase: SyncWeight
 
     @Before
     fun setup(){
@@ -41,7 +41,7 @@ class SyncWeightUseCaseTest {
         mockkObject(Formatter)
         mockkObject(FitWriter)
 
-        useCase = SyncWeightUseCase(repo, folder.newFolder())
+        useCase = SyncWeight(repo, folder.newFolder())
     }
 
     @After

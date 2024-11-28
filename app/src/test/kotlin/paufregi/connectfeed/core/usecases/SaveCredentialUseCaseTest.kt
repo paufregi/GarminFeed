@@ -16,11 +16,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 
 class SaveCredentialUseCaseTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: SaveCredentialUseCase
+    private lateinit var useCase: SaveCredential
 
     @Before
     fun setup(){
-        useCase = SaveCredentialUseCase(repo)
+        useCase = SaveCredential(repo)
     }
 
     @After

@@ -17,11 +17,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetSetupDoneUseCaseTest {
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: GetSetupDoneUseCase
+    private lateinit var useCase: IsSetupDone
 
     @Before
     fun setup() {
-        useCase = GetSetupDoneUseCase(repo)
+        useCase = IsSetupDone(repo)
     }
 
     @After

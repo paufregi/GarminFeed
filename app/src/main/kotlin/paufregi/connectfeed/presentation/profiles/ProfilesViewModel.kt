@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.usecases.DeleteProfilesUseCase
-import paufregi.connectfeed.core.usecases.GetProfilesUseCase
+import paufregi.connectfeed.core.usecases.DeleteProfile
+import paufregi.connectfeed.core.usecases.GetProfiles
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfilesViewModel @Inject constructor(
-    getProfiles: GetProfilesUseCase,
-    val deleteProfile: DeleteProfilesUseCase
+    getProfiles: GetProfiles,
+    val deleteProfile: DeleteProfile
 ) : ViewModel() {
     val state = getProfiles()
         .map {  ProfilesState(profiles = it) }

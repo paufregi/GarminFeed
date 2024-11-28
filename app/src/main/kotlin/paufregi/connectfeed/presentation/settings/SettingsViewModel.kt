@@ -10,15 +10,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.GetCredentialUseCase
-import paufregi.connectfeed.core.usecases.SaveCredentialUseCase
+import paufregi.connectfeed.core.usecases.GetCredential
+import paufregi.connectfeed.core.usecases.SaveCredential
 import paufregi.connectfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val getCredential: GetCredentialUseCase,
-    private val saveCredential: SaveCredentialUseCase,
+    private val getCredential: GetCredential,
+    private val saveCredential: SaveCredential,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SettingsState())

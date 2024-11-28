@@ -20,7 +20,7 @@ import paufregi.connectfeed.data.repository.GarminRepository
 
 class UpdateActivityUseCaseTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: UpdateActivityUseCase
+    private lateinit var useCase: UpdateActivity
 
     val activity = Activity(id = 1, name = "name", type = ActivityType.Running)
     val profile = Profile(
@@ -33,7 +33,7 @@ class UpdateActivityUseCaseTest{
 
     @Before
     fun setup(){
-        useCase = UpdateActivityUseCase(repo)
+        useCase = UpdateActivity(repo)
     }
 
     @After

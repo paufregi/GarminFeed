@@ -3,7 +3,7 @@ package paufregi.connectfeed.core.usecases
 import paufregi.connectfeed.core.models.ActivityType
 import javax.inject.Inject
 
-class GetActivityTypesUseCase @Inject constructor() {
+class GetActivityTypes @Inject constructor() {
     operator fun  invoke(): List<ActivityType> {
         return listOf(
             ActivityType.Any,

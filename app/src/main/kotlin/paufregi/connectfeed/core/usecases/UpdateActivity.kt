@@ -6,7 +6,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class UpdateActivityUseCase @Inject constructor (private val garminRepository: GarminRepository) {
+class UpdateActivity @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun invoke(
         activity: Activity?,
         profile: Profile?,

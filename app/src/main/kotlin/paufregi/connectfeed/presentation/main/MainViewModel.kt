@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
-import paufregi.connectfeed.core.usecases.GetSetupDoneUseCase
+import paufregi.connectfeed.core.usecases.IsSetupDone
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    getSetupDone: GetSetupDoneUseCase
+    getSetupDone: IsSetupDone
 ) : ViewModel() {
 
     val state = getSetupDone()

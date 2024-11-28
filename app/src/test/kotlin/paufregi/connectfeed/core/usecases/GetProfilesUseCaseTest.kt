@@ -16,11 +16,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetProfilesUseCaseTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: GetProfilesUseCase
+    private lateinit var useCase: GetProfiles
 
     @Before
     fun setup(){
-        useCase = GetProfilesUseCase(repo)
+        useCase = GetProfiles(repo)
     }
 
     @After

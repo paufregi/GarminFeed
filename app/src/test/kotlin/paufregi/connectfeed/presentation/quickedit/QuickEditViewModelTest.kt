@@ -21,17 +21,17 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.GetLatestActivitiesUseCase
-import paufregi.connectfeed.core.usecases.GetProfilesUseCase
-import paufregi.connectfeed.core.usecases.UpdateActivityUseCase
+import paufregi.connectfeed.core.usecases.GetLatestActivities
+import paufregi.connectfeed.core.usecases.GetProfiles
+import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class QuickEditViewModelTest {
 
-    private val getActivities = mockk<GetLatestActivitiesUseCase>()
-    private val getProfiles = mockk<GetProfilesUseCase>()
-    private val updateActivity = mockk<UpdateActivityUseCase>()
+    private val getActivities = mockk<GetLatestActivities>()
+    private val getProfiles = mockk<GetProfiles>()
+    private val updateActivity = mockk<UpdateActivity>()
 
     private lateinit var viewModel: QuickEditViewModel
 

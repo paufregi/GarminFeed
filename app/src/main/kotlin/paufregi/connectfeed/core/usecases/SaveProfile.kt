@@ -1,13 +1,12 @@
 package paufregi.connectfeed.core.usecases
 
-import android.util.Log
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class SaveProfileUseCase @Inject constructor (private val garminRepository: GarminRepository) {
+class SaveProfile @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun invoke(profile: Profile):Result<Unit> {
         if (profile.name.isBlank()) return Result.Failure("Name cannot be empty")
         if (profile.activityType != ActivityType.Any &&

@@ -5,6 +5,6 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
-class GetEventTypesUseCase @Inject constructor (private val garminRepository: GarminRepository) {
+class GetEventTypes @Inject constructor (private val garminRepository: GarminRepository) {
     suspend operator fun  invoke(): Result<List<EventType>> = garminRepository.getEventTypes()
 }

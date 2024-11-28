@@ -8,13 +8,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.SyncWeightUseCase
+import paufregi.connectfeed.core.usecases.SyncWeight
 import java.io.InputStream
 import javax.inject.Inject
 
 @HiltViewModel
 class SyncWeightViewModel @Inject constructor(
-    val syncWeightUseCase: SyncWeightUseCase
+    val syncWeightUseCase: SyncWeight
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<SyncWeightState>(SyncWeightState.Idle)

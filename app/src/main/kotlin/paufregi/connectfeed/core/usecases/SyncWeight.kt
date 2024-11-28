@@ -12,7 +12,7 @@ import java.time.ZoneId
 import javax.inject.Inject
 import javax.inject.Named
 
-class SyncWeightUseCase @Inject constructor (
+class SyncWeight @Inject constructor (
     private val garminRepository: GarminRepository,
     @Named("tempFolder") val folder: File
 ) {

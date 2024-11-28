@@ -11,16 +11,16 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.GetLatestActivitiesUseCase
-import paufregi.connectfeed.core.usecases.GetProfilesUseCase
-import paufregi.connectfeed.core.usecases.UpdateActivityUseCase
+import paufregi.connectfeed.core.usecases.GetLatestActivities
+import paufregi.connectfeed.core.usecases.GetProfiles
+import paufregi.connectfeed.core.usecases.UpdateActivity
 import javax.inject.Inject
 
 @HiltViewModel
 class QuickEditViewModel @Inject constructor(
-    val getLatestActivities: GetLatestActivitiesUseCase,
-    getProfiles: GetProfilesUseCase,
-    val updateActivity: UpdateActivityUseCase
+    val getLatestActivities: GetLatestActivities,
+    getProfiles: GetProfiles,
+    val updateActivity: UpdateActivity
 ) : ViewModel() {
     private val _state = MutableStateFlow(QuickEditState())
     val state = combine(_state, getProfiles()) { state, profiles -> state.copy(profiles = profiles) }

@@ -8,31 +8,28 @@ import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.GetActivityTypesUseCase
-import paufregi.connectfeed.core.usecases.GetCoursesUseCase
-import paufregi.connectfeed.core.usecases.GetEventTypesUseCase
-import paufregi.connectfeed.core.usecases.GetProfileUseCase
-import paufregi.connectfeed.core.usecases.SaveProfileUseCase
+import paufregi.connectfeed.core.usecases.GetActivityTypes
+import paufregi.connectfeed.core.usecases.GetCourses
+import paufregi.connectfeed.core.usecases.GetEventTypes
+import paufregi.connectfeed.core.usecases.GetProfile
+import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.presentation.Routes
-import paufregi.connectfeed.presentation.ui.components.SnackbarController
 import javax.inject.Inject
 
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val getProfile: GetProfileUseCase,
-    val getActivityTypes: GetActivityTypesUseCase,
-    val getEventTypes: GetEventTypesUseCase,
-    val getCourses: GetCoursesUseCase,
-    val saveProfile: SaveProfileUseCase,
+    val getProfile: GetProfile,
+    val getActivityTypes: GetActivityTypes,
+    val getEventTypes: GetEventTypes,
+    val getCourses: GetCourses,
+    val saveProfile: SaveProfile,
 ) : ViewModel() {
 
     private val profileId: Long = savedStateHandle.toRoute<Routes.EditProfile>().id

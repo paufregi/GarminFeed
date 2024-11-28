@@ -17,11 +17,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 
 class GetLatestActivitiesUseCaseTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: GetLatestActivitiesUseCase
+    private lateinit var useCase: GetLatestActivities
 
     @Before
     fun setup(){
-        useCase = GetLatestActivitiesUseCase(repo)
+        useCase = GetLatestActivities(repo)
     }
 
     @After

@@ -17,15 +17,15 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.GetCredentialUseCase
-import paufregi.connectfeed.core.usecases.SaveCredentialUseCase
+import paufregi.connectfeed.core.usecases.GetCredential
+import paufregi.connectfeed.core.usecases.SaveCredential
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class SettingsViewModelTest {
 
-    private val getCredential = mockk<GetCredentialUseCase>()
-    private val saveCredential = mockk<SaveCredentialUseCase>()
+    private val getCredential = mockk<GetCredential>()
+    private val saveCredential = mockk<SaveCredential>()
 
     private lateinit var viewModel: SettingsViewModel
 

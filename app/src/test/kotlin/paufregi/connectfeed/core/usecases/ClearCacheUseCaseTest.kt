@@ -14,11 +14,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 class ClearCacheUseCaseTest {
 
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: ClearCacheUseCase
+    private lateinit var useCase: ClearCache
 
     @Before
     fun setup(){
-        useCase = ClearCacheUseCase(repo)
+        useCase = ClearCache(repo)
     }
 
     @After
