@@ -15,7 +15,7 @@ import org.junit.Test
 import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class GetCredentialUseCaseTest{
+class GetCredentialTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: GetCredential
 

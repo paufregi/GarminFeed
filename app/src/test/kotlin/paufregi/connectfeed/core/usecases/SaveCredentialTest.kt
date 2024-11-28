@@ -14,7 +14,7 @@ import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class SaveCredentialUseCaseTest{
+class SaveCredentialTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: SaveCredential
 

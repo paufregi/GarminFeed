@@ -18,7 +18,7 @@ import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class UpdateActivityUseCaseTest{
+class UpdateActivityTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: UpdateActivity
 

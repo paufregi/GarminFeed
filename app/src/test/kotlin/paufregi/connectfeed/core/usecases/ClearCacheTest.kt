@@ -11,7 +11,7 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class ClearCacheUseCaseTest {
+class ClearCacheTest {
 
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: ClearCache

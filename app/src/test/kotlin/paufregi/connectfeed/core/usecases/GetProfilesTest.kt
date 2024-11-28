@@ -14,7 +14,7 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class GetProfilesUseCaseTest{
+class GetProfilesTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: GetProfiles
 

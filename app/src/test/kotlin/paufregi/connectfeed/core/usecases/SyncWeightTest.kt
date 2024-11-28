@@ -27,7 +27,7 @@ import java.time.Instant
 import java.util.Date
 
 
-class SyncWeightUseCaseTest {
+class SyncWeightTest {
     @Rule
     @JvmField
     var folder: TemporaryFolder = TemporaryFolder()

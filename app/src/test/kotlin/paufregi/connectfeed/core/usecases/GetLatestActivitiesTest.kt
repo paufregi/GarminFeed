@@ -15,7 +15,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class GetLatestActivitiesUseCaseTest{
+class GetLatestActivitiesTest{
     private val repo = mockk<GarminRepository>()
     private lateinit var useCase: GetLatestActivities
 
