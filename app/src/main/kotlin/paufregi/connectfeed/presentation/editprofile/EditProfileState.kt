@@ -18,5 +18,5 @@ sealed interface ProcessState {
     data object Processing : ProcessState
     data object Success : ProcessState
     data class FailureLoading(val reason: String) : ProcessState
-    data object FailureUpdating : ProcessState
+    data object FailureSaving : ProcessState
 }

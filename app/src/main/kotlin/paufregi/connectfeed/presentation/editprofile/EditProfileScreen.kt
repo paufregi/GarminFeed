@@ -67,7 +67,7 @@ internal fun EditProfileContent(
             text = state.processing.reason,
             actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
             paddingValues = paddingValues)
-        is ProcessState.FailureUpdating -> StatusInfo(
+        is ProcessState.FailureSaving -> StatusInfo(
             type = StatusInfoType.Failure,
             text = "Couldn't save profile",
             actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},

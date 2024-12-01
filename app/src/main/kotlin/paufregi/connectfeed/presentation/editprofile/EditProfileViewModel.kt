@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.editprofile
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -44,8 +43,6 @@ class EditProfileViewModel @Inject constructor(
         _state.update { it.copy(processing = ProcessState.Processing) }
         var errors = mutableListOf<String>()
 
-        val profile = getProfile(profileId) ?: Profile()
-
         _state.update { it.copy(
             profile = getProfile(profileId) ?: Profile(),
             activityTypes = getActivityTypes()
@@ -61,7 +58,7 @@ class EditProfileViewModel @Inject constructor(
         }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(processing = ProcessState.FailureLoading("Couldn't load ${errors.joinToString(", ")}")) }
+            true -> _state.update { it.copy(processing = ProcessState.FailureLoading("Couldn't load ${errors.joinToString("& ")}")) }
             false -> _state.update { it.copy(processing = ProcessState.Idle) }
         }
     }
@@ -89,11 +86,9 @@ class EditProfileViewModel @Inject constructor(
 
     private fun save() = viewModelScope.launch {
         _state.update { it.copy(processing = ProcessState.Processing) }
-        when (val res = saveProfile(state.value.profile) ) {
+        when (saveProfile(state.value.profile) ) {
             is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }
-            is Result.Failure -> {
-                Log.d("EditProfileViewModel", "error: ${res.error}")
-                _state.update { it.copy(processing = ProcessState.FailureUpdating) }
+            is Result.Failure -> _state.update { it.copy(processing = ProcessState.FailureSaving)
             }
         }
     }
