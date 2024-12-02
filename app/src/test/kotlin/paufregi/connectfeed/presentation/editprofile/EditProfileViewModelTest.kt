@@ -59,7 +59,10 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.contains(any()) } returns true
+        every { savedState.get<Long>(any()) } returns 1
+
+//        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
