@@ -61,20 +61,20 @@ class GarminDaoTest {
 
     @Test
     fun `Save and retrieve profile`() = runTest {
-        val profile1 = ProfileEntity(Profile(
+        val profile1 = ProfileEntity(
             id = 1,
             name = "profile1",
-            eventType = EventType.training,
+            eventType = EventType(id = 1, name = "event1"),
             activityType = ActivityType.Running,
             water = 100,
-        ))
-        val profile2 = ProfileEntity(Profile(
+        )
+        val profile2 = ProfileEntity(
             id = 2,
             name = "profile1",
-            eventType = EventType.transportation,
+            eventType =  EventType(id = 2, name = "event2"),
             activityType = ActivityType.Cycling,
             water = 550,
-        ))
+        )
 
         val credFlow = dao.getAllProfiles()
 

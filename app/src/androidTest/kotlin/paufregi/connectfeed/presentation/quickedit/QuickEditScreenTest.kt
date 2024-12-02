@@ -41,7 +41,6 @@ class QuickEditScreenTest {
             QuickEditContent(state = QuickEditState(
                 activities = activities,
                 profiles = profiles,
-                availableProfiles = profiles
             ))
         }
         composeTestRule.onNodeWithText("Activity").isDisplayed()
@@ -56,7 +55,6 @@ class QuickEditScreenTest {
                 processing = ProcessState.Processing,
                 activities = activities,
                 profiles = profiles,
-                availableProfiles = profiles
             ))
         }
         composeTestRule.onNodeWithTag("loading").isDisplayed()
@@ -68,7 +66,6 @@ class QuickEditScreenTest {
             QuickEditContent(state = QuickEditState(
                 activities = activities,
                 profiles = profiles,
-                availableProfiles = profiles,
                 activity = activities[0],
                 profile = profiles[0],
             ))
@@ -83,7 +80,6 @@ class QuickEditScreenTest {
             QuickEditContent(state = QuickEditState(
                 activities = activities,
                 profiles = profiles,
-                availableProfiles = profiles,
                 activity = activities[1],
                 profile = profiles[1],
                 effort = 50f,

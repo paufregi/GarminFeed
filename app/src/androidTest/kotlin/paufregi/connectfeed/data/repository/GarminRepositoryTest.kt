@@ -123,9 +123,9 @@ class GarminRepositoryTest {
         val profile = Profile(
             name = "newName",
             rename = true,
-            eventType = EventType.transportation,
+            eventType = EventType(id = 1, name = "event1"),
             activityType = CoreActivityType.Cycling,
-            course = Course.commuteWork,
+            course = Course(id = 1, name = "course1", type = CoreActivityType.Cycling),
             water = 1
         )
 
