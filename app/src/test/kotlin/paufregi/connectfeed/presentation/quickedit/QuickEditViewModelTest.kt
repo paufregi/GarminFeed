@@ -121,7 +121,7 @@ class QuickEditViewModelTest {
             viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.activity).isEqualTo(profiles[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -140,7 +140,7 @@ class QuickEditViewModelTest {
             viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
             assertThat(state.activity).isEqualTo(activities[0])
-            assertThat(state.activity).isNull()
+            assertThat(state.profile).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }

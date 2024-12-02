@@ -17,11 +17,11 @@ import paufregi.connectfeed.data.repository.GarminRepository
 class GetEventTypesTest {
 
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: GetCourses
+    private lateinit var useCase: GetEventTypes
 
     @Before
     fun setup(){
-        useCase = GetCourses(repo)
+        useCase = GetEventTypes(repo)
     }
 
     @After
@@ -41,17 +41,17 @@ class GetEventTypesTest {
         assertThat(res.isSuccessful).isTrue()
         res as Result.Success
         assertThat(res.data).isEqualTo(eventTypes)
-        coVerify { repo.getCourses() }
+        coVerify { repo.getEventTypes() }
         confirmVerified(repo)
     }
 
     @Test
     fun `Get event types - failure`() = runTest {
-        coEvery { repo.getCourses() } returns Result.Failure("Failed")
+        coEvery { repo.getEventTypes() } returns Result.Failure("Failed")
         val res = useCase()
 
         assertThat(res.isSuccessful).isFalse()
-        coVerify { repo.getCourses() }
+        coVerify { repo.getEventTypes() }
         confirmVerified(repo)
     }
 }

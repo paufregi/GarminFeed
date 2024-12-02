@@ -27,12 +27,10 @@ class GetActivityTypesTest {
         val res = useCase()
 
         assertThat(res).containsExactly(
-            listOf(
-                ActivityType.Any,
-                ActivityType.Running,
-                ActivityType.Cycling,
-                ActivityType.Strength
-            )
+            ActivityType.Any,
+            ActivityType.Running,
+            ActivityType.Cycling,
+            ActivityType.Strength
         )
     }
 }

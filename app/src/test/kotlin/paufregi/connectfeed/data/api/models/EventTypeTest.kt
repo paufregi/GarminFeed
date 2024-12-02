@@ -9,7 +9,7 @@ class EventTypeTest {
     @Test
     fun `To Core event type`() {
         val eventType = EventType(id = 1, key = "event")
-        val coreEventType = CoreEventType(id = 1, name = "event")
+        val coreEventType = CoreEventType(id = 1, name = "Event")
 
 
         assertThat(eventType.toCore()).isEqualTo(coreEventType)

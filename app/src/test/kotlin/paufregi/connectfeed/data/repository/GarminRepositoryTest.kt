@@ -137,7 +137,7 @@ class GarminRepositoryTest {
 
         coEvery { garminDao.deleteProfile(any()) } returns Unit
 
-        repo.saveProfile(profile)
+        repo.deleteProfile(profile)
 
         coVerify { garminDao.deleteProfile(profileEntity) }
         confirmVerified(garminDao, garminConnect)
@@ -491,9 +491,9 @@ class GarminRepositoryTest {
         val expectedRequest = UpdateActivity(
             id = 1,
             name = "newName",
-            eventType = EventType(5, "transportation"),
-            metadata = Metadata(1),
-            summary = Summary(2, null, null)
+            eventType = EventType(id = 1, key = "event"),
+            metadata = Metadata(courseId = 1),
+            summary = Summary(water = 2, feel = null, effort = null)
         )
 
         val res = repo.updateActivity(activity, profile, null, null)
