@@ -58,7 +58,7 @@ class EditProfileViewModel @Inject constructor(
         }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(processing = ProcessState.FailureLoading("Couldn't load ${errors.joinToString("& ")}")) }
+            true -> _state.update { it.copy(processing = ProcessState.FailureLoading("Couldn't load ${errors.joinToString(" & ")}")) }
             false -> _state.update { it.copy(processing = ProcessState.Idle) }
         }
     }

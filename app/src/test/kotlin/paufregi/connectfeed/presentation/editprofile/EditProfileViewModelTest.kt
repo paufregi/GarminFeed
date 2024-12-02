@@ -5,9 +5,11 @@ import androidx.navigation.toRoute
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.clearStaticMockk
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -44,7 +46,7 @@ class EditProfileViewModelTest {
 
     @Before
     fun setup(){
-
+        mockkStatic("androidx.navigation.SavedStateHandleKt")
     }
 
     @After
@@ -59,10 +61,7 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.contains(any()) } returns true
-        every { savedState.get<Long>(any()) } returns 1
-
-//        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
@@ -362,9 +361,9 @@ class EditProfileViewModelTest {
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetRename(true))
+            viewModel.onEvent(EditProfileEvent.SetRename(false))
             val state = awaitItem()
-            assertThat(state.profile.rename).isEqualTo(true)
+            assertThat(state.profile.rename).isEqualTo(false)
             cancelAndIgnoreRemainingEvents()
         }
     }
