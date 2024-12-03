@@ -46,27 +46,27 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-            setContent {
-                val setupDone by viewModel.state.collectAsStateWithLifecycle()
-                installSplashScreen().setKeepOnScreenCondition({ setupDone == null })
+        setContent {
+            val setupDone by viewModel.state.collectAsStateWithLifecycle()
+            installSplashScreen().setKeepOnScreenCondition({ setupDone == null })
 
-                val scope = rememberCoroutineScope()
-                val snackState = remember { SnackbarHostState() }
-                val nav = rememberNavController()
+            val scope = rememberCoroutineScope()
+            val snackState = remember { SnackbarHostState() }
+            val nav = rememberNavController()
 
-                Theme {
-                    SnackbarObserver(snackState, scope)
-                    Scaffold(
-                        modifier = Modifier.fillMaxSize(),
-                        snackbarHost = { SnackbarHost(hostState = snackState) },
-                        bottomBar = { NavBar(
-                            nav = nav,
-                            navItems = listOf(
-                                NavItem(Routes.Home, "Home", Icons.Default.Home),
-                                NavItem(Routes.Profiles, "Profiles", Icons.Default.Tune),
-                                NavItem(Routes.Settings, "Settings", Icons.Default.Settings),
-                            ),
-                        ) }
+            Theme {
+                SnackbarObserver(snackState, scope)
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    snackbarHost = { SnackbarHost(hostState = snackState) },
+                    bottomBar = { NavBar(
+                        nav = nav,
+                        navItems = listOf(
+                            NavItem(Routes.Home, "Home", Icons.Default.Home),
+                            NavItem(Routes.Profiles, "Profiles", Icons.Default.Tune),
+                            NavItem(Routes.Settings, "Settings", Icons.Default.Settings),
+                        ),
+                    ) }
                 ) { pv ->
                     NavHost(navController = nav, startDestination = Routes.Home) {
                         composable<Routes.Home> {
