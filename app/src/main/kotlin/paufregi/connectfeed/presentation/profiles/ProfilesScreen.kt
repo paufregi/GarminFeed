@@ -73,11 +73,12 @@ internal fun ProfilesContent(
             } }
     ) { pv ->
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(pv)
+                .padding(top = 40.dp)
                 .verticalScroll(rememberScrollState())
         ) {
             if (state.profiles.isEmpty()) {
