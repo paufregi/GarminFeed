@@ -1,9 +1,11 @@
 package paufregi.connectfeed.presentation.quickedit
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -39,6 +41,7 @@ class QuickEditScreenTest {
     fun `Default values`() {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
+                processing = ProcessState.Idle,
                 activities = activities,
                 profiles = profiles,
             ))
@@ -53,17 +56,16 @@ class QuickEditScreenTest {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
                 processing = ProcessState.Processing,
-                activities = activities,
-                profiles = profiles,
             ))
         }
         composeTestRule.onNodeWithTag("loading").isDisplayed()
     }
 
     @Test
-    fun `Values selected - running`() {
+    fun `Values selected`() {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
+                processing = ProcessState.Idle,
                 activities = activities,
                 profiles = profiles,
                 activity = activities[0],
@@ -72,23 +74,6 @@ class QuickEditScreenTest {
         }
         composeTestRule.onNodeWithText("Activity").assertTextContains(activities[0].name)
         composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[0].name)
-    }
-
-    @Test
-    fun `Values selected - cycling`() {
-        composeTestRule.setContent {
-            QuickEditContent(state = QuickEditState(
-                activities = activities,
-                profiles = profiles,
-                activity = activities[1],
-                profile = profiles[1],
-                effort = 50f,
-                feel = 50f,
-            ))
-        }
-        composeTestRule.onNodeWithText("Activity").assertTextContains(activities[1].name)
-        composeTestRule.onNodeWithText("Profile").assertTextContains(profiles[1].name)
-        composeTestRule.onNodeWithText("5 - Hard").isDisplayed()
-        composeTestRule.onNodeWithText("Normal").isDisplayed()
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
     }
 }

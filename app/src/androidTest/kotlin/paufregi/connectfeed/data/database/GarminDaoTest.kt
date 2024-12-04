@@ -49,9 +49,9 @@ class GarminDaoTest {
     fun `Save and retrieve credential`() = runTest {
         val credEntity = CredentialEntity(credential = cred)
 
-        val credFlow = dao.getCredential()
+        val cred = dao.getCredential()
 
-        credFlow.test {
+        cred.test {
             assertThat(awaitItem()).isNull()
             dao.saveCredential(credEntity)
             assertThat(awaitItem()).isEqualTo(credEntity)
@@ -60,29 +60,25 @@ class GarminDaoTest {
     }
 
     @Test
-    fun `Save and retrieve profile`() = runTest {
-        val profile1 = ProfileEntity(
+    fun `Save delete and retrieve profiles`() = runTest {
+        val profile = ProfileEntity(
             id = 1,
             name = "profile1",
             eventType = EventType(id = 1, name = "event1"),
             activityType = ActivityType.Running,
             water = 100,
         )
-        val profile2 = ProfileEntity(
-            id = 2,
-            name = "profile1",
-            eventType =  EventType(id = 2, name = "event2"),
-            activityType = ActivityType.Cycling,
-            water = 550,
-        )
 
-        val credFlow = dao.getAllProfiles()
+        dao.saveProfile(profile)
+        assertThat(dao.getProfile(profile.id)).isEqualTo(profile)
 
-        credFlow.test {
-            assertThat(awaitItem()).isNull()
-            dao.saveProfile(profile1)
-            dao.saveProfile(profile2)
-            assertThat(awaitItem()).containsExactly(profile1, profile2)
+        dao.deleteProfile(profile)
+        assertThat(dao.getProfile(profile.id)).isNull()
+
+        dao.getAllProfiles().test {
+            assertThat(awaitItem()).isEmpty()
+            dao.saveProfile(profile)
+            assertThat(awaitItem()).containsExactly(profile)
             cancelAndIgnoreRemainingEvents()
         }
     }

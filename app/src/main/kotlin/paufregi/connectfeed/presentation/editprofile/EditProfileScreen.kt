@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -153,6 +154,7 @@ internal fun EditProfileForm(
                 })
         ) {
             Checkbox(
+                modifier = Modifier.testTag("rename_checkbox"),
                 checked = state.profile.rename,
                 onCheckedChange = { onEvent(EditProfileEvent.SetRename(it)) },
             )
@@ -166,6 +168,7 @@ internal fun EditProfileForm(
             )
         ) {
             Checkbox(
+                modifier = Modifier.testTag("custom_water_checkbox"),
                 checked = state.profile.customWater,
                 onCheckedChange = { onEvent(EditProfileEvent.SetCustomWater(it)) },
             )
@@ -179,6 +182,7 @@ internal fun EditProfileForm(
             )
         ) {
             Checkbox(
+                modifier = Modifier.testTag("feel_and_effort_checkbox"),
                 checked = state.profile.feelAndEffort,
                 onCheckedChange = { onEvent(EditProfileEvent.SetFeelAndEffort(it)) },
             )

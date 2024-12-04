@@ -82,7 +82,7 @@ internal fun ProfilesContent(
                 .verticalScroll(rememberScrollState())
         ) {
             if (state.profiles.isEmpty()) {
-                Text("No profiles found")
+                Text("No profile")
             }
             state.profiles.fastForEachIndexed { index, it ->
                 Card(

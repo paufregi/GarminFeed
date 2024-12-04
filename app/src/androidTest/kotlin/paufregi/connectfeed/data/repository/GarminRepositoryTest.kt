@@ -15,6 +15,8 @@ import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
 import paufregi.connectfeed.core.models.Activity as CoreActivity
 import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
+import paufregi.connectfeed.core.models.Course as CoreCourse
+import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
@@ -78,12 +80,31 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Store credentials`() = runTest {
+    fun `Store credential`() = runTest {
         repo.saveCredential(cred)
         val res = repo.getCredential()
 
         res.test{
             assertThat(awaitItem()).isEqualTo(cred)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Store profiles`() = runTest {
+        val profile = Profile(id = 1, name = "test")
+        repo.saveProfile(profile)
+        assertThat(repo.getProfile(profile.id)).isEqualTo(profile)
+
+        repo.deleteProfile(profile)
+        assertThat(repo.getProfile(profile.id)).isNull()
+
+        val res = repo.getAllProfiles()
+
+        res.test{
+            assertThat(awaitItem()).isEmpty()
+            repo.saveProfile(profile)
+            assertThat(awaitItem()).containsExactly(profile)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -114,6 +135,39 @@ class GarminRepositoryTest {
         res as Result.Success
         assertThat(res.data).isEqualTo(expected)
     }
+
+    @Test
+    fun `Get courses`() = runTest {
+        dao.saveCredential(CredentialEntity(credential = cred))
+
+        val expected = listOf(
+            CoreCourse(id = 1, name = "Course 1", type = CoreActivityType.Running),
+            CoreCourse(id = 2, name = "Course 2", type = CoreActivityType.Cycling),
+        )
+
+        val res = repo.getCourses()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+    }
+
+    @Test
+    fun `Get event types`() = runTest {
+        dao.saveCredential(CredentialEntity(credential = cred))
+
+        val expected = listOf(
+            CoreEventType(id = 1, name = "Race"),
+            CoreEventType(id = 2, name = "Training"),
+        )
+
+        val res = repo.getEventTypes()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+    }
+
 
     @Test
     fun `Update activity`() = runTest {
