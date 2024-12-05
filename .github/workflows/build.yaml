@@ -44,7 +44,9 @@ jobs:
         with:
           api-level: 34
           arch: x86_64
-          script: ./gradlew connectedCheck
+          emulator-boot-timeout: 600
+          disable-animations: true
+          script: ./gradlew connectedDebugAndroidTest
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
