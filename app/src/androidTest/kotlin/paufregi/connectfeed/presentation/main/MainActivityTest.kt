@@ -113,7 +113,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Create profiles`() = runTest {
+    fun `Create profile`() = runTest {
         dao.saveCredential(CredentialEntity(credential = cred))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -132,6 +132,8 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Water").performTextInput("500")
         composeTestRule.onNodeWithText("Save").performClick()
 
+        composeTestRule.unregisterIdlingResource()
+
         val res = repo.getAllProfiles()
         res.test{
             val profiles = awaitItem()
@@ -146,7 +148,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Update profiles`() = runTest {
+    fun `Update profile`() = runTest {
         dao.saveCredential(CredentialEntity(credential = cred))
         dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 
@@ -178,7 +180,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Delete profiles`() = runTest {
+    fun `Delete profile`() = runTest {
         dao.saveCredential(CredentialEntity(credential = cred))
         dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 

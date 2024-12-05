@@ -64,6 +64,7 @@ android {
     }
 
     testOptions {
+        animationsDisabled = true
         managedDevices {
             devices {
                 register("pixel9Pro", ManagedVirtualDevice::class) {
