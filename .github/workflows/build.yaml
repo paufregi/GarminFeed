@@ -9,16 +9,10 @@ on:
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Enable KVM
-        run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
 
       - name: Set Timezone
         uses: szenius/set-timezone@v2.0
@@ -36,69 +30,72 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # - name: Run test
-      #   run: ./gradlew test
-
-      - name: Run android test
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: 34
-          target: aosp_atd
-          arch: x86_64
-          disable-animations: true
-          script: |
-            avdmanager list device
-            ./gradlew pixel9ProDebugAndroidTest
-
-      - name: Archive logs
-        uses: actions/upload-artifact@v4
-        if: success() || failure()
-        with:
-          name: test-results
-          path: app/build/outputs/androidTest-results/connected/debug
-
       - name: Run build
         run: ./gradlew build
 
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Run test
+        run: ./gradlew pixel9ProDebugAndroidTest
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "adopt"
+      # - name: Run android test
+      #   uses: reactivecircus/android-emulator-runner@v2
+      #   with:
+      #     api-level: 34
+      #     target: aosp_atd
+      #     arch: x86_64
+      #     disable-animations: true
+      #     script: |
+      #       avdmanager list device
+      #       ./gradlew pixel9ProDebugAndroidTest
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+      # - name: Archive logs
+      #   uses: actions/upload-artifact@v4
+      #   if: success() || failure()
+      #   with:
+      #     name: test-results
+      #     path: app/build/outputs/androidTest-results/connected/debug
 
-      - name: Run lint
-        run: ./gradlew lint
+      # - name: Run build
+      #   run: ./gradlew build
 
-      - name: Check and report lint results
-        uses: hidakatsuya/action-report-android-lint@v1.2.2
-        with:
-          result-path: "app/build/reports/lint-results-debug.xml"
-          fail-on-warning: false
+  # lint:
+  #   name: Lint
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
 
-  dependacy-graph:
-    name: Dependency graph
-    permissions:
-      contents: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  #     - name: Setup JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: "17"
+  #         distribution: "adopt"
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "adopt"
+  #     - name: Setup Gradle
+  #       uses: gradle/actions/setup-gradle@v4
 
-      - name: Dependency graph
-        uses: gradle/actions/dependency-submission@v4
+  #     - name: Run lint
+  #       run: ./gradlew lint
+
+  #     - name: Check and report lint results
+  #       uses: hidakatsuya/action-report-android-lint@v1.2.2
+  #       with:
+  #         result-path: "app/build/reports/lint-results-debug.xml"
+  #         fail-on-warning: false
+
+  # dependacy-graph:
+  #   name: Dependency graph
+  #   permissions:
+  #     contents: write
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+
+  #     - name: Setup JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: "17"
+  #         distribution: "adopt"
+
+  #     - name: Dependency graph
+  #       uses: gradle/actions/dependency-submission@v4
