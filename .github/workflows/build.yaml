@@ -48,7 +48,7 @@ jobs:
           disable-animations: true
           script: |
             avdmanager list device
-            ./gradlew connectedCheck --console rich -i
+            ./gradlew pixel9ProDebugAndroidTest
 
       - name: Archive logs
         uses: actions/upload-artifact@v4
