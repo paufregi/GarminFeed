@@ -1,5 +1,6 @@
 package paufregi.connectfeed.data.repository
 
+import android.util.Log
 import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -37,8 +38,11 @@ class GarminRepository @Inject constructor(
     fun getCredential(): Flow<Credential?> =
         garminDao.getCredential().map { it?.credential }
 
-    suspend fun saveProfile(profile: Profile) =
-        garminDao.saveProfile(profile.toEntity())
+    suspend fun saveProfile(profile: Profile) {
+        Log.i("Repo", "about to save")
+        return garminDao.saveProfile(profile.toEntity())
+    }
+
 
     suspend fun deleteProfile(profile: Profile) =
         garminDao.deleteProfile(profile.toEntity())
