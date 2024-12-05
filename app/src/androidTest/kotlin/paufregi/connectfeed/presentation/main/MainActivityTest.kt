@@ -160,7 +160,7 @@ class MainActivityTest {
         composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Profile 1").isDisplayed() }
         composeTestRule.onNodeWithText("Profile 1").performClick()
 
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Name").isDisplayed() }
+        composeTestRule.waitUntil(1001) { composeTestRule.onNodeWithText("Name").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextClearance()
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 2")
@@ -173,7 +173,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Water").performTextInput("100")
         composeTestRule.onNodeWithText("Save").performClick()
 
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
+        composeTestRule.waitUntil(1002) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
         composeTestRule.onNodeWithText("Ok").performClick()
 
         val profile = repo.getProfile(5)
