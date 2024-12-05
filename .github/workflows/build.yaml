@@ -44,9 +44,10 @@ jobs:
         with:
           api-level: 34
           target: aosp_atd
+          profile: Pixel 9 Pro
           arch: x86_64
           disable-animations: true
-          script: ./gradlew connectedDebugAndroidTest
+          script: ./gradlew connectedCheck --console rich -i
 
       - name: Archive logs
         uses: actions/upload-artifact@v4

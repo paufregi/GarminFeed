@@ -54,7 +54,6 @@ class MainActivityTest {
 
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
-    private lateinit var loadingResource: CountingIdlingResource
 
     @Inject
     lateinit var repo: GarminRepository
@@ -83,8 +82,6 @@ class MainActivityTest {
         garminSSOServer.dispatcher = garminSSODispatcher
 
         dao = database.garminDao()
-
-        loadingResource = CountingIdlingResource("loading")
     }
 
     @After
@@ -175,9 +172,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Save").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").performClick()
 
-        loadingResource.increment()
         composeTestRule.waitUntil(1001) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
-        loadingResource.decrement()
 
         val profile = repo.getProfile(5)
         assertThat(profile?.name).isEqualTo("Profile 2")
