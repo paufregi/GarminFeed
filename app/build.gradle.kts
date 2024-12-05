@@ -134,5 +134,4 @@ dependencies {
     androidTestImplementation(libs.okhttp.mockwebserver)
     androidTestImplementation(libs.okhttp.tls)
     androidTestImplementation(libs.turbine)
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 }
