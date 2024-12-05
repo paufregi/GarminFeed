@@ -51,7 +51,10 @@ jobs:
         if: success() || failure()
         with:
           name: test-results
-          path: app/build
+          path: |
+            app/build/outputs/
+            app/build/reports/
+            app/build/test-results/
 
       - name: Run build
         run: ./gradlew build
