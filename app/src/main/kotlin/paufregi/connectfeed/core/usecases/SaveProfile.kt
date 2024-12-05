@@ -1,6 +1,5 @@
 package paufregi.connectfeed.core.usecases
 
-import android.util.Log
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
@@ -14,9 +13,7 @@ class SaveProfile @Inject constructor (private val garminRepository: GarminRepos
             profile.activityType != ActivityType.Strength &&
             profile.course != null &&
             profile.course.type != profile.activityType) return Result.Failure("Course must match activity type")
-        Log.i("SaveProfile", "Validation passed")
         garminRepository.saveProfile(profile)
-        Log.i("SaveProfile", "All done")
         return Result.Success(Unit)
     }
 }

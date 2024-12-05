@@ -36,69 +36,58 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
-      - name: Run test
+      - name: Run tests
+        run: ./gradlew test
+
+      - name: Run android tests
         run: ./gradlew pixel9ProDebugAndroidTest
 
-      # - name: Run android test
-      #   uses: reactivecircus/android-emulator-runner@v2
-      #   with:
-      #     api-level: 34
-      #     target: aosp_atd
-      #     arch: x86_64
-      #     disable-animations: true
-      #     script: |
-      #       avdmanager list device
-      #       ./gradlew pixel9ProDebugAndroidTest
+      - name: Archive logs
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: test-results
+          path: app/build/outputs/androidTest-results/connected/debug
 
-      # - name: Archive logs
-      #   uses: actions/upload-artifact@v4
-      #   if: success() || failure()
-      #   with:
-      #     name: test-results
-      #     path: app/build/outputs/androidTest-results/connected/debug
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # - name: Run build
-      #   run: ./gradlew build
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "adopt"
 
-  # lint:
-  #   name: Lint
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-  #     - name: Setup JDK
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         java-version: "17"
-  #         distribution: "adopt"
+      - name: Run lint
+        run: ./gradlew lint
 
-  #     - name: Setup Gradle
-  #       uses: gradle/actions/setup-gradle@v4
+      - name: Check and report lint results
+        uses: hidakatsuya/action-report-android-lint@v1.2.2
+        with:
+          result-path: "app/build/reports/lint-results-debug.xml"
+          fail-on-warning: false
 
-  #     - name: Run lint
-  #       run: ./gradlew lint
+  dependacy-graph:
+    name: Dependency graph
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Check and report lint results
-  #       uses: hidakatsuya/action-report-android-lint@v1.2.2
-  #       with:
-  #         result-path: "app/build/reports/lint-results-debug.xml"
-  #         fail-on-warning: false
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "adopt"
 
-  # dependacy-graph:
-  #   name: Dependency graph
-  #   permissions:
-  #     contents: write
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-
-  #     - name: Setup JDK
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         java-version: "17"
-  #         distribution: "adopt"
-
-  #     - name: Dependency graph
-  #       uses: gradle/actions/dependency-submission@v4
+      - name: Dependency graph
+        uses: gradle/actions/dependency-submission@v4

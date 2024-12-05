@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.editprofile
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -86,21 +85,10 @@ class EditProfileViewModel @Inject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        Log.i("EditProfileViewModel", "Saving profile")
-        print("Saving profile")
         _state.update { it.copy(processing = ProcessState.Processing) }
-        when (val res = saveProfile(state.value.profile) ) {
-            is Result.Success -> {
-                Log.i("EditProfileViewModel", "Profile saved")
-                print("Profile saved")
-                _state.update { it.copy(processing = ProcessState.Success) }
-            }
-            is Result.Failure -> {
-                Log.i("EditProfileViewModel", "Couldn't save profile")
-                print("Failure - ${res.error}")
-                _state.update { it.copy(processing = ProcessState.FailureSaving)
-                }
-            }
+        when (saveProfile(state.value.profile) ) {
+            is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }
+            is Result.Failure -> _state.update { it.copy(processing = ProcessState.FailureSaving) }
         }
     }
 }

@@ -1,12 +1,10 @@
 package paufregi.connectfeed.presentation.editprofile
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
-import io.mockk.clearStaticMockk
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -48,14 +46,11 @@ class EditProfileViewModelTest {
     @Before
     fun setup(){
         mockkStatic("androidx.navigation.SavedStateHandleKt")
-        mockkStatic(Log::class)
-        every { Log.i(any(), any()) } returns 0
     }
 
     @After
     fun tearDown(){
         clearAllMocks()
-        clearStaticMockk(Log::class)
     }
 
     @Test

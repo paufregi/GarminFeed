@@ -7,13 +7,11 @@ import io.mockk.clearStaticMockk
 import io.mockk.every
 import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.data.repository.GarminRepository
 import retrofit2.Response
 
 class CallApiTest {
