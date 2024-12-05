@@ -42,13 +42,6 @@ jobs:
       - name: Run android tests
         run: ./gradlew pixel9ProDebugAndroidTest
 
-      - name: Archive logs
-        uses: actions/upload-artifact@v4
-        if: success() || failure()
-        with:
-          name: test-results
-          path: app/build/outputs/androidTest-results/connected/debug
-
   lint:
     name: Lint
     runs-on: ubuntu-latest
