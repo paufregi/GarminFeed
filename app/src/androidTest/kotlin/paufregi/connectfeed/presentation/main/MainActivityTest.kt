@@ -120,7 +120,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("nav_profiles").performClick()
         composeTestRule.onNodeWithTag("create_profile").performClick()
 
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Name").isDisplayed() }
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Name").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 1")
         composeTestRule.onNodeWithText("Activity Type").performClick()
@@ -186,7 +186,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("nav_profiles").performClick()
         composeTestRule.onNodeWithTag("loading").isDisplayed()
 
-        composeTestRule.waitUntil(2000) { composeTestRule.onNodeWithText("Profile 1").isDisplayed() }
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Profile 1").isDisplayed() }
         composeTestRule.onNodeWithTag("delete_profile_10").performClick()
 
         composeTestRule.onNodeWithText("Profile 1").isNotDisplayed()
@@ -201,7 +201,7 @@ class MainActivityTest {
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithTag("loading").isDisplayed()
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Activity").isDisplayed() }
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Activity").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithText("Profile").performClick()
@@ -209,7 +209,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Save").performClick()
 
         composeTestRule.onNodeWithText("Save").isDisplayed()
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
         composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 }
