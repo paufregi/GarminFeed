@@ -10,7 +10,9 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -37,6 +39,7 @@ fun NavBar(
     NavigationBar {
         navItems.forEach { item ->
             NavigationBarItem(
+                modifier = Modifier.testTag("nav_${item.label.lowercase()}"),
                 selected = navBackStackEntry?.isCurrent(item.route) == true,
                 onClick = { nav.navigate(item.route) },
                 label = { Text(item.label) },

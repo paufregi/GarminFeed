@@ -39,7 +39,7 @@ class EditProfileScreenTest {
         }
         composeTestRule.onNodeWithText("Name").isDisplayed()
         composeTestRule.onNodeWithText("Activity Type").isDisplayed()
-        composeTestRule.onNodeWithText("Event type").isDisplayed()
+        composeTestRule.onNodeWithText("Event Type").isDisplayed()
         composeTestRule.onNodeWithText("Water").isDisplayed()
         composeTestRule.onNodeWithText("Rename activity").isDisplayed()
         composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
@@ -80,7 +80,7 @@ class EditProfileScreenTest {
         }
         composeTestRule.onNodeWithText("Name").assertTextContains("Profile 1")
         composeTestRule.onNodeWithText("Activity Type").assertTextContains("Running")
-        composeTestRule.onNodeWithText("Event type").assertTextContains("Event 1")
+        composeTestRule.onNodeWithText("Event Type").assertTextContains("Event 1")
         composeTestRule.onNodeWithText("Course").assertTextContains("Course 1")
         composeTestRule.onNodeWithText("Water").assertTextContains("10")
         composeTestRule.onNodeWithTag("rename_checkbox").assertIsOn()
@@ -118,7 +118,7 @@ class EditProfileScreenTest {
                 )
             ))
         }
-        composeTestRule.onNodeWithText("Event type").assertTextContains("")
+        composeTestRule.onNodeWithText("Event Type").assertTextContains("")
         composeTestRule.onNodeWithText("Save").assertIsNotEnabled()
     }
 

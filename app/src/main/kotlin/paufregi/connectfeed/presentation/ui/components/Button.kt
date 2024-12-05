@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -31,9 +32,12 @@ fun Button(
 fun Button(
     @PreviewParameter(ButtonIconPreview ::class) icon: ImageVector,
     description: String? = "",
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
-    MaterialIconButton(onClick) {
+    MaterialIconButton(
+        modifier = modifier,
+        onClick = onClick) {
         Icon(icon, description)
     }
 }

@@ -115,7 +115,7 @@ internal fun EditProfileForm(
             }
         )
         Dropdown(
-            label = { Text("Event type") },
+            label = { Text("Event Type") },
             selected = state.profile.eventType?.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.eventTypes.map {

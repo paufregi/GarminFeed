@@ -67,7 +67,7 @@ internal fun ProfilesContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { nav.navigate(Routes.EditProfile()) },
-                modifier = Modifier.testTag("addProfile")
+                modifier = Modifier.testTag("create_profile")
             ) {
                 Icon(Icons.Default.Add, "Create profile")
             } }
@@ -100,7 +100,8 @@ internal fun ProfilesContent(
                         Spacer(modifier = Modifier.weight(1f))
                         Button(
                             icon = Icons.Default.Delete,
-                            onClick = { onEvent(ProfileEvent.Delete(it)) }
+                            onClick = { onEvent(ProfileEvent.Delete(it)) },
+                            modifier = Modifier.testTag("delete_profile_${it.id}")
                         )
                     }
                 }

@@ -11,7 +11,8 @@ class SaveProfile @Inject constructor (private val garminRepository: GarminRepos
         if (profile.name.isBlank()) return Result.Failure("Name cannot be empty")
         if (profile.activityType != ActivityType.Any &&
             profile.activityType != ActivityType.Strength &&
-            profile.course?.type != profile.activityType) return Result.Failure("Course must match activity type")
+            profile.course != null &&
+            profile.course.type != profile.activityType) return Result.Failure("Course must match activity type")
         garminRepository.saveProfile(profile)
         return Result.Success(Unit)
     }
