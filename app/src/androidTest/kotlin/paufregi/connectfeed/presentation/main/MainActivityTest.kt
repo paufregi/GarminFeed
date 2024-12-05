@@ -120,7 +120,6 @@ class MainActivityTest {
         composeTestRule.onNodeWithTag("nav_profiles").performClick()
         composeTestRule.onNodeWithTag("create_profile").performClick()
 
-        composeTestRule.onNodeWithTag("loading").isDisplayed()
         composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Name").isDisplayed() }
 
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 1")
