@@ -60,7 +60,7 @@ android {
     }
 
     lint {
-        disable += "ObsoleteLintCustomCheck OldTargetApi"
+        disable += "OldTargetApi"
     }
 
     testOptions {

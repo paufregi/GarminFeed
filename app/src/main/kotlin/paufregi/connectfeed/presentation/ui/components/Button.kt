@@ -30,10 +30,10 @@ fun Button(
 @Preview
 @Composable
 fun Button(
+    modifier: Modifier = Modifier,
     @PreviewParameter(ButtonIconPreview ::class) icon: ImageVector,
     description: String? = "",
-    onClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onClick: () -> Unit = {}
 ) {
     MaterialIconButton(
         modifier = modifier,

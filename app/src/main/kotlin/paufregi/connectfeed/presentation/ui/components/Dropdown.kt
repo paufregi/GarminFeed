@@ -63,11 +63,11 @@ fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
 @Composable
 @ExperimentalMaterial3Api
 fun Dropdown(
+    modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     selected: DropdownItem? = null,
     items: List<DropdownItem> = emptyList(),
-    isError: Boolean = false,
-    modifier: Modifier = Modifier
+    isError: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
