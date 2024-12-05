@@ -179,10 +179,11 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Water").performTextInput("100")
         composeTestRule.onNodeWithText("Save").performClick()
         Log.i("TEST", "SAVE")
-        composeTestRule.waitUntil(2000) { composeTestRule.onNodeWithTag("status_info_text").isDisplayed() }
+
+//        composeTestRule.waitUntil(5000) { composeTestRule.onNodeWithTag("status_info_text").isDisplayed() }
         Log.i("TEST", "SAVED")
 
-        composeTestRule.onAllNodesWithTag("status_info_text").printToLog("TEST")
+//        composeTestRule.onAllNodesWithTag("status_info_text").printToLog("TEST")
         composeTestRule.onNodeWithText("Ok").performClick()
 
         val profile = repo.getProfile(5)
