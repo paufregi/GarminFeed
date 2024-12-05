@@ -1,8 +1,8 @@
 package paufregi.connectfeed.presentation.main
 
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.ui.test.IdlingResource
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -12,7 +12,6 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -98,7 +97,7 @@ class MainActivityTest {
 
     @Test
     fun `Home page - no credential`() {
-        val a = ActivityScenario.launch(MainActivity::class.java)
+        ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithText("Please setup your credential").assertIsDisplayed()
     }
 
@@ -173,6 +172,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Course").performClick()
         composeTestRule.onNodeWithText("Course 2").performClick()
         composeTestRule.onNodeWithText("Water").performTextInput("100")
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
         composeTestRule.onNodeWithText("Save").performClick()
 
         loadingResource.increment()
