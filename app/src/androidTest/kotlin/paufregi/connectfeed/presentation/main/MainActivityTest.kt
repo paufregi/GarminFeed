@@ -131,9 +131,7 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Course 1").performClick()
         composeTestRule.onNodeWithText("Water").performTextInput("500")
         composeTestRule.onNodeWithText("Save").performClick()
-
-        composeTestRule.unregisterIdlingResource()
-
+        
         val res = repo.getAllProfiles()
         res.test{
             val profiles = awaitItem()
