@@ -52,9 +52,8 @@ jobs:
         with:
           name: test-results
           path: |
-            app/build/outputs/
+            app/build/outputs/androidTest-results
             app/build/reports/
-            app/build/test-results/
 
       - name: Run build
         run: ./gradlew build

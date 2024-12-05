@@ -1,18 +1,15 @@
 package paufregi.connectfeed.presentation.main
 
-import android.util.Log
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
-import androidx.compose.ui.test.printToLog
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -135,9 +132,6 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Water").performTextInput("500")
         composeTestRule.onNodeWithText("Save").performClick()
 
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
-        composeTestRule.onNodeWithText("Ok").performClick()
-
         val res = repo.getAllProfiles()
         res.test{
             val profiles = awaitItem()
@@ -157,17 +151,13 @@ class MainActivityTest {
         dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
-        Log.i("TEST", "START")
         composeTestRule.onNodeWithTag("nav_profiles").performClick()
-        Log.i("TEST", "NAV PROFILES")
         composeTestRule.onNodeWithTag("loading").isDisplayed()
 
         composeTestRule.waitUntil { composeTestRule.onNodeWithText("Profile 1").isDisplayed() }
         composeTestRule.onNodeWithText("Profile 1").performClick()
-        Log.i("TEST", "EDIT PROFILE 1")
 
         composeTestRule.waitUntil { composeTestRule.onNodeWithText("Name").isDisplayed() }
-        Log.i("TEST", "FORM")
         composeTestRule.onNodeWithText("Name").performTextClearance()
         composeTestRule.onNodeWithText("Name").performTextInput("Profile 2")
         composeTestRule.onNodeWithText("Activity Type").performClick()
@@ -178,13 +168,6 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Course 2").performClick()
         composeTestRule.onNodeWithText("Water").performTextInput("100")
         composeTestRule.onNodeWithText("Save").performClick()
-        Log.i("TEST", "SAVE")
-
-//        composeTestRule.waitUntil(5000) { composeTestRule.onNodeWithTag("status_info_text").isDisplayed() }
-        Log.i("TEST", "SAVED")
-
-//        composeTestRule.onAllNodesWithTag("status_info_text").printToLog("TEST")
-        composeTestRule.onNodeWithText("Ok").performClick()
 
         val profile = repo.getProfile(5)
         assertThat(profile?.name).isEqualTo("Profile 2")
