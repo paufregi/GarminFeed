@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.editprofile
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -62,22 +63,34 @@ internal fun EditProfileContent(
     nav: NavHostController = rememberNavController()
 ) {
     when (state.processing) {
-        is ProcessState.Processing -> Loading(paddingValues)
-        is ProcessState.FailureLoading -> StatusInfo(
-            type = StatusInfoType.Failure,
-            text = state.processing.reason,
-            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
-            paddingValues = paddingValues)
-        is ProcessState.FailureSaving -> StatusInfo(
-            type = StatusInfoType.Failure,
-            text = "Couldn't save profile",
-            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
-            paddingValues = paddingValues)
-        is ProcessState.Success -> StatusInfo(
-            type = StatusInfoType.Success,
-            text = "Profile saved",
-            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
-            paddingValues = paddingValues)
+        is ProcessState.Processing -> {
+            Log.i("EditProfileContent", "Processing")
+            Loading(paddingValues)
+        }
+        is ProcessState.FailureLoading -> {
+            Log.i("EditProfileContent", "FailureLoading")
+            StatusInfo(
+                type = StatusInfoType.Failure,
+                text = state.processing.reason,
+                actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
+                paddingValues = paddingValues)
+        }
+        is ProcessState.FailureSaving -> {
+            Log.i("EditProfileContent", "FailureSaving")
+            StatusInfo(
+                type = StatusInfoType.Failure,
+                text = "Couldn't save profile",
+                actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
+                paddingValues = paddingValues)
+        }
+        is ProcessState.Success -> {
+            Log.i("EditProfileContent", "Success")
+            StatusInfo(
+                type = StatusInfoType.Success,
+                text = "Profile saved",
+                actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
+                paddingValues = paddingValues)
+        }
         else -> EditProfileForm(state, onEvent, paddingValues, nav)
     }
 }
