@@ -44,7 +44,13 @@ jobs:
         with:
           api-level: 34
           arch: x86_64
-          script: ./gradlew connectedCheck --debug
+          script: ./gradlew connectedCheck
+
+      - name: Archive logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: app/build/reports/androidTests/connected/debug/index.html
 
       - name: Run build
         run: ./gradlew build

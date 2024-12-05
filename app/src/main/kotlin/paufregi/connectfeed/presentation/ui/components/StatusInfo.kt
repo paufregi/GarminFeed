@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
@@ -59,7 +60,7 @@ fun StatusInfo(
             modifier = Modifier.scale(2.5f)
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer)
+        Text(text = text, color = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.testTag("status_info_text"))
         Spacer(modifier = Modifier.height(50.dp))
         actionButton()
     }

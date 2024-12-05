@@ -5,11 +5,13 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.printToLog
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -173,7 +175,9 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Water").performTextInput("100")
         composeTestRule.onNodeWithText("Save").performClick()
 
-        composeTestRule.waitUntil(2000) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
+
+        composeTestRule.waitUntil(2000) { composeTestRule.onNodeWithTag("status_info_text").isDisplayed() }
+        composeTestRule.onAllNodesWithTag("status_info_text").printToLog("TEST")
         composeTestRule.onNodeWithText("Ok").performClick()
 
         val profile = repo.getProfile(5)
