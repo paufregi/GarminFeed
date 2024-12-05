@@ -105,6 +105,7 @@ dependencies {
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.hilt.android)
+    implementation("androidx.test.espresso:espresso-core:3.6.1")
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.hilt.compiler)

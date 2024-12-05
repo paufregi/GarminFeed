@@ -1,6 +1,7 @@
 package paufregi.connectfeed.presentation.main
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.test.IdlingResource
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.isNotDisplayed
@@ -11,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -39,6 +41,7 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
+import paufregi.connectfeed.presentation.ui.utils.GlobalIdlingResource
 import paufregi.connectfeed.sslSocketFactory
 import javax.inject.Inject
 
@@ -52,6 +55,7 @@ class MainActivityTest {
 
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
+    private lateinit var loadingResource: IdlingResource
 
     @Inject
     lateinit var repo: GarminRepository
@@ -80,6 +84,8 @@ class MainActivityTest {
         garminSSOServer.dispatcher = garminSSODispatcher
 
         dao = database.garminDao()
+
+        IdlingRegistry.getInstance().register(GlobalIdlingResource.countingIdlingResource)
     }
 
     @After
@@ -88,11 +94,14 @@ class MainActivityTest {
         garminSSOServer.shutdown()
         garthServer.shutdown()
         database.close()
+
+        IdlingRegistry.getInstance().unregister(GlobalIdlingResource.countingIdlingResource)
+
     }
 
     @Test
     fun `Home page - no credential`() {
-        ActivityScenario.launch(MainActivity::class.java)
+        val a = ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithText("Please setup your credential").assertIsDisplayed()
     }
 
@@ -131,7 +140,9 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Course 1").performClick()
         composeTestRule.onNodeWithText("Water").performTextInput("500")
         composeTestRule.onNodeWithText("Save").performClick()
-        
+
+
+
         val res = repo.getAllProfiles()
         res.test{
             val profiles = awaitItem()
