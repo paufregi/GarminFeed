@@ -44,7 +44,7 @@ jobs:
         with:
           api-level: 34
           arch: x86_64
-          script: ./gradlew connectedCheck
+          script: ./gradlew connectedCheck --debug
 
       - name: Run build
         run: ./gradlew build
