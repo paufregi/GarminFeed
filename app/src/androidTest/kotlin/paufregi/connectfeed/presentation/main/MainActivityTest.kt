@@ -13,6 +13,7 @@ import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.idling.CountingIdlingResource
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -41,7 +42,6 @@ import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
-import paufregi.connectfeed.presentation.ui.utils.GlobalIdlingResource
 import paufregi.connectfeed.sslSocketFactory
 import javax.inject.Inject
 
@@ -55,7 +55,7 @@ class MainActivityTest {
 
     @get:Rule(order = 1)
     val composeTestRule = createComposeRule()
-    private lateinit var loadingResource: IdlingResource
+    private lateinit var loadingResource: CountingIdlingResource
 
     @Inject
     lateinit var repo: GarminRepository
@@ -85,7 +85,7 @@ class MainActivityTest {
 
         dao = database.garminDao()
 
-        IdlingRegistry.getInstance().register(GlobalIdlingResource.countingIdlingResource)
+        loadingResource = CountingIdlingResource("loading")
     }
 
     @After
@@ -94,9 +94,6 @@ class MainActivityTest {
         garminSSOServer.shutdown()
         garthServer.shutdown()
         database.close()
-
-        IdlingRegistry.getInstance().unregister(GlobalIdlingResource.countingIdlingResource)
-
     }
 
     @Test
@@ -141,8 +138,6 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Water").performTextInput("500")
         composeTestRule.onNodeWithText("Save").performClick()
 
-
-
         val res = repo.getAllProfiles()
         res.test{
             val profiles = awaitItem()
@@ -179,6 +174,10 @@ class MainActivityTest {
         composeTestRule.onNodeWithText("Course 2").performClick()
         composeTestRule.onNodeWithText("Water").performTextInput("100")
         composeTestRule.onNodeWithText("Save").performClick()
+
+        loadingResource.increment()
+        composeTestRule.waitUntil(1001) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
+        loadingResource.decrement()
 
         val profile = repo.getProfile(5)
         assertThat(profile?.name).isEqualTo("Profile 2")

@@ -1,11 +1,15 @@
 package paufregi.connectfeed.core.usecases
 
+import android.util.Log
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
+import io.mockk.clearStaticMockk
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkStatic
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -25,11 +29,14 @@ class SaveProfileTest{
     @Before
     fun setup(){
         useCase = SaveProfile(repo)
+        mockkStatic(Log::class)
+        every { Log.i(any(), any()) } returns 0
     }
 
     @After
     fun tearDown(){
         clearAllMocks()
+        clearStaticMockk(Log::class)
     }
 
     @Test

@@ -5,7 +5,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import androidx.test.espresso.idling.CountingIdlingResource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -21,7 +20,6 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.presentation.Routes
-import paufregi.connectfeed.presentation.ui.utils.GlobalIdlingResource
 import javax.inject.Inject
 
 @HiltViewModel
@@ -89,7 +87,6 @@ class EditProfileViewModel @Inject constructor(
 
     private fun save() = viewModelScope.launch {
         Log.i("EditProfileViewModel", "Saving profile")
-        GlobalIdlingResource.increment()
         _state.update { it.copy(processing = ProcessState.Processing) }
         when (saveProfile(state.value.profile) ) {
             is Result.Success -> {
@@ -102,6 +99,5 @@ class EditProfileViewModel @Inject constructor(
                 }
             }
         }
-        GlobalIdlingResource.decrement()
     }
 }

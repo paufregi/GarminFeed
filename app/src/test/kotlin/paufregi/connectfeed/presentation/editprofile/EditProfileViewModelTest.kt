@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.editprofile
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import app.cash.turbine.test
@@ -47,11 +48,14 @@ class EditProfileViewModelTest {
     @Before
     fun setup(){
         mockkStatic("androidx.navigation.SavedStateHandleKt")
+        mockkStatic(Log::class)
+        every { Log.i(any(), any()) } returns 0
     }
 
     @After
     fun tearDown(){
         clearAllMocks()
+        clearStaticMockk(Log::class)
     }
 
     @Test
@@ -440,7 +444,7 @@ class EditProfileViewModelTest {
     }
 
     @Test
-    fun `Save activity - failure`() = runTest {
+    fun `Save profile - failure`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
