@@ -4,7 +4,7 @@
    <g id="background" style="fill:#494848" transform="scale(0.19921569)">
       <path d="M 0,0 H 680 V 680 H 0 Z" />
    </g>
-   <g id="banner" style="fill:#11aeed" transform="matrix(0.265625,0,0,-0.26666666,0,136.53333)">
+   <g id="banner" style="fill:#11A9ED" transform="matrix(0.265625,0,0,-0.26666666,0,136.53333)">
       <g transform="translate(0,512)" >
          <path d="M 0,0 V -219 L 512,-61.5 V 0 Z" />
       </g>
