@@ -1,6 +1,5 @@
 package paufregi.connectfeed
 
-import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
@@ -419,6 +418,138 @@ val latestActivitiesJson = """
     ]
 """.trimIndent()
 
+val coursesJson = """
+    [
+        {
+            "courseId": 1,
+            "userProfileId": 1,
+            "displayName": "display name",
+            "userGroupId": null,
+            "geoRoutePk": null,
+            "activityType": {
+                "typeId": 1,
+                "typeKey": "running",
+                "parentTypeId": 17,
+                "isHidden": false,
+                "restricted": false,
+                "trimmable": false
+            },
+            "courseName": "Course 1",
+            "courseDescription": null,
+            "createdDate": 1690847946000,
+            "updatedDate": 1690847946000,
+            "privacyRule": {
+                "typeId": 2,
+                "typeKey": "private"
+            },
+            "distanceInMeters": 10234.81,
+            "elevationGainInMeters": 256.29,
+            "elevationLossInMeters": 255.1,
+            "startLatitude": -36.84921,
+            "startLongitude": 174.75862,
+            "speedInMetersPerSecond": 0.0,
+            "sourceTypeId": 3,
+            "sourcePk": null,
+            "elapsedSeconds": null,
+            "coordinateSystem": "WGS84",
+            "originalCoordinateSystem": "WGS84",
+            "consumer": null,
+            "elevationSource": 3,
+            "hasShareableEvent": false,
+            "hasPaceBand": false,
+            "hasPowerGuide": false,
+            "favorite": false,
+            "hasTurnDetectionDisabled": false,
+            "curatedCourseId": null,
+            "startNote": null,
+            "finishNote": null,
+            "cutoffDuration": null,
+            "activityTypeId": {
+                "typeId": 1,
+                "typeKey": "running",
+                "parentTypeId": 17,
+                "isHidden": false,
+                "restricted": false,
+                "trimmable": false
+            },
+            "public": false,
+            "createdDateFormatted": "2023-07-31 23:59:06.0 GMT",
+            "updatedDateFormatted": "2023-07-31 23:59:06.0 GMT"
+        },
+        {
+            "courseId": 2,
+            "userProfileId": 1,
+            "displayName": "display name",
+            "userGroupId": null,
+            "geoRoutePk": null,
+            "activityType": {
+                "typeId": 10,
+                "typeKey": "road_biking",
+                "parentTypeId": 2,
+                "isHidden": false,
+                "restricted": false,
+                "trimmable": false
+            },
+            "courseName": "Course 2",
+            "courseDescription": null,
+            "createdDate": 1693709364000,
+            "updatedDate": 1693709485000,
+            "privacyRule": {
+                "typeId": 2,
+                "typeKey": "private"
+            },
+            "distanceInMeters": 15007.59,
+            "elevationGainInMeters": 139.0,
+            "elevationLossInMeters": 131.0,
+            "startLatitude": -36.87140095978975,
+            "startLongitude": 174.6240344736725,
+            "speedInMetersPerSecond": 3.031836363636364,
+            "sourceTypeId": 1,
+            "sourcePk": 11867676869,
+            "elapsedSeconds": 4950.0,
+            "coordinateSystem": "WGS84",
+            "originalCoordinateSystem": "WGS84",
+            "consumer": null,
+            "elevationSource": 2,
+            "hasShareableEvent": false,
+            "hasPaceBand": false,
+            "hasPowerGuide": false,
+            "favorite": false,
+            "hasTurnDetectionDisabled": false,
+            "curatedCourseId": null,
+            "startNote": null,
+            "finishNote": null,
+            "cutoffDuration": null,
+            "activityTypeId": {
+                "typeId": 1,
+                "typeKey": "running",
+                "parentTypeId": 17,
+                "isHidden": false,
+                "restricted": false,
+                "trimmable": false
+            },
+            "public": false,
+            "createdDateFormatted": "2023-09-03 02:49:24.0 GMT",
+            "updatedDateFormatted": "2023-09-03 02:51:25.0 GMT"
+        }
+    ]
+""".trimIndent()
+
+val eventTypesJson = """
+    [
+        {
+            "typeId": 1,
+            "typeKey": "race",
+            "sortOrder": 5
+        },
+        {
+            "typeId": 2,
+            "typeKey": "training",
+            "sortOrder": 4
+        }
+    ]
+""".trimIndent()
+
 const val connectPort = 8081
 const val garminSSOPort = 8082
 const val garthPort = 8083
@@ -440,6 +571,10 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
                 MockResponse().setResponseCode(200).setBody(oauth2Body)
             path == "/upload-service/upload" && request.method == "POST" ->
                 MockResponse().setResponseCode(200)
+            path == "/course-service/course" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(coursesJson)
+            path == "/activity-service/activity/eventTypes" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(eventTypesJson)
             (path.startsWith("/activitylist-service/activities/search/activities") && request.method == "GET") ->
                 MockResponse().setResponseCode(200).setBody(latestActivitiesJson)
             (path.startsWith("/activity-service/activity") && request.method == "PUT") ->

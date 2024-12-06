@@ -16,7 +16,7 @@ import paufregi.connectfeed.presentation.ui.theme.Theme
 @ExperimentalMaterial3Api
 class SyncWeightActivity : ComponentActivity() {
 
-    private val viewModel: SyncWeightModelView by viewModels()
+    private val viewModel: SyncWeightViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

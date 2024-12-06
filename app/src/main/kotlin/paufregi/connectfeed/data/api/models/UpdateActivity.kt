@@ -10,7 +10,7 @@ data class UpdateActivity(
     @SerializedName("activityId")
     val id: Long,
     @SerializedName("activityName")
-    val name: String,
+    val name: String?,
     @SerializedName("eventTypeDTO")
     val eventType: EventType,
     @SerializedName("metadataDTO")

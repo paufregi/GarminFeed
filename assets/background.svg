@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<svg width="512" height="512" viewBox="0 0 135.46666 135.46667" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+   <g id="background" style="fill:#494848" transform="scale(0.19921569)">
+      <path d="M 0,0 H 680 V 680 H 0 Z" />
+   </g>
+   <g id="banner" style="fill:#11aeed" transform="matrix(0.265625,0,0,-0.26666666,0,136.53333)">
+      <g transform="translate(0,512)" >
+         <path d="M 0,0 V -219 L 512,-61.5 V 0 Z" />
+      </g>
+   </g>
+</svg>

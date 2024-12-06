@@ -2,11 +2,14 @@ package paufregi.connectfeed.presentation.main
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.isDisplayed
+import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -23,11 +26,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.connectDispatcher
 import paufregi.connectfeed.connectPort
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.Credential
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.CredentialEntity
+import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
@@ -85,21 +92,20 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Home page`() {
+    fun `Home page - no credential`() {
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithText("Setup credential").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Please setup your credential").assertIsDisplayed()
     }
 
     @Test
     fun `Setup credential`() = runTest {
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithText("Setup").performClick()
+        composeTestRule.onNodeWithTag("nav_settings").performClick()
 
         composeTestRule.onNodeWithText("Username").performTextInput("user")
         composeTestRule.onNodeWithText("Password").performTextInput("pass")
         composeTestRule.onNodeWithText("Save").performClick()
 
-        composeTestRule.onNodeWithText("All good").assertIsDisplayed()
         val res = repo.getCredential()
         res.test{
             assertThat(awaitItem()).isEqualTo(Credential("user", "pass"))
@@ -108,29 +114,106 @@ class MainActivityTest {
     }
 
     @Test
-    fun `Clear cache`() = runTest {
+    fun `Create profile`() = runTest {
+        dao.saveCredential(CredentialEntity(credential = cred))
+
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithText("Clear cache").performClick()
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Cache cleared").isDisplayed() }
-        composeTestRule.onNodeWithText("Cache cleared").assertIsDisplayed()
+        composeTestRule.onNodeWithTag("nav_profiles").performClick()
+        composeTestRule.onNodeWithTag("create_profile").performClick()
+
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Name").isDisplayed() }
+
+        composeTestRule.onNodeWithText("Name").performTextInput("Profile 1")
+        composeTestRule.onNodeWithText("Activity Type").performClick()
+        composeTestRule.onNodeWithText("Running").performClick()
+        composeTestRule.onNodeWithText("Event Type").performClick()
+        composeTestRule.onNodeWithText("Race").performClick()
+        composeTestRule.onNodeWithText("Course").performClick()
+        composeTestRule.onNodeWithText("Course 1").performClick()
+        composeTestRule.onNodeWithText("Water").performTextInput("500")
+        composeTestRule.onNodeWithText("Save").performClick()
+
+        val res = repo.getAllProfiles()
+        res.test{
+            val profiles = awaitItem()
+            assertThat(profiles.size).isEqualTo(1)
+            assertThat(profiles.first().name).isEqualTo("Profile 1")
+            assertThat(profiles.first().activityType).isEqualTo(ActivityType.Running)
+            assertThat(profiles.first().eventType).isEqualTo(EventType(id = 1, name = "Race"))
+            assertThat(profiles.first().course).isEqualTo(Course(id = 1, name = "Course 1", type = ActivityType.Running))
+            assertThat(profiles.first().water).isEqualTo(500)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Update profile`() = runTest {
+        dao.saveCredential(CredentialEntity(credential = cred))
+        dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.onNodeWithTag("nav_profiles").performClick()
+        composeTestRule.onNodeWithTag("loading").isDisplayed()
+
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Profile 1").isDisplayed() }
+        composeTestRule.onNodeWithText("Profile 1").performClick()
+
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Name").isDisplayed() }
+        composeTestRule.onNodeWithText("Name").performTextClearance()
+        composeTestRule.onNodeWithText("Name").performTextInput("Profile 2")
+        composeTestRule.onNodeWithText("Activity Type").performClick()
+        composeTestRule.onNodeWithText("Cycling").performClick()
+        composeTestRule.onNodeWithText("Event Type").performClick()
+        composeTestRule.onNodeWithText("Training").performClick()
+        composeTestRule.onNodeWithText("Course").performClick()
+        composeTestRule.onNodeWithText("Course 2").performClick()
+        composeTestRule.onNodeWithText("Water").performTextInput("100")
+        composeTestRule.onNodeWithText("Save").assertIsEnabled()
+        composeTestRule.onNodeWithText("Save").performClick()
+
+        composeTestRule.waitUntil(1001) { composeTestRule.onNodeWithText("Profile saved").isDisplayed() }
+
+        val profile = repo.getProfile(5)
+        assertThat(profile?.name).isEqualTo("Profile 2")
+        assertThat(profile?.activityType).isEqualTo(ActivityType.Cycling)
+        assertThat(profile?.eventType).isEqualTo(EventType(id = 2, name = "Training"))
+        assertThat(profile?.course).isEqualTo(Course(id = 2, name = "Course 2", type = ActivityType.Cycling))
+        assertThat(profile?.water).isEqualTo(100)
+    }
+
+    @Test
+    fun `Delete profile`() = runTest {
+        dao.saveCredential(CredentialEntity(credential = cred))
+        dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
+
+        ActivityScenario.launch(MainActivity::class.java)
+        composeTestRule.onNodeWithTag("nav_profiles").performClick()
+        composeTestRule.onNodeWithTag("loading").isDisplayed()
+
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Profile 1").isDisplayed() }
+        composeTestRule.onNodeWithTag("delete_profile_10").performClick()
+
+        composeTestRule.onNodeWithText("Profile 1").isNotDisplayed()
+        val profile = repo.getProfile(10)
+        assertThat(profile).isNull()
     }
 
     @Test
     fun `Update activity`() = runTest {
         dao.saveCredential(CredentialEntity(credential = cred))
+        dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
-        composeTestRule.onNodeWithTag("quickedit").performClick()
         composeTestRule.onNodeWithTag("loading").isDisplayed()
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Activity").isDisplayed() }
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Activity").isDisplayed() }
         composeTestRule.onNodeWithText("Activity").performClick()
         composeTestRule.onNodeWithText("Activity 1").performClick()
         composeTestRule.onNodeWithText("Profile").performClick()
-        composeTestRule.onNodeWithText("Commute to work").performClick()
+        composeTestRule.onNodeWithText("Profile 1").performClick()
         composeTestRule.onNodeWithText("Save").performClick()
 
         composeTestRule.onNodeWithText("Save").isDisplayed()
-        composeTestRule.waitUntil(1000) { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
+        composeTestRule.waitUntil { composeTestRule.onNodeWithText("Activity updated").isDisplayed() }
         composeTestRule.onNodeWithText("Activity updated").assertIsDisplayed()
     }
 }

@@ -43,14 +43,14 @@ fun <T>IconRadioGroup(
         modifier = Modifier.fillMaxWidth()
     ) {
         options.forEach { option ->
-            val selected = selected == option.value
+            val isSelected = selected == option.value
             Box(
                 modifier = Modifier
-                    .size(if (selected) 50.dp else 42.dp)
+                    .size(if (isSelected) 50.dp else 42.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.primaryContainer)
-                    .alpha(if(selected) 1f else 0.5f)
-                    .clickable { onClick(if (selected) null else option.value) }
+                    .alpha(if(isSelected) 1f else 0.5f)
+                    .clickable { onClick(if (isSelected) null else option.value) }
             ) {
                 Icon(
                     imageVector = option.icon,
@@ -59,8 +59,8 @@ fun <T>IconRadioGroup(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .animateContentSize(alignment = Alignment.Center)
-                        .size(if (selected) 46.dp else 38.dp)
-                        .alpha(if (selected) 1f else 0.5f)
+                        .size(if (isSelected) 46.dp else 38.dp)
+                        .alpha(if (isSelected) 1f else 0.5f)
                 )
             }
         }

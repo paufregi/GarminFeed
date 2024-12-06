@@ -26,7 +26,7 @@ class SettingsScreenTest {
     @Test
     fun `Default values`() {
         composeTestRule.setContent {
-            SettingsScreen(state = SettingsState(Credential("userTest", "passTest")))
+            SettingsContent(state = SettingsState(Credential("userTest", "passTest")))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("••••••••")
@@ -36,7 +36,7 @@ class SettingsScreenTest {
     @Test
     fun `Default values visible password`() {
         composeTestRule.setContent {
-            SettingsScreen(state = SettingsState(Credential("userTest", "passTest"), showPassword = true))
+            SettingsContent(state = SettingsState(Credential("userTest", "passTest"), showPassword = true))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("passTest")
@@ -46,7 +46,7 @@ class SettingsScreenTest {
     @Test
     fun `Save button disabled`() {
         composeTestRule.setContent {
-            SettingsScreen(state = SettingsState(Credential("", "")))
+            SettingsContent(state = SettingsState(Credential("", "")))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("")
         composeTestRule.onNodeWithText("Password").assertTextContains("")

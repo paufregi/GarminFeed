@@ -9,6 +9,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
@@ -20,17 +21,17 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.GetLatestActivitiesUseCase
-import paufregi.connectfeed.core.usecases.GetProfilesUseCase
-import paufregi.connectfeed.core.usecases.UpdateActivityUseCase
+import paufregi.connectfeed.core.usecases.GetLatestActivities
+import paufregi.connectfeed.core.usecases.GetProfiles
+import paufregi.connectfeed.core.usecases.UpdateActivity
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class QuickEditViewModelTest {
 
-    private val getActivities = mockk<GetLatestActivitiesUseCase>()
-    private val getProfiles = mockk<GetProfilesUseCase>()
-    private val updateActivity = mockk<UpdateActivityUseCase>()
+    private val getActivities = mockk<GetLatestActivities>()
+    private val getProfiles = mockk<GetProfiles>()
+    private val updateActivity = mockk<UpdateActivity>()
 
     private lateinit var viewModel: QuickEditViewModel
 
@@ -43,9 +44,9 @@ class QuickEditViewModelTest {
     )
 
     val profiles = listOf(
-        Profile("profile1", EventType.transportation, ActivityType.Running, Course.commuteHome, 1),
-        Profile("profile2", EventType.transportation, ActivityType.Cycling, Course.commuteWork, 1),
-        Profile("profile3", EventType.transportation, ActivityType.Running, Course.commuteHome, 1)
+        Profile(name = "profile1", activityType = ActivityType.Running),
+        Profile(name = "profile2" ,activityType = ActivityType.Cycling),
+        Profile(name = "profile3", activityType = ActivityType.Running)
     )
 
     @Before
@@ -61,16 +62,15 @@ class QuickEditViewModelTest {
     @Test
     fun `Load activities and profiles`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.loading).isFalse()
+            assertThat(state.processing).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
-            assertThat(state.allProfiles).isEqualTo(profiles)
-            assertThat(state.availableProfiles).isEqualTo(profiles)
+            assertThat(state.profiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -78,81 +78,117 @@ class QuickEditViewModelTest {
     @Test
     fun `Fails to load activities`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Failure("error")
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.loading).isFalse()
+            assertThat(state.processing).isEqualTo(ProcessState.FailureLoading)
             assertThat(state.activities).isEqualTo(emptyList<Activity>())
-            assertThat(state.allProfiles).isEqualTo(profiles)
-            assertThat(state.availableProfiles).isEqualTo(profiles)
+            assertThat(state.profiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `Select activity`() = runTest {
+    fun `Set activity`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
+            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
-            assertThat(state.selectedActivity).isEqualTo(activities[0])
-            assertThat(state.availableProfiles.count()).isEqualTo(2)
+            assertThat(state.activity).isEqualTo(activities[0])
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `Select effort`() = runTest {
+    fun `Set activity with matching profile`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectEffort(50f))
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            awaitItem() // Skip this state
+            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
-            assertThat(state.selectedEffort).isEqualTo(50f)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.profile).isEqualTo(profiles[0])
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `Select feel`() = runTest {
+    fun `Set activity with no matching profile`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectFeel(50f))
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[1]))
+            awaitItem() // Skip this state
+            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
             val state = awaitItem()
-            assertThat(state.selectedFeel).isEqualTo(50f)
+            assertThat(state.activity).isEqualTo(activities[0])
+            assertThat(state.profile).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `Select profile`() = runTest {
+    fun `Set effort`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
+            viewModel.onEvent(QuickEditEvent.SetEffort(50f))
             val state = awaitItem()
-            assertThat(state.selectedProfile).isEqualTo(profiles[0])
+            assertThat(state.effort).isEqualTo(50f)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set feel`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
+        every { getProfiles.invoke() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.onEvent(QuickEditEvent.SetFeel(50f))
+            val state = awaitItem()
+            assertThat(state.feel).isEqualTo(50f)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Set profile`() = runTest {
+        coEvery { getActivities.invoke() } returns Result.Success(activities)
+        every { getProfiles.invoke() } returns flowOf(profiles)
+
+        viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
+
+        viewModel.state.test {
+            awaitItem() // Initial state
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            val state = awaitItem()
+            assertThat(state.profile).isEqualTo(profiles[0])
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -160,17 +196,17 @@ class QuickEditViewModelTest {
     @Test
     fun `Save activity`() = runTest {
         coEvery { getActivities.invoke() } returns Result.Success(activities)
-        every { getProfiles.invoke() } returns profiles
+        every { getProfiles.invoke() } returns flowOf(profiles)
         coEvery { updateActivity.invoke(any(), any(), any(), any()) } returns Result.Success(Unit)
 
         viewModel = QuickEditViewModel(getActivities, getProfiles, updateActivity)
 
         viewModel.state.test {
-            viewModel.onEvent(QuickEditEvent.SelectActivity(activities[0]))
-            viewModel.onEvent(QuickEditEvent.SelectProfile(profiles[0]))
-            viewModel.onEvent(QuickEditEvent.SelectFeel(50F))
-            viewModel.onEvent(QuickEditEvent.SelectEffort(80f))
-            viewModel.onEvent(QuickEditEvent.Save({}))
+            viewModel.onEvent(QuickEditEvent.SetActivity(activities[0]))
+            viewModel.onEvent(QuickEditEvent.SetProfile(profiles[0]))
+            viewModel.onEvent(QuickEditEvent.SetFeel(50F))
+            viewModel.onEvent(QuickEditEvent.SetEffort(80f))
+            viewModel.onEvent(QuickEditEvent.Save)
             cancelAndIgnoreRemainingEvents()
         }
 

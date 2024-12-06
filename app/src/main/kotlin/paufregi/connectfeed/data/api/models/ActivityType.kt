@@ -15,7 +15,9 @@ data class ActivityType(
 ) {
     fun toCore(): CoreActivityType = when (this.id) {
         1L -> CoreActivityType.Running
+        6L -> CoreActivityType.TrailRunning
         10L -> CoreActivityType.Cycling
+        13L -> CoreActivityType.Strength
         else -> CoreActivityType.Unknown
     }
 }

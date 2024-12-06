@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.api.utils
 
-import android.util.Log
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor

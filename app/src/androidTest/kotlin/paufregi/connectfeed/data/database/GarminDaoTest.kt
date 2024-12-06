@@ -7,13 +7,16 @@ import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import okhttp3.internal.ignoreIoExceptions
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.models.Credential
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.EventType
+import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.database.entities.CredentialEntity
+import paufregi.connectfeed.data.database.entities.ProfileEntity
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -43,15 +46,39 @@ class GarminDaoTest {
     }
 
     @Test
-    fun `Save and retrieve credentials`() = runTest {
-        val cred = CredentialEntity(credential = Credential(username = "username", password = "password"))
+    fun `Save and retrieve credential`() = runTest {
+        val credEntity = CredentialEntity(credential = cred)
 
-        val credFlow = dao.getCredential()
+        val cred = dao.getCredential()
 
-        credFlow.test {
+        cred.test {
             assertThat(awaitItem()).isNull()
-            dao.saveCredential(cred)
-            assertThat(awaitItem()).isEqualTo(cred)
+            dao.saveCredential(credEntity)
+            assertThat(awaitItem()).isEqualTo(credEntity)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Save delete and retrieve profiles`() = runTest {
+        val profile = ProfileEntity(
+            id = 1,
+            name = "profile1",
+            eventType = EventType(id = 1, name = "event1"),
+            activityType = ActivityType.Running,
+            water = 100,
+        )
+
+        dao.saveProfile(profile)
+        assertThat(dao.getProfile(profile.id)).isEqualTo(profile)
+
+        dao.deleteProfile(profile)
+        assertThat(dao.getProfile(profile.id)).isNull()
+
+        dao.getAllProfiles().test {
+            assertThat(awaitItem()).isEmpty()
+            dao.saveProfile(profile)
+            assertThat(awaitItem()).containsExactly(profile)
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -1,5 +1,6 @@
 package paufregi.connectfeed.presentation.ui.components
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -14,6 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import paufregi.connectfeed.core.models.Activity
+import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 
 data class DropdownItem(
@@ -24,33 +28,56 @@ data class DropdownItem(
 
 @ExperimentalMaterial3Api
 fun Activity.toDropdownItem(onClick: () -> Unit) = DropdownItem(
-    text = this.name,
+    text = name,
     leadingIcon = { ActivityIcon(this.type) },
     onClick = onClick
 )
 
 @ExperimentalMaterial3Api
+fun ActivityType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    leadingIcon = { ActivityIcon(this) },
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
+fun EventType.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
+fun Course.toDropdownItem(onClick: () -> Unit) = DropdownItem(
+    text = name,
+    leadingIcon = { ActivityIcon(type) },
+    onClick = onClick
+)
+
+@ExperimentalMaterial3Api
 fun Profile.toDropdownItem(onClick: () -> Unit) = DropdownItem(
-    text = this.activityName,
-    leadingIcon = { ActivityIcon(this.activityType) },
+    text = this.name,
+    leadingIcon = { ActivityIcon(activityType) },
     onClick = onClick
 )
 
 @Composable
 @ExperimentalMaterial3Api
 fun Dropdown(
+    modifier: Modifier = Modifier,
     label: @Composable (() -> Unit)? = null,
     selected: DropdownItem? = null,
-    items: List<DropdownItem> = emptyList()
+    items: List<DropdownItem> = emptyList(),
+    isError: Boolean = false
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox (
         expanded = expanded,
-        onExpandedChange = { expanded = it }
+        onExpandedChange = { expanded = it },
+        modifier = modifier
     ) {
         TextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable).fillMaxWidth(),
             label = label,
             value = selected?.text ?: "",
             leadingIcon = selected?.leadingIcon,
@@ -59,6 +86,7 @@ fun Dropdown(
             singleLine = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            isError = isError,
         )
         ExposedDropdownMenu(
             expanded = expanded,

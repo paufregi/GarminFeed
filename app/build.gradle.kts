@@ -60,10 +60,11 @@ android {
     }
 
     lint {
-        disable += "ObsoleteLintCustomCheck OldTargetApi"
+        disable += "OldTargetApi"
     }
 
     testOptions {
+        animationsDisabled = true
         managedDevices {
             devices {
                 register("pixel9Pro", ManagedVirtualDevice::class) {
@@ -87,6 +88,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.material3)
@@ -102,6 +104,7 @@ dependencies {
     implementation(libs.fit)
     implementation(libs.commons.csv)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.hilt.android)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.androidx.hilt.compiler)
@@ -120,10 +123,12 @@ dependencies {
     testImplementation(libs.turbine)
 
     androidTestImplementation(libs.android.core.testing)
+    androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.junit)
     androidTestImplementation(libs.truth)
     androidTestImplementation(libs.hilt.testing)
     androidTestImplementation(libs.okhttp.mockwebserver)

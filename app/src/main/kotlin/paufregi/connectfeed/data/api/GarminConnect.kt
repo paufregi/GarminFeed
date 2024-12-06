@@ -4,6 +4,8 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import paufregi.connectfeed.data.api.converters.GarminConverterFactory
 import paufregi.connectfeed.data.api.models.Activity
+import paufregi.connectfeed.data.api.models.Course
+import paufregi.connectfeed.data.api.models.EventType
 import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
 import retrofit2.Response
@@ -30,6 +32,12 @@ interface GarminConnect {
         @Query("limit") limit: Int,
         @Query("start") start: Int = 0,
     ): Response<List<Activity>>
+
+    @GET("/course-service/course")
+    suspend fun getCourses(): Response<List<Course>>
+
+    @GET("/activity-service/activity/eventTypes")
+    suspend fun getEventTypes(): Response<List<EventType>>
 
     @PUT("/activity-service/activity/{id}")
     suspend fun updateActivity(

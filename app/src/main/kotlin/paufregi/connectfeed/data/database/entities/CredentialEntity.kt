@@ -7,7 +7,7 @@ import paufregi.connectfeed.core.models.Credential
 
 @Entity(tableName="credentials")
 data class CredentialEntity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     val id: Int = 1,
 
     @Embedded
