@@ -3,26 +3,37 @@ package paufregi.connectfeed.data.datastore
 import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.di.dataStore
 
 class TokenManager (private val context: Context) {
+
     companion object {
+        private val CREDENTIAL = ("credential")
         private val OAUTH_CONSUMER = stringPreferencesKey("oauthConsumer")
         private val OAUTH1 = stringPreferencesKey("oauth1")
         private val OAUTH2 = stringPreferencesKey("oauth2")
     }
 
+    fun getCredential(): Flow<Credential?> {
+        return context.dataStore.data.map { preferences ->
+            val credentialJson = preferences[CREDENTIAL]
+            credentialJson?.let { Json.decodeFromString<Credential>(it) }
+        }
+    }
+
     fun getOAuthConsumer(): Flow<OAuthConsumer?> {
         return context.dataStore.data.map { preferences ->
             val consumerJson = preferences[OAUTH_CONSUMER]
-            if (consumerJson != null) Json.decodeFromString<OAuthConsumer>(consumerJson) else null
+            consumerJson?.let { Json.decodeFromString<OAuthConsumer>(it) }
         }
     }
 
@@ -37,6 +48,12 @@ class TokenManager (private val context: Context) {
         return context.dataStore.data.map { preferences ->
             val oauth2Json = preferences[OAUTH2]
             if (oauth2Json != null) Json.decodeFromString<OAuth2>(oauth2Json) else null
+        }
+    }
+
+    suspend fun saveCredential(credential: Credential) {
+        context.dataStore.edit { preferences ->
+            preferences[CREDENTIAL] = Json.encodeToString(credential)
         }
     }
 
@@ -55,6 +72,12 @@ class TokenManager (private val context: Context) {
     suspend fun saveOAuth2(oauth2: OAuth2) {
         context.dataStore.edit { preferences ->
             preferences[OAUTH2] = Json.encodeToString(oauth2)
+        }
+    }
+
+    suspend fun deleteCredential() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(CREDENTIAL)
         }
     }
 
