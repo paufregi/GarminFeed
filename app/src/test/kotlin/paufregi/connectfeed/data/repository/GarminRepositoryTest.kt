@@ -36,7 +36,7 @@ import paufregi.connectfeed.data.api.models.UpdateActivity
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
-import paufregi.connectfeed.data.datastore.TokenManager
+import paufregi.connectfeed.data.datastore.UserDataStore
 import retrofit2.Response
 import java.io.File
 
@@ -45,11 +45,11 @@ class GarminRepositoryTest {
     private lateinit var repo: GarminRepository
     private val garminDao = mockk<GarminDao>()
     private val garminConnect = mockk<GarminConnect>()
-    private val tokenManager = mockk<TokenManager>()
+    private val userDataStore = mockk<UserDataStore>()
 
     @Before
     fun setup(){
-        repo = GarminRepository(garminDao, garminConnect, tokenManager)
+        repo = GarminRepository(garminDao, garminConnect, userDataStore)
         mockkStatic(Log::class)
         every { Log.i(any(), any()) } returns 0
         every { Log.e(any(), any()) } returns 0

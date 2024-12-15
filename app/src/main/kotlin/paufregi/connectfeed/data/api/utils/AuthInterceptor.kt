@@ -18,21 +18,21 @@ import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.models.Ticket
 import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.datastore.TokenManager
+import paufregi.connectfeed.data.datastore.UserDataStore
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
     private val garminDao: GarminDao,
     private val garth: Garth,
     private val garminSSO: GarminSSO,
-    private val tokenManager: TokenManager,
+    private val userDataStore: UserDataStore,
     private val createConnectOAuth1: (oauthConsumer: OAuthConsumer) -> GarminConnectOAuth1,
     private val createConnectOAuth2: (oauthConsumer: OAuthConsumer, oauth: OAuth1) -> GarminConnectOAuth2,
 ): Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val cachedOauth2 = runBlocking { tokenManager.getOauth2().firstOrNull() }
+        val cachedOauth2 = runBlocking { userDataStore.getOauth2().firstOrNull() }
         return if (cachedOauth2 != null && !cachedOauth2.isExpired()) {
             chain.proceed(newRequestWithAccessToken(cachedOauth2.accessToken, request))
         } else {
@@ -102,15 +102,15 @@ class AuthInterceptor @Inject constructor(
     private suspend fun authenticate(): Result<OAuth2> {
 
         val consumer =
-            tokenManager.getOAuthConsumer().firstOrNull() ?: when (val res = getOAuthConsumer()) {
+            userDataStore.getOAuthConsumer().firstOrNull() ?: when (val res = getOAuthConsumer()) {
                 is Result.Success -> {
-                    tokenManager.saveOAuthConsumer(res.data)
+                    userDataStore.saveOAuthConsumer(res.data)
                     res.data
                 }
                 is Result.Failure -> return Result.Failure(res.error)
             }
 
-        val cachedOAuth1 = tokenManager.getOauth1().firstOrNull()
+        val cachedOAuth1 = userDataStore.getOauth1().firstOrNull()
         val oauth: OAuth1
         if (cachedOAuth1 != null && cachedOAuth1.isValid()) {
             oauth = cachedOAuth1
@@ -122,7 +122,7 @@ class AuthInterceptor @Inject constructor(
 
             oauth = when (val res = getOAuthToken(ticket, consumer)) {
                 is Result.Success -> {
-                    tokenManager.saveOAuth1(res.data)
+                    userDataStore.saveOAuth1(res.data)
                     res.data
                 }
                 is Result.Failure -> return Result.Failure(res.error)
@@ -131,7 +131,7 @@ class AuthInterceptor @Inject constructor(
 
         return when (val oauth2 = getOAuth2Token(oauth, consumer)) {
             is Result.Success -> {
-                tokenManager.saveOAuth2(oauth2.data)
+                userDataStore.saveOAuth2(oauth2.data)
                 Result.Success(oauth2.data)
             }
             is Result.Failure -> Result.Failure(oauth2.error)

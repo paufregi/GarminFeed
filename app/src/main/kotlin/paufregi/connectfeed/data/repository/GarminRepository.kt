@@ -22,7 +22,7 @@ import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
 import paufregi.connectfeed.data.database.entities.CredentialEntity
-import paufregi.connectfeed.data.datastore.TokenManager
+import paufregi.connectfeed.data.datastore.UserDataStore
 import java.io.File
 import javax.inject.Inject
 import kotlin.Int
@@ -30,7 +30,7 @@ import kotlin.Int
 class GarminRepository @Inject constructor(
     private val garminDao: GarminDao,
     private val garminConnect: GarminConnect,
-    private val tokenManager: TokenManager
+    private val userDataStore: UserDataStore
 ) {
     suspend fun saveCredential(credential: Credential) =
         garminDao.saveCredential(CredentialEntity(credential = credential))
@@ -54,8 +54,8 @@ class GarminRepository @Inject constructor(
         garminDao.getProfile(id)?.toCore()
 
     suspend fun clearCache() {
-        tokenManager.deleteOAuth1()
-        tokenManager.deleteOAuth2()
+        userDataStore.deleteOAuth1()
+        userDataStore.deleteOAuth2()
     }
 
     suspend fun getLatestActivities(limit: Int): Result<List<Activity>> {
