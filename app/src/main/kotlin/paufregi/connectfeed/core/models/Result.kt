@@ -7,7 +7,7 @@ sealed interface Result<T> {
         override val isSuccessful: Boolean
             get() = true
     }
-    class Failure<T>(val error: String) : Result<T>{
+    class Failure<T>(val reason: String) : Result<T>{
         override val isSuccessful: Boolean
             get() = false
     }

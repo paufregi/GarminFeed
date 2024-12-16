@@ -59,6 +59,6 @@ class CallApiTest {
 
         assertThat(result.isSuccessful).isFalse()
         result as Result.Failure
-        assertThat(result.error).isEqualTo("ops")
+        assertThat(result.reason).isEqualTo("ops")
     }
 }
