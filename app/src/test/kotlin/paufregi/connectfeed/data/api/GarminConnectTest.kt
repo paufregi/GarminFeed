@@ -24,9 +24,11 @@ import paufregi.connectfeed.data.api.models.EventType
 import paufregi.connectfeed.data.api.models.Metadata
 import paufregi.connectfeed.data.api.models.Summary
 import paufregi.connectfeed.data.api.models.UpdateActivity
+import paufregi.connectfeed.data.api.models.UserProfile
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
 import paufregi.connectfeed.eventTypesJson
 import paufregi.connectfeed.latestActivitiesJson
+import paufregi.connectfeed.userProfileJson
 import java.io.File
 
 class GarminConnectTest {
@@ -56,6 +58,31 @@ class GarminConnectTest {
     fun tearDown() {
         clearAllMocks()
         server.shutdown()
+    }
+
+    @Test
+    fun `Get user profile`() = runTest {
+        val response = MockResponse().setResponseCode(200).setBody(userProfileJson)
+        server.enqueue(response)
+
+        val res = api.getUserProfile()
+
+        assertThat(res.isSuccessful).isTrue()
+        assertThat(res.body()).isEqualTo(UserProfile("GarminUser"))
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
+    }
+
+    @Test
+    fun `Get user profile - failure`() = runTest {
+        val response = MockResponse().setResponseCode(400)
+        server.enqueue(response)
+
+        val res = api.getUserProfile()
+
+        assertThat(res.isSuccessful).isFalse()
+        verify { authInterceptor.intercept(any()) }
+        confirmVerified(authInterceptor)
     }
 
     @Test

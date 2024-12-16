@@ -7,6 +7,7 @@ import paufregi.connectfeed.data.api.models.Activity
 import paufregi.connectfeed.data.api.models.Course
 import paufregi.connectfeed.data.api.models.EventType
 import paufregi.connectfeed.data.api.models.UpdateActivity
+import paufregi.connectfeed.data.api.models.UserProfile
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -38,6 +39,9 @@ interface GarminConnect {
 
     @GET("/activity-service/activity/eventTypes")
     suspend fun getEventTypes(): Response<List<EventType>>
+
+    @GET("/userprofile-service/userprofile/userProfileBase")
+    suspend fun getUserProfile(): Response<UserProfile>
 
     @PUT("/activity-service/activity/{id}")
     suspend fun updateActivity(
