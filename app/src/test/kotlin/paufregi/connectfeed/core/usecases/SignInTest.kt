@@ -14,13 +14,13 @@ import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class SaveCredentialTest{
+class SignInTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: SaveCredential
+    private lateinit var useCase: SignIn
 
     @Before
     fun setup(){
-        useCase = SaveCredential(repo)
+        useCase = SignIn(repo)
     }
 
     @After
@@ -29,17 +29,32 @@ class SaveCredentialTest{
     }
 
     @Test
-    fun `Save credential`() = runTest {
+    fun `SignIn - success`() = runTest {
         val credential = Credential("user", "pass")
         coEvery { repo.saveCredential(any()) } returns Unit
+        coEvery { repo.fetchFullName() } returns Result.Success("ConnectFeed")
+        val res = useCase(credential)
+
+        assertThat(res).isInstanceOf(Result.Success<String>("ConnectFeed").javaClass)
+        coVerify { repo.saveCredential(credential) }
+        coVerify { repo.fetchFullName() }
+        confirmVerified(repo)
+    }
+
+    @Test
+    fun `SignIn - failure`() = runTest {
+        val credential = Credential("user", "pass")
+        coEvery { repo.saveCredential(any()) } returns Unit
+        coEvery { repo.fetchFullName() } returns Result.Failure("error")
+        coEvery { repo.deleteCredential() } returns Unit
         coEvery { repo.deleteTokens() } returns Unit
         val res = useCase(credential)
 
-        assertThat(res).isInstanceOf(Result.Success(Unit).javaClass)
-        coVerify {
-            repo.saveCredential(credential)
-            repo.deleteTokens()
-        }
+        assertThat(res).isInstanceOf(Result.Failure<String>("error").javaClass)
+        coVerify { repo.saveCredential(credential) }
+        coVerify { repo.fetchFullName() }
+        coVerify { repo.deleteCredential() }
+        coVerify { repo.deleteTokens() }
         confirmVerified(repo)
     }
 
@@ -49,6 +64,7 @@ class SaveCredentialTest{
         val res = useCase(credential)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
+        confirmVerified(repo)
     }
 
     @Test
@@ -57,6 +73,7 @@ class SaveCredentialTest{
         val res = useCase(credential)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
+        confirmVerified(repo)
     }
 
     @Test
@@ -65,5 +82,6 @@ class SaveCredentialTest{
         val res = useCase(credential)
 
         assertThat(res).isInstanceOf(Result.Failure<Unit>("Validation error").javaClass)
+        confirmVerified(repo)
     }
 }

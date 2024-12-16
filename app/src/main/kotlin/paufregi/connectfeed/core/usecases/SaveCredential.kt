@@ -9,7 +9,7 @@ class SaveCredential @Inject constructor (private val garminRepository: GarminRe
     suspend operator fun invoke(credential: Credential):Result<Unit> {
         if (credential.username.isNotBlank() && credential.password.isNotBlank()) {
             garminRepository.saveCredential(credential)
-            garminRepository.clearCache()
+            garminRepository.deleteTokens()
             return Result.Success(Unit)
         }
         return Result.Failure("Validation error")

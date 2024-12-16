@@ -28,9 +28,9 @@ class ClearCacheTest {
 
     @Test
     fun `Clear cache`() = runTest {
-        coEvery { repo.clearCache() } returns Unit
+        coEvery { repo.deleteTokens() } returns Unit
         useCase()
-        coVerify { repo.clearCache() }
+        coVerify { repo.deleteTokens() }
         confirmVerified(repo)
     }
 }
