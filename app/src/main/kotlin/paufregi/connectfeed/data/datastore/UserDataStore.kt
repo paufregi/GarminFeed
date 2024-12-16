@@ -51,49 +51,57 @@ class UserDataStore (
             oauth2Json?.let { Json.decodeFromString<OAuth2>(crypto.decrypt(it)) }
         }
 
-    suspend fun saveCredential(credential: Credential) =
+    suspend fun saveCredential(credential: Credential) {
         dataStore.edit { preferences ->
             preferences[CREDENTIAL] = crypto.encrypt(Json.encodeToString(credential))
         }
+    }
 
-    suspend fun saveOAuthConsumer(consumer: OAuthConsumer) =
+    suspend fun saveOAuthConsumer(consumer: OAuthConsumer) {
         dataStore.edit { preferences ->
             preferences[OAUTH_CONSUMER] = crypto.encrypt(
                 Json.encodeToString(consumer)
             )
         }
+    }
 
-    suspend fun saveOAuth1(oauth1: OAuth1) =
+    suspend fun saveOAuth1(oauth1: OAuth1) {
         dataStore.edit { preferences ->
             preferences[OAUTH1] = crypto.encrypt(
                 Json.encodeToString(oauth1)
             )
         }
+    }
 
-    suspend fun saveOAuth2(oauth2: OAuth2) =
+    suspend fun saveOAuth2(oauth2: OAuth2) {
         dataStore.edit { preferences ->
             preferences[OAUTH2] = crypto.encrypt(
                 Json.encodeToString(oauth2)
             )
         }
+    }
 
-    suspend fun deleteCredential() =
+    suspend fun deleteCredential() {
         dataStore.edit { preferences ->
             preferences.remove(CREDENTIAL)
         }
+    }
 
-    suspend fun deleteOAuthConsumer() =
+    suspend fun deleteOAuthConsumer() {
         dataStore.edit { preferences ->
             preferences.remove(OAUTH_CONSUMER)
         }
+    }
 
-    suspend fun deleteOAuth1() =
+    suspend fun deleteOAuth1() {
         dataStore.edit { preferences ->
             preferences.remove(OAUTH1)
         }
+    }
 
-    suspend fun deleteOAuth2() =
+    suspend fun deleteOAuth2() {
         dataStore.edit { preferences ->
             preferences.remove(OAUTH2)
         }
+    }
 }
