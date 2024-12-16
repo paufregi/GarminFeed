@@ -41,7 +41,6 @@ class AuthInterceptorTest {
     private lateinit var auth: AuthInterceptor
     private lateinit var api: TestApi
 
-    private val garminDao = mockk<GarminDao>()
     private val garth = mockk<Garth>()
     private val connectOAuth1 = mockk<GarminConnectOAuth1>()
     private val connectOAuth2 = mockk<GarminConnectOAuth2>()
@@ -60,12 +59,11 @@ class AuthInterceptorTest {
         server.start()
 
         auth = AuthInterceptor(
-            garminDao,
-            garth,
-            garminSSO,
-            userDataStore,
-            {_ -> connectOAuth1},
-            {_, _ -> connectOAuth2},
+            garth = garth,
+            garminSSO = garminSSO,
+            userDataStore = userDataStore,
+            createConnectOAuth1 = {_ -> connectOAuth1},
+            createConnectOAuth2 = {_, _ -> connectOAuth2},
         )
         server.enqueue(MockResponse().setResponseCode(200))
         api = Retrofit.Builder()
@@ -91,7 +89,7 @@ class AuthInterceptorTest {
         api.test()
 
         verify { userDataStore.getOauth2() }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
 
         val req = server.takeRequest()
         assertThat(req.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
@@ -122,7 +120,7 @@ class AuthInterceptorTest {
             userDataStore.saveOAuth2(oauth2)
             connectOAuth2.getOauth2()
         }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -134,6 +132,7 @@ class AuthInterceptorTest {
         val oauth1 = OAuth1("OAUTH_TOKEN", "OAUTH_SECRET")
         val oauth2 = createOAuth2(tomorrow)
 
+        every { userDataStore.getCredential() } returns flowOf(cred)
         every { userDataStore.getOAuthConsumer() } returns flowOf(null)
         every { userDataStore.getOauth1() } returns flowOf(null)
         every { userDataStore.getOauth2() } returns flowOf(null)
@@ -141,7 +140,6 @@ class AuthInterceptorTest {
         coEvery { userDataStore.saveOAuth1(any()) } returns Unit
         coEvery { userDataStore.saveOAuth2(any()) } returns Unit
         coEvery { garth.getOAuthConsumer() } returns Response.success(consumer)
-        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
         coEvery { connectOAuth1.getOauth1(any()) } returns Response.success(oauth1)
@@ -152,6 +150,7 @@ class AuthInterceptorTest {
         val apiReq = server.takeRequest()
         assertThat(apiReq.headers["Authorization"]).isEqualTo("Bearer ${oauth2.accessToken}")
         verify {
+            userDataStore.getCredential()
             userDataStore.getOAuthConsumer()
             userDataStore.getOauth1()
             userDataStore.getOauth2()
@@ -161,13 +160,12 @@ class AuthInterceptorTest {
             userDataStore.saveOAuth1(oauth1)
             userDataStore.saveOAuth2(oauth2)
             garth.getOAuthConsumer()
-            garminDao.getCredential()
             garminSSO.getCSRF()
             garminSSO.login(cred.username, cred.password, csrf)
             connectOAuth1.getOauth1(ticket)
             connectOAuth2.getOauth2()
         }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -187,7 +185,7 @@ class AuthInterceptorTest {
             garth.getOAuthConsumer()
             garth.getOAuthConsumer()
         }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
 
@@ -195,10 +193,10 @@ class AuthInterceptorTest {
     fun `Authenticate - failure no credentials`() = runTest {
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
+        every { userDataStore.getCredential() } returns flowOf(null)
         every { userDataStore.getOAuthConsumer() } returns flowOf(consumer)
         every { userDataStore.getOauth1() } returns flowOf(null)
         every { userDataStore.getOauth2() } returns flowOf(null)
-        coEvery { garminDao.getCredential() } returns flowOf(null)
 
         val res = api.test()
 
@@ -208,8 +206,8 @@ class AuthInterceptorTest {
             userDataStore.getOauth1()
             userDataStore.getOauth2()
         }
-        coVerify { garminDao.getCredential() }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        coVerify { userDataStore.getCredential() }
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -217,25 +215,25 @@ class AuthInterceptorTest {
         val cred = Credential(username = "user", password = "pass")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
+        every { userDataStore.getCredential() } returns flowOf(cred)
         every { userDataStore.getOAuthConsumer() } returns flowOf(consumer)
         every { userDataStore.getOauth1() } returns flowOf(null)
         every { userDataStore.getOauth2() } returns flowOf(null)
-        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.error(400, "error".toResponseBody())
 
         val res = api.test()
 
         assertThat(res.isSuccessful).isFalse()
         verify {
+            userDataStore.getCredential()
             userDataStore.getOAuthConsumer()
             userDataStore.getOauth1()
             userDataStore.getOauth2()
         }
         coVerify {
-            garminDao.getCredential()
             garminSSO.getCSRF()
         }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -244,10 +242,10 @@ class AuthInterceptorTest {
         val csrf = CSRF("csrf")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
+        every { userDataStore.getCredential() } returns flowOf(cred)
         every { userDataStore.getOAuthConsumer() } returns flowOf(consumer)
         every { userDataStore.getOauth1() } returns flowOf(null)
         every { userDataStore.getOauth2() } returns flowOf(null)
-        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.error(400, "error".toResponseBody())
 
@@ -255,16 +253,16 @@ class AuthInterceptorTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify {
+            userDataStore.getCredential()
             userDataStore.getOAuthConsumer()
             userDataStore.getOauth1()
             userDataStore.getOauth2()
         }
         coVerify {
-            garminDao.getCredential()
             garminSSO.getCSRF()
             garminSSO.login(cred.username, cred.password, csrf)
         }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -274,10 +272,10 @@ class AuthInterceptorTest {
         val ticket = Ticket("ticket")
         val consumer = OAuthConsumer("CONSUMER_KEY", "CONSUMER_SECRET")
 
+        every { userDataStore.getCredential() } returns flowOf(cred)
         every { userDataStore.getOAuthConsumer() } returns flowOf(consumer)
         every { userDataStore.getOauth1() } returns flowOf(null)
         every { userDataStore.getOauth2() } returns flowOf(null)
-        coEvery { garminDao.getCredential() } returns flowOf(CredentialEntity(credential = cred))
         coEvery { garminSSO.getCSRF() } returns Response.success(csrf)
         coEvery { garminSSO.login(any(), any(), any()) } returns Response.success(ticket)
         coEvery { connectOAuth1.getOauth1(any()) } returns Response.error(400, "error".toResponseBody())
@@ -286,17 +284,17 @@ class AuthInterceptorTest {
 
         assertThat(res.isSuccessful).isFalse()
         verify {
+            userDataStore.getCredential()
             userDataStore.getOAuthConsumer()
             userDataStore.getOauth1()
             userDataStore.getOauth2()
         }
         coVerify {
-            garminDao.getCredential()
             garminSSO.getCSRF()
             garminSSO.login(cred.username, cred.password, csrf)
             connectOAuth1.getOauth1(ticket)
         }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 
     @Test
@@ -318,6 +316,6 @@ class AuthInterceptorTest {
             userDataStore.getOauth2()
         }
         coVerify { connectOAuth2.getOauth2() }
-        confirmVerified(garminDao, garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
+        confirmVerified(garth, garminSSO, userDataStore, connectOAuth1, connectOAuth2)
     }
 }

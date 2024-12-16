@@ -12,17 +12,13 @@ import paufregi.connectfeed.data.api.GarminConnectOAuth1
 import paufregi.connectfeed.data.api.GarminConnectOAuth2
 import paufregi.connectfeed.data.api.GarminSSO
 import paufregi.connectfeed.data.api.Garth
-import paufregi.connectfeed.data.api.models.CSRF
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuth2
 import paufregi.connectfeed.data.api.models.OAuthConsumer
-import paufregi.connectfeed.data.api.models.Ticket
-import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.UserDataStore
 import javax.inject.Inject
 
 class AuthInterceptor @Inject constructor(
-    private val garminDao: GarminDao,
     private val garth: Garth,
     private val garminSSO: GarminSSO,
     private val userDataStore: UserDataStore,
@@ -32,114 +28,75 @@ class AuthInterceptor @Inject constructor(
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        val cachedOauth2 = runBlocking { userDataStore.getOauth2().firstOrNull() }
-        return if (cachedOauth2 != null && !cachedOauth2.isExpired()) {
-            chain.proceed(newRequestWithAccessToken(cachedOauth2.accessToken, request))
-        } else {
-            when (val oauth2 = runBlocking { authenticate() }){
-                is Result.Success -> chain.proceed(newRequestWithAccessToken(oauth2.data.accessToken, request))
-                is Result.Failure -> Response.Builder()
-                    .request(request)
-                    .protocol(Protocol.HTTP_1_1)
-                    .code(401)
-                    .message("Auth failed")
-                    .body("".toResponseBody())
-                    .build()
+
+        var oAuth2 = runBlocking { userDataStore.getOauth2().firstOrNull() }
+        if (oAuth2 == null || oAuth2.isExpired()) {
+            val resOAuth2 = runBlocking { authenticate() }
+            when (resOAuth2) {
+                is Result.Failure -> return failedResponse(request, resOAuth2.reason)
+                is Result.Success -> oAuth2 = resOAuth2.data
             }
         }
+
+        return chain.proceed(authRequest(request, oAuth2.accessToken))
     }
 
-    private suspend fun getCSRF(): Result<CSRF> {
-        val res = garminSSO.getCSRF()
-        return when(res.isSuccessful) {
-            true -> Result.Success(res.body()!!)
-            false -> Result.Failure(res.errorBody().toString())
-        }
-    }
+    private suspend fun login(consumer: OAuthConsumer): Result<OAuth1> {
+        val credential = userDataStore.getCredential().firstOrNull()
+        if (credential == null) return Result.Failure("No credential found")
 
-    private suspend fun login(username: String, password: String, csrf: CSRF): Result<Ticket> {
-        val res = garminSSO.login(username = username, password = password, csrf = csrf)
-        return when(res.isSuccessful) {
-            true -> Result.Success(res.body()!!)
-            false -> Result.Failure(res.errorBody().toString())
-        }
-    }
+        val resCSRF = garminSSO.getCSRF()
+        if (!resCSRF.isSuccessful) return Result.Failure("Problem with the login page")
+        val csrf = resCSRF.body()!!
 
-    private suspend fun getOAuthConsumer(): Result<OAuthConsumer> {
-        val res = garth.getOAuthConsumer()
-        return when(res.isSuccessful) {
-            true -> Result.Success(res.body()!!)
-            false -> Result.Failure(res.errorBody().toString())
-        }
-    }
+        val resLogin = garminSSO.login(username = credential.username, password = credential.password, csrf = csrf)
+        if (!resLogin.isSuccessful) return Result.Failure("Couldn't login")
+        val ticket = resLogin.body()!!
 
-    private suspend fun getOAuthToken(ticket: Ticket, consumer: OAuthConsumer): Result<OAuth1> {
-        val garminConnect = createConnectOAuth1(consumer)
-        val res = garminConnect.getOauth1(ticket)
-        return when(res.isSuccessful) {
-            true -> Result.Success(res.body()!!)
-            false -> Result.Failure(res.errorBody().toString())
-        }
-    }
-
-    private suspend fun getOAuth2Token(oauth: OAuth1, consumer: OAuthConsumer): Result<OAuth2> {
-        val garminConnect = createConnectOAuth2(consumer, oauth)
-        val res = garminConnect.getOauth2()
-        return when(res.isSuccessful) {
-            true -> Result.Success(res.body()!!)
-            false -> Result.Failure(res.errorBody().toString())
-        }
-    }
-
-    private suspend fun signIn(): Result<Ticket> {
-        val cred = garminDao.getCredential().firstOrNull()?.credential ?: return Result.Failure("No credentials")
-        return when(val csrf = getCSRF()) {
-            is Result.Success -> login(username = cred.username , password = cred.password, csrf = csrf.data)
-            is Result.Failure -> Result.Failure(csrf.error)
-        }
+        val connect = createConnectOAuth1(consumer)
+        val resOAuth1 = connect.getOauth1(ticket)
+        if (!resOAuth1.isSuccessful) return Result.Failure("Couldn't get OAuth1 token")
+        return Result.Success(resOAuth1.body()!!)
     }
 
     private suspend fun authenticate(): Result<OAuth2> {
-
-        val consumer =
-            userDataStore.getOAuthConsumer().firstOrNull() ?: when (val res = getOAuthConsumer()) {
-                is Result.Success -> {
-                    userDataStore.saveOAuthConsumer(res.data)
-                    res.data
-                }
-                is Result.Failure -> return Result.Failure(res.error)
-            }
-
-        val cachedOAuth1 = userDataStore.getOauth1().firstOrNull()
-        val oauth: OAuth1
-        if (cachedOAuth1 != null && cachedOAuth1.isValid()) {
-            oauth = cachedOAuth1
-        } else {
-            val ticket = when (val res = signIn()) {
-                is Result.Success -> res.data
-                is Result.Failure -> return Result.Failure(res.error)
-            }
-
-            oauth = when (val res = getOAuthToken(ticket, consumer)) {
-                is Result.Success -> {
-                    userDataStore.saveOAuth1(res.data)
-                    res.data
-                }
-                is Result.Failure -> return Result.Failure(res.error)
-            }
+        var consumer: OAuthConsumer? = userDataStore.getOAuthConsumer().firstOrNull()
+        if (consumer == null) {
+            val resConsumer = garth.getOAuthConsumer()
+            if (!resConsumer.isSuccessful) return Result.Failure("Couldn't get OAuth Consumer")
+            consumer = resConsumer.body()!!
+            userDataStore.saveOAuthConsumer(consumer)
         }
 
-        return when (val oauth2 = getOAuth2Token(oauth, consumer)) {
-            is Result.Success -> {
-                userDataStore.saveOAuth2(oauth2.data)
-                Result.Success(oauth2.data)
+        var oauth1 = userDataStore.getOauth1().firstOrNull()
+        if (oauth1 == null) {
+            val resOAuth1 = login(consumer)
+            when (resOAuth1) {
+                is Result.Failure -> return Result.Failure(resOAuth1.reason)
+                is Result.Success -> oauth1 = resOAuth1.data
             }
-            is Result.Failure -> Result.Failure(oauth2.error)
+            userDataStore.saveOAuth1(resOAuth1.data)
         }
+
+        val connect = createConnectOAuth2(consumer, oauth1)
+        val resOAuth2 = connect.getOauth2()
+        if (!resOAuth2.isSuccessful) return Result.Failure("Couldn't get OAuth2 token")
+        val oauth2 = resOAuth2.body()!!
+        userDataStore.saveOAuth2(oauth2)
+        return Result.Success(oauth2)
     }
 
-    private fun newRequestWithAccessToken(accessToken: String?, request: Request): Request =
+    private fun authRequest(request: Request, accessToken: String?): Request =
         request.newBuilder()
             .header("Authorization", "Bearer $accessToken")
+            .build()
+
+    private fun failedResponse(request: Request, reason: String): Response =
+        Response.Builder()
+            .request(request)
+            .protocol(Protocol.HTTP_1_1)
+            .code(401)
+            .message("Auth failed")
+            .body(reason.toResponseBody())
             .build()
 }
