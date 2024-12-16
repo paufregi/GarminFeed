@@ -1,6 +1,5 @@
 package paufregi.connectfeed.data.repository
 
-import android.util.Log
 import androidx.compose.ui.util.fastMap
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -21,7 +20,6 @@ import paufregi.connectfeed.data.api.utils.callApi
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.coverters.toCore
 import paufregi.connectfeed.data.database.coverters.toEntity
-import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.datastore.UserDataStore
 import java.io.File
 import javax.inject.Inject
@@ -32,20 +30,20 @@ class GarminRepository @Inject constructor(
     private val garminConnect: GarminConnect,
     private val userDataStore: UserDataStore
 ) {
-    suspend fun saveCredential(credential: Credential) =
-        garminDao.saveCredential(CredentialEntity(credential = credential))
+    suspend fun fetchFullName(): Result<String> =
+        callApi (
+            { garminConnect.getUserProfile() },
+            { res -> res.body()?.firstName ?: "" }
+        )
 
     fun getCredential(): Flow<Credential?> =
-        garminDao.getCredential().map { it?.credential }
+        userDataStore.getCredential()
 
-    suspend fun saveProfile(profile: Profile) {
-        Log.i("Repo", "about to save")
-        return garminDao.saveProfile(profile.toEntity())
-    }
+    suspend fun saveCredential(credential: Credential) =
+        userDataStore.saveCredential(credential)
 
-
-    suspend fun deleteProfile(profile: Profile) =
-        garminDao.deleteProfile(profile.toEntity())
+    suspend fun deleteCredential() =
+        userDataStore.deleteCredential()
 
     fun getAllProfiles(): Flow<List<Profile>> =
         garminDao.getAllProfiles().map { it.fastMap { it.toCore() } }
@@ -53,31 +51,34 @@ class GarminRepository @Inject constructor(
     suspend fun getProfile(id: Long): Profile? =
         garminDao.getProfile(id)?.toCore()
 
-    suspend fun clearCache() {
+    suspend fun saveProfile(profile: Profile) =
+        garminDao.saveProfile(profile.toEntity())
+
+    suspend fun deleteProfile(profile: Profile) =
+        garminDao.deleteProfile(profile.toEntity())
+
+    suspend fun deleteTokens() {
         userDataStore.deleteOAuth1()
         userDataStore.deleteOAuth2()
     }
 
-    suspend fun getLatestActivities(limit: Int): Result<List<Activity>> {
-        return callApi (
+    suspend fun getLatestActivities(limit: Int): Result<List<Activity>> =
+        callApi (
             { garminConnect.getLatestActivity(limit) },
             { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
-    }
 
-    suspend fun getCourses(): Result<List<Course>> {
-        return callApi (
+    suspend fun getCourses(): Result<List<Course>> =
+        callApi (
             { garminConnect.getCourses() },
             { res -> res.body()?.fastMap { it.toCore() } ?: emptyList() }
         )
-    }
 
-    suspend fun getEventTypes(): Result<List<EventType>> {
-        return callApi (
+    suspend fun getEventTypes(): Result<List<EventType>> =
+        callApi (
             { garminConnect.getEventTypes() },
             { res -> res.body()?.fastMap { it.toCore() }?.filterNotNull() ?: emptyList() }
         )
-    }
 
     suspend fun updateActivity(
         activity: Activity,

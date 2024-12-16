@@ -21,16 +21,20 @@ import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.createOAuth2
 import paufregi.connectfeed.cred
+import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
 import paufregi.connectfeed.data.database.entities.CredentialEntity
+import paufregi.connectfeed.data.datastore.UserDataStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
 import paufregi.connectfeed.garthDispatcher
 import paufregi.connectfeed.garthPort
 import paufregi.connectfeed.sslSocketFactory
 import java.io.File
+import java.util.Date
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -49,6 +53,7 @@ class GarminRepositoryTest {
     lateinit var database: GarminDatabase
 
     private lateinit var dao: GarminDao
+    private lateinit var dataStore: UserDataStore
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
@@ -81,11 +86,11 @@ class GarminRepositoryTest {
 
     @Test
     fun `Store credential`() = runTest {
-        repo.saveCredential(cred)
-        val res = repo.getCredential()
-
-        res.test{
+        repo.getCredential().test{
+            assertThat(awaitItem()).isNull()
+            repo.saveCredential(cred)
             assertThat(awaitItem()).isEqualTo(cred)
+            repo.deleteCredential()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -99,9 +104,7 @@ class GarminRepositoryTest {
         repo.deleteProfile(profile)
         assertThat(repo.getProfile(profile.id)).isNull()
 
-        val res = repo.getAllProfiles()
-
-        res.test{
+        repo.getAllProfiles().test{
             assertThat(awaitItem()).isEmpty()
             repo.saveProfile(profile)
             assertThat(awaitItem()).containsExactly(profile)
@@ -110,14 +113,25 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Upload file`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+    fun `Delete tokens`() = runTest {
+        val oAuth1 = OAuth1("token", "secret")
+        val oAuth2 = createOAuth2(Date())
 
-        val testFile = File.createTempFile("test", "test")
-        testFile.deleteOnExit()
-        val res = repo.uploadFile(testFile)
+        dataStore.getOauth1().test {
+            assertThat(awaitItem()).isNotNull()
+            dataStore.saveOAuth1(oAuth1)
+            assertThat(awaitItem()).isEqualTo(oAuth1)
+            repo.deleteTokens()
+            assertThat(awaitItem()).isNotNull()
+        }
 
-        assertThat(res.isSuccessful).isTrue()
+        dataStore.getOauth2().test {
+            assertThat(awaitItem()).isNotNull()
+            dataStore.saveOAuth2(oAuth2)
+            assertThat(awaitItem()).isEqualTo(oAuth2)
+            repo.deleteTokens()
+            assertThat(awaitItem()).isNotNull()
+        }
     }
 
     @Test
@@ -168,7 +182,6 @@ class GarminRepositoryTest {
         assertThat(res.data).isEqualTo(expected)
     }
 
-
     @Test
     fun `Update activity`() = runTest {
         dao.saveCredential(CredentialEntity(credential = cred))
@@ -184,6 +197,17 @@ class GarminRepositoryTest {
         )
 
         val res = repo.updateActivity(activity, profile, 50f, 90f)
+
+        assertThat(res.isSuccessful).isTrue()
+    }
+
+    @Test
+    fun `Upload file`() = runTest {
+        dao.saveCredential(CredentialEntity(credential = cred))
+
+        val testFile = File.createTempFile("test", "test")
+        testFile.deleteOnExit()
+        val res = repo.uploadFile(testFile)
 
         assertThat(res.isSuccessful).isTrue()
     }
