@@ -2,7 +2,7 @@
 activityCompose = "1.9.3"
 androidGradlePlugin = "8.7.3"
 commonsCsv = "1.12.0"
-composeVersion = "1.7.5"
+composeVersion = "1.7.6"
 core = "1.6.1"
 coreSplashscreen = "1.0.1"
 coreTesting = "1.1.1"
