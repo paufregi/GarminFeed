@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val setupDone by viewModel.state.collectAsStateWithLifecycle()
-            installSplashScreen().setKeepOnScreenCondition({ setupDone == null })
+            installSplashScreen().setKeepOnScreenCondition { setupDone == null }
 
             val nav = rememberNavController()
 
