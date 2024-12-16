@@ -18,7 +18,6 @@ import paufregi.connectfeed.data.api.Garth
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.utils.AuthInterceptor
-import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.datastore.UserDataStore
 import paufregi.connectfeed.data.keystore.CryptoManager
 import java.io.File
@@ -49,14 +48,12 @@ class AppModule {
     @Provides
     @Singleton
     fun provideAuthInterceptor(
-        garminDao: GarminDao,
         garth: Garth,
         garminSSO: GarminSSO,
         userDataStore: UserDataStore,
         @Named("GarminConnectOAuth1Url") garminConnectOAuth1Url: String,
         @Named("GarminConnectOAuth2Url") garminConnectOAuth2Url: String
     ): AuthInterceptor = AuthInterceptor(
-        garminDao = garminDao,
         garth = garth,
         garminSSO = garminSSO,
         userDataStore = userDataStore,
