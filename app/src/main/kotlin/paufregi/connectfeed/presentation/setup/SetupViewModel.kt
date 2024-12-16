@@ -10,12 +10,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.usecases.SetupDone
 import paufregi.connectfeed.core.usecases.SignIn
 import javax.inject.Inject
 
 @HiltViewModel
 class SetupViewModel @Inject constructor(
     private val signInUseCase: SignIn,
+    private val setupDone: SetupDone,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SetupState())
@@ -29,6 +31,7 @@ class SetupViewModel @Inject constructor(
             is SetupEvent.SetPassword -> _state.change(password = event.password)
             is SetupEvent.ShowPassword -> _state.change(showPassword = event.showPassword)
             is SetupEvent.Reset -> _state.update { SetupState() }
+            is SetupEvent.Done -> done()
             is SetupEvent.Save -> signIn()
         }
     }
@@ -40,5 +43,9 @@ class SetupViewModel @Inject constructor(
             is Result.Success -> _state.change(processState = ProcessState.Success(res.data))
             is Result.Failure -> _state.change(processState = ProcessState.Failure(res.reason))
         }
+    }
+
+    private fun done() = viewModelScope.launch {
+        setupDone()
     }
 }

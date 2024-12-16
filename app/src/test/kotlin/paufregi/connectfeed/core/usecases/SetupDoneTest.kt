@@ -1,6 +1,7 @@
 package paufregi.connectfeed.core.usecases
 
 import io.mockk.clearAllMocks
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.confirmVerified
 import io.mockk.mockk
@@ -26,6 +27,8 @@ class SetupDoneTest {
 
     @Test
     fun `Setup done`() = runTest {
+        coEvery { repo.saveSetup(any()) } returns Unit
+
         useCase()
 
         coVerify { repo.saveSetup(true) }

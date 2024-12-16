@@ -74,6 +74,10 @@ internal fun SetupContent(
             type = StatusInfoType.Failure,
             text = state.processState.reason,
             actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Reset) } )})
+        is ProcessState.Success -> StatusInfo(
+            type = StatusInfoType.Success,
+            text = "Welcome ${state.processState.name}",
+            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Done) } )})
         else -> SetupForm(state, onEvent, paddingValues)
     }
 }
