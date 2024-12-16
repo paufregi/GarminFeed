@@ -85,12 +85,25 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Store setup`() = runTest {
+        repo.getSetup().test{
+            assertThat(awaitItem()).isFalse()
+            repo.saveSetup(true)
+            assertThat(awaitItem()).isTrue()
+            repo.saveSetup(false)
+            assertThat(awaitItem()).isFalse()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Store credential`() = runTest {
         repo.getCredential().test{
             assertThat(awaitItem()).isNull()
             repo.saveCredential(cred)
             assertThat(awaitItem()).isEqualTo(cred)
             repo.deleteCredential()
+            assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -123,6 +136,7 @@ class GarminRepositoryTest {
             assertThat(awaitItem()).isEqualTo(oAuth1)
             repo.deleteTokens()
             assertThat(awaitItem()).isNotNull()
+            cancelAndIgnoreRemainingEvents()
         }
 
         dataStore.getOauth2().test {
@@ -131,6 +145,7 @@ class GarminRepositoryTest {
             assertThat(awaitItem()).isEqualTo(oAuth2)
             repo.deleteTokens()
             assertThat(awaitItem()).isNotNull()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 

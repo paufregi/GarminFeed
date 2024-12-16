@@ -30,6 +30,12 @@ class GarminRepository @Inject constructor(
     private val garminConnect: GarminConnect,
     private val userDataStore: UserDataStore
 ) {
+    fun getSetup(): Flow<Boolean> =
+        userDataStore.getSetup()
+
+    suspend fun saveSetup(setup: Boolean) =
+        userDataStore.saveSetup(setup)
+
     suspend fun fetchFullName(): Result<String> =
         callApi (
             { garminConnect.getUserProfile() },

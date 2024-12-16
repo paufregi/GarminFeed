@@ -12,7 +12,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.data.repository.GarminRepository
 
 class IsSetupDoneTest {
@@ -31,25 +30,22 @@ class IsSetupDoneTest {
 
     @Test
     fun `Setup done`() = runTest {
-        val credential = Credential("user", "pass")
-        coEvery { repo.getCredential() } returns flowOf(credential)
-        val res = useCase()
+        coEvery { repo.getSetup() } returns flowOf(true)
 
-        res.test {
+        useCase().test {
             assertThat(awaitItem()).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { repo.getCredential() }
+        coVerify { repo.getSetup() }
         confirmVerified(repo)
     }
 
     @Test
     fun `Setup not done`() = runTest {
-        coEvery { repo.getCredential() } returns flowOf(null)
-        val res = useCase()
+        coEvery { repo.getSetup() } returns flowOf(false)
 
-        res.test {
+        useCase().test {
             assertThat(awaitItem()).isFalse()
             cancelAndIgnoreRemainingEvents()
         }

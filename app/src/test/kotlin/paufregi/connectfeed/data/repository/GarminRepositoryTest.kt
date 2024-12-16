@@ -62,6 +62,29 @@ class GarminRepositoryTest {
     }
 
     @Test
+    fun `Get setup`() = runTest {
+        coEvery { userDataStore.getSetup() } returns flowOf(true)
+
+        repo.getSetup().test {
+            assertThat(awaitItem()).isEqualTo(true)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify { userDataStore.getCredential() }
+        confirmVerified(garminDao, garminConnect, userDataStore)
+    }
+
+    @Test
+    fun `Save setup`() = runTest {
+        coEvery { userDataStore.saveSetup(any()) } returns Unit
+
+        repo.saveSetup(true)
+
+        coVerify { userDataStore.saveSetup(true) }
+        confirmVerified(garminDao, garminConnect, userDataStore)
+    }
+
+    @Test
     fun `Get credential`() = runTest {
         val cred = Credential(username = "user", password = "pass")
         coEvery { userDataStore.getCredential() } returns flowOf(cred)

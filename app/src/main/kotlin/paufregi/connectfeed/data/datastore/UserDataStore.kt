@@ -2,6 +2,7 @@ package paufregi.connectfeed.data.datastore
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.byteArrayPreferencesKey
 import kotlinx.coroutines.flow.Flow
@@ -20,11 +21,17 @@ class UserDataStore (
 ) {
 
     companion object {
+        private val SETUP = booleanPreferencesKey("setup")
         private val CREDENTIAL = byteArrayPreferencesKey("credential")
         private val OAUTH_CONSUMER = byteArrayPreferencesKey("oauthConsumer")
         private val OAUTH1 = byteArrayPreferencesKey("oauth1")
         private val OAUTH2 = byteArrayPreferencesKey("oauth2")
     }
+
+    fun getSetup(): Flow<Boolean> =
+        dataStore.data.map { preferences ->
+            preferences[SETUP] == true
+        }
 
     fun getCredential(): Flow<Credential?> =
         dataStore.data.map { preferences ->
@@ -38,7 +45,6 @@ class UserDataStore (
             consumerJson?.let { Json.decodeFromString<OAuthConsumer>(crypto.decrypt(it)) }
         }
 
-
     fun getOauth1(): Flow<OAuth1?> =
         dataStore.data.map { preferences ->
             val oauthJson = preferences[OAUTH1]
@@ -50,6 +56,12 @@ class UserDataStore (
             val oauth2Json = preferences[OAUTH2]
             oauth2Json?.let { Json.decodeFromString<OAuth2>(crypto.decrypt(it)) }
         }
+
+    suspend fun saveSetup(setup: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[SETUP] = setup
+        }
+    }
 
     suspend fun saveCredential(credential: Credential) {
         dataStore.edit { preferences ->

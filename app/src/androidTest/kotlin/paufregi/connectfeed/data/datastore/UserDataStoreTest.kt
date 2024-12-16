@@ -35,6 +35,17 @@ class UserDataStoreTest {
     }
 
     @Test
+    fun `Save and retrieve Setup`() = runTest {
+        dataStore.getSetup().test {
+            assertThat(awaitItem()).isFalse()
+            dataStore.saveSetup(true)
+            assertThat(awaitItem()).isTrue()
+            dataStore.saveSetup(false)
+            assertThat(awaitItem()).isFalse()
+        }
+    }
+
+    @Test
     fun `Save retrieve and delete Credential`() = runTest {
         dataStore.getCredential().test {
             assertThat(awaitItem()).isNull()
