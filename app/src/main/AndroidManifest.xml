@@ -16,6 +16,7 @@
         >
         <activity
             android:name=".presentation.main.MainActivity"
+            android:theme="@android:style/Theme.NoTitleBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
