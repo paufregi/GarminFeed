@@ -123,6 +123,39 @@ val htmlForTicket = """
         </html>
     """.trimIndent()
 
+val userProfileJson = """
+    {
+        "userProfilePk": 1,
+        "userName": "email@gmail.com",
+        "firstName": "GarminUser",
+        "lastName": null,
+        "birthDate": "2000-01-01",
+        "gender": "MALE",
+        "emailAddress": "email@gmail.com",
+        "createDate": "2000-01-01T01:00:00.000+0000",
+        "measurementSystemPk": 1,
+        "glucoseMeasurementUnitId": 516,
+        "hydrationMeasurementUnitId": 413,
+        "timeZonePk": 130,
+        "decimalFormat": 1,
+        "timeFormat": 32,
+        "formatLocalePk": 1,
+        "dayOfWeekPk": 3,
+        "garminGlobalId": "123",
+        "displayName": "36b8f84d-df4e-4d49-b662-bcde71a8764f",
+        "tocAcceptedDate": "2019-03-05T06:00:00.000+0000",
+        "accessDeletedDate": null,
+        "garminGUID": "36b8f84d-df4e-4d49-b662-bcde71a8764f",
+        "countryCode": "NZ",
+        "countryCodeVerified": true,
+        "countryCodeVerifiedTimestamp": "2000-01-01",
+        "golfDistanceUnitId": 1,
+        "golfElevationUnitId": null,
+        "golfSpeedUnitId": null,
+        "phoneNumber": null
+    }
+""".trimIndent()
+
 val latestActivitiesJson = """
     [
         {
