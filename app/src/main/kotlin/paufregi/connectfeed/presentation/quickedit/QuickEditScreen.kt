@@ -10,15 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.MoodBad
 import androidx.compose.material.icons.filled.SentimentNeutral
 import androidx.compose.material.icons.filled.SentimentSatisfiedAlt
 import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,20 +51,29 @@ import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditScreen(
-    paddingValues: PaddingValues = PaddingValues(),
-) {
+internal fun QuickEditScreen() {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    QuickEditContent(state, viewModel::onEvent, paddingValues)
+    Scaffold(
+        topBar = { TopAppBar(
+            title = { Text("Connect Feed") },
+            actions = {
+                IconButton(onClick = { }) {
+                    Icon(Icons.Filled.Menu, "Settings")
+                }
+            }
+        ) },
+    ) { pv ->
+        QuickEditContent(state, viewModel::onEvent, pv)
+    }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun QuickEditContent(
-    @PreviewParameter(QuickEditStatePreview ::class) state: QuickEditState,
+    @PreviewParameter(QuickEditContentStatePreview ::class) state: QuickEditState,
     onEvent: (QuickEditEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -87,7 +102,7 @@ internal fun QuickEditContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun QuickEditForm(
-    @PreviewParameter(QuickEditStatePreview ::class) state: QuickEditState,
+    @PreviewParameter(QuickEditFormStatePreview ::class) state: QuickEditState,
     onEvent: (QuickEditEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {

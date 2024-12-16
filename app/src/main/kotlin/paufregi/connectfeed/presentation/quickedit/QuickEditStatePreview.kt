@@ -5,10 +5,17 @@ import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
 
-class QuickEditStatePreview : PreviewParameterProvider<QuickEditState> {
+class QuickEditContentStatePreview : PreviewParameterProvider<QuickEditState> {
     override val values = sequenceOf(
         QuickEditState(ProcessState.Processing),
-        QuickEditState(ProcessState.Idle),
+        QuickEditState(ProcessState.Success),
+        QuickEditState(ProcessState.FailureLoading),
+        QuickEditState(ProcessState.FailureUpdating),
+    )
+}
+
+class QuickEditFormStatePreview : PreviewParameterProvider<QuickEditState> {
+    override val values = sequenceOf(
         QuickEditState(
             activity = Activity(id = 1, name = "activity", type = ActivityType.Running),
             profile = Profile(name = "name", activityType = ActivityType.Running)
