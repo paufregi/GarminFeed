@@ -29,6 +29,7 @@ import paufregi.connectfeed.presentation.editprofile.EditProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.settings.SettingsScreen
+import paufregi.connectfeed.presentation.setup.SetupScreen
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.NavBar
 import paufregi.connectfeed.presentation.ui.components.NavItem
@@ -50,49 +51,18 @@ class MainActivity : ComponentActivity() {
             val setupDone by viewModel.state.collectAsStateWithLifecycle()
             installSplashScreen().setKeepOnScreenCondition({ setupDone == null })
 
-            val scope = rememberCoroutineScope()
-            val snackState = remember { SnackbarHostState() }
             val nav = rememberNavController()
 
             Theme {
-                SnackbarObserver(snackState, scope)
-                Scaffold(
-                    modifier = Modifier.fillMaxSize(),
-                    snackbarHost = { SnackbarHost(hostState = snackState) },
-                    bottomBar = { NavBar(
-                        nav = nav,
-                        navItems = listOf(
-                            NavItem(Routes.Home, "Home", Icons.Default.Home),
-                            NavItem(Routes.Profiles, "Profiles", Icons.Default.Tune),
-                            NavItem(Routes.Settings, "Settings", Icons.Default.Settings),
-                        ),
-                    ) }
-                ) { pv ->
-                    NavHost(navController = nav, startDestination = Routes.Home) {
-                        composable<Routes.Home> {
-                            when (setupDone)   {
-                                true -> QuickEditScreen(pv)
-                                else -> StatusInfo(
-                                    type = StatusInfoType.Failure,
-                                    text = "Please setup your credential",
-                                    paddingValues = pv
-                                )
-                            }
-                        }
-                        composable<Routes.Profiles> { ProfilesScreen(pv, nav) }
-                        composable<Routes.EditProfile> {
-                            when (setupDone)   {
-                                true -> EditProfileScreen(pv, nav)
-                                else -> StatusInfo(
-                                    type = StatusInfoType.Failure,
-                                    text = "Please setup your credential",
-                                    actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() }) },
-                                    paddingValues = pv
-                                )
-                            }
-                        }
-                        composable<Routes.Settings> { SettingsScreen(pv) }
+                when (setupDone) {
+                    true -> NavHost(navController = nav, startDestination = Routes.Home) {
+                        composable<Routes.Home> { QuickEditScreen() }
+                        composable<Routes.Profiles> { ProfilesScreen(nav = nav) }
+                        composable<Routes.EditProfile> { EditProfileScreen(nav = nav) }
+                        composable<Routes.Settings> { SettingsScreen() }
                     }
+
+                    else -> SetupScreen()
                 }
             }
         }
