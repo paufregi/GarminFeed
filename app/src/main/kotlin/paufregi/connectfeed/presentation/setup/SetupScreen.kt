@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -31,9 +30,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.presentation.Routes
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Loading
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
@@ -64,7 +60,7 @@ internal fun SetupScreen() {
 @Composable
 @ExperimentalMaterial3Api
 internal fun SetupContent(
-    @PreviewParameter(SetupStatePreview ::class) state: SetupState,
+    @PreviewParameter(SetupContentStatePreview ::class) state: SetupState,
     onEvent: (SetupEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -86,7 +82,7 @@ internal fun SetupContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun SetupForm(
-    @PreviewParameter(SetupStatePreview::class) state: SetupState,
+    @PreviewParameter(SetupFormStatePreview::class) state: SetupState,
     onEvent: (SetupEvent) -> Unit = {  },
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -132,7 +128,7 @@ internal fun SetupForm(
                 text = "Sign in",
                 enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
                 onClick = {
-                    onEvent(SetupEvent.Save)
+                    onEvent(SetupEvent.SignIn)
                     keyboardController?.hide()
                     focusManager.clearFocus()
                 }

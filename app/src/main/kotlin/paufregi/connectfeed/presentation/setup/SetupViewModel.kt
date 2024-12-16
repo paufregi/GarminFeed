@@ -1,6 +1,5 @@
 package paufregi.connectfeed.presentation.setup
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,14 +30,13 @@ class SetupViewModel @Inject constructor(
             is SetupEvent.SetPassword -> _state.change(password = event.password)
             is SetupEvent.ShowPassword -> _state.change(showPassword = event.showPassword)
             is SetupEvent.Reset -> _state.update { SetupState() }
+            is SetupEvent.SignIn -> signIn()
             is SetupEvent.Done -> done()
-            is SetupEvent.Save -> signIn()
         }
     }
 
     private fun signIn() = viewModelScope.launch {
         _state.change(processState = ProcessState.Processing)
-        Log.i("ConnectFeed", "signIn")
         when (val res = signInUseCase(state.value.credential) ) {
             is Result.Success -> _state.change(processState = ProcessState.Success(res.data))
             is Result.Failure -> _state.change(processState = ProcessState.Failure(res.reason))
