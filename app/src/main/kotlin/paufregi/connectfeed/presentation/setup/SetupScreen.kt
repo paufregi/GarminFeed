@@ -42,11 +42,7 @@ internal fun SetupScreen() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Setup") },
-            )
-        }
+        topBar = { TopAppBar(title = { Text("Setup ") }) }
     ) { pv ->
         SetupContent(
             state = state,
