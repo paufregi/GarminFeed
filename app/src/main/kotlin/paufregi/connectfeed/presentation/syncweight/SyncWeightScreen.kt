@@ -2,6 +2,8 @@ package paufregi.connectfeed.presentation.syncweight
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -17,7 +19,9 @@ internal fun SyncWeightScreen(
     @PreviewParameter(SyncWeightStatePreview::class) state: SyncWeightState,
     onComplete: () -> Unit = {},
 ) {
-    Scaffold {
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Connect Feed") }) }
+    ) {
         when (state) {
             is SyncWeightState.Uploading -> Loading(it)
             is SyncWeightState.Success -> StatusInfo(
