@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.editprofile
+package paufregi.connectfeed.presentation.profile
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -18,11 +18,11 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
-import paufregi.connectfeed.presentation.Routes
+import paufregi.connectfeed.presentation.Route
 import javax.inject.Inject
 
 @HiltViewModel
-class EditProfileViewModel @Inject constructor(
+class ProfileViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     val getProfile: GetProfile,
     val getActivityTypes: GetActivityTypes,
@@ -31,7 +31,7 @@ class EditProfileViewModel @Inject constructor(
     val saveProfile: SaveProfile,
 ) : ViewModel() {
 
-    private val profileId: Long = savedStateHandle.toRoute<Routes.EditProfile>().id
+    private val profileId: Long = savedStateHandle.toRoute<Route.Profile>().id
 
     private val _state = MutableStateFlow(EditProfileState())
 
@@ -63,10 +63,10 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: EditProfileEvent) {
+    fun onEvent(event: ProfileEvent) {
         when (event) {
-            is EditProfileEvent.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
-            is EditProfileEvent.SetActivityType -> _state.update {
+            is ProfileEvent.SetName -> _state.update { it.copy(profile = it.profile.copy(name = event.name)) }
+            is ProfileEvent.SetActivityType -> _state.update {
                 it.copy(
                     profile = it.profile.copy(
                         activityType = event.activityType,
@@ -74,13 +74,13 @@ class EditProfileViewModel @Inject constructor(
                     ),
                 )
             }
-            is EditProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
-            is EditProfileEvent.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
-            is EditProfileEvent.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
-            is EditProfileEvent.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
-            is EditProfileEvent.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
-            is EditProfileEvent.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
-            is EditProfileEvent.Save -> save()
+            is ProfileEvent.SetEventType -> _state.update { it.copy(profile = it.profile.copy(eventType = event.eventType)) }
+            is ProfileEvent.SetCourse -> _state.update { it.copy(profile = it.profile.copy(course = event.course)) }
+            is ProfileEvent.SetWater -> _state.update { it.copy(profile = it.profile.copy(water = event.water)) }
+            is ProfileEvent.SetRename -> _state.update { it.copy(profile = it.profile.copy(rename = event.rename)) }
+            is ProfileEvent.SetCustomWater -> _state.update { it.copy(profile = it.profile.copy(customWater = event.customWater)) }
+            is ProfileEvent.SetFeelAndEffort -> _state.update { it.copy(profile = it.profile.copy(feelAndEffort = event.feelAndEffort)) }
+            is ProfileEvent.Save -> save()
         }
     }
 

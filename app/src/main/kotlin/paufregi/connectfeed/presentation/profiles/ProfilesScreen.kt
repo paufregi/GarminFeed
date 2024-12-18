@@ -32,25 +32,32 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import paufregi.connectfeed.presentation.Routes
+import paufregi.connectfeed.presentation.Navigation
+import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.ActivityIcon
 import paufregi.connectfeed.presentation.ui.components.Button
+import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
 
 @Composable
 @ExperimentalMaterial3Api
 internal fun ProfilesScreen(
-    paddingValues: PaddingValues = PaddingValues(),
-    nav: NavHostController,
+    nav: NavHostController = rememberNavController(),
 ) {
     val viewModel = hiltViewModel<ProfilesViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    ProfilesContent(
-        state = state,
-        onEvent = viewModel::onEvent,
-        paddingValues = paddingValues,
+    NavigationDrawer(
+        items = Navigation.items,
+        selectIndex = Navigation.PROFILES,
         nav = nav
-    )
+    ) { pv ->
+        ProfilesContent(
+            state = state,
+            onEvent = viewModel::onEvent,
+            paddingValues = pv,
+            nav = nav
+        )
+    }
 }
 
 @Preview
@@ -66,7 +73,7 @@ internal fun ProfilesContent(
         modifier = Modifier.padding(paddingValues),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { nav.navigate(Routes.EditProfile()) },
+                onClick = { nav.navigate(Route.Profile()) },
                 modifier = Modifier.testTag("create_profile")
             ) {
                 Icon(Icons.Default.Add, "Create profile")
@@ -88,7 +95,7 @@ internal fun ProfilesContent(
                 Card(
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
-                        .clickable(onClick = { nav.navigate(Routes.EditProfile(it.id)) })
+                        .clickable(onClick = { nav.navigate(Route.Profile(it.id)) })
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,

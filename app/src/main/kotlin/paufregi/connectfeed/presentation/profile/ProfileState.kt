@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.editprofile
+package paufregi.connectfeed.presentation.profile
 
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course

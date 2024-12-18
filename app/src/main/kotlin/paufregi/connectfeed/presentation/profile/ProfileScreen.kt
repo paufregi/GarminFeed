@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.editprofile
+package paufregi.connectfeed.presentation.profile
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,9 +28,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.core.models.ActivityType
+import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
 import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
@@ -38,26 +40,31 @@ import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditProfileScreen(
-    paddingValues: PaddingValues = PaddingValues(),
     nav: NavHostController = rememberNavController()
 ) {
-    val viewModel = hiltViewModel<EditProfileViewModel>()
+    val viewModel = hiltViewModel<ProfileViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    EditProfileContent(
-        state = state,
-        onEvent = viewModel::onEvent,
-        paddingValues = paddingValues,
+    NavigationDrawer(
+        items = Navigation.items,
+        selectIndex = Navigation.PROFILE,
         nav = nav
-    )
+    ) { pv ->
+        EditProfileContent(
+            state = state,
+            onEvent = viewModel::onEvent,
+            paddingValues = pv,
+            nav = nav
+        )
+    }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditProfileContent(
-    @PreviewParameter(EditProfileStatePreview ::class) state: EditProfileState,
-    onEvent: (EditProfileEvent) -> Unit = {},
+    @PreviewParameter(ProfileStatePreview ::class) state: EditProfileState,
+    onEvent: (ProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
     nav: NavHostController = rememberNavController()
 ) {
@@ -86,8 +93,8 @@ internal fun EditProfileContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun EditProfileForm(
-    @PreviewParameter(EditProfileStatePreview::class) state: EditProfileState,
-    onEvent: (EditProfileEvent) -> Unit = {},
+    @PreviewParameter(ProfileStatePreview::class) state: EditProfileState,
+    onEvent: (ProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
     nav: NavHostController = rememberNavController()
 ) {
@@ -102,7 +109,7 @@ internal fun EditProfileForm(
         TextField(
             label = { Text("Name") },
             value = state.profile.name,
-            onValueChange = { onEvent(EditProfileEvent.SetName(it)) },
+            onValueChange = { onEvent(ProfileEvent.SetName(it)) },
             isError = state.profile.name.isBlank(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -111,7 +118,7 @@ internal fun EditProfileForm(
             selected = state.profile.activityType.toDropdownItem { },
             modifier = Modifier.fillMaxWidth(),
             items = state.activityTypes.map {
-                it.toDropdownItem { onEvent(EditProfileEvent.SetActivityType(it)) }
+                it.toDropdownItem { onEvent(ProfileEvent.SetActivityType(it)) }
             }
         )
         Dropdown(
@@ -120,7 +127,7 @@ internal fun EditProfileForm(
             modifier = Modifier.fillMaxWidth(),
             items = state.eventTypes.map {
                 it.toDropdownItem {
-                    onEvent(EditProfileEvent.SetEventType(it))
+                    onEvent(ProfileEvent.SetEventType(it))
                 }
             },
             isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
@@ -133,14 +140,14 @@ internal fun EditProfileForm(
                 modifier = Modifier.fillMaxWidth(),
                 items = state.courses
                     .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
-                    .map { it.toDropdownItem { onEvent(EditProfileEvent.SetCourse(it)) }
+                    .map { it.toDropdownItem { onEvent(ProfileEvent.SetCourse(it)) }
                 }
             )
         }
         TextField(
             label = { Text("Water") },
             value = state.profile.water?.toString() ?: "",
-            onValueChange = { if (it.isDigitsOnly()) onEvent(EditProfileEvent.SetWater(it.toInt())) },
+            onValueChange = { if (it.isDigitsOnly()) onEvent(ProfileEvent.SetWater(it.toInt())) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -150,13 +157,13 @@ internal fun EditProfileForm(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = {
-                    onEvent(EditProfileEvent.SetRename(!state.profile.rename))
+                    onEvent(ProfileEvent.SetRename(!state.profile.rename))
                 })
         ) {
             Checkbox(
                 modifier = Modifier.testTag("rename_checkbox"),
                 checked = state.profile.rename,
-                onCheckedChange = { onEvent(EditProfileEvent.SetRename(it)) },
+                onCheckedChange = { onEvent(ProfileEvent.SetRename(it)) },
             )
             Text("Rename activity")
         }
@@ -164,13 +171,13 @@ internal fun EditProfileForm(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(EditProfileEvent.SetCustomWater(!state.profile.customWater)) }
+                onClick = { onEvent(ProfileEvent.SetCustomWater(!state.profile.customWater)) }
             )
         ) {
             Checkbox(
                 modifier = Modifier.testTag("custom_water_checkbox"),
                 checked = state.profile.customWater,
-                onCheckedChange = { onEvent(EditProfileEvent.SetCustomWater(it)) },
+                onCheckedChange = { onEvent(ProfileEvent.SetCustomWater(it)) },
             )
             Text("Customizable water")
         }
@@ -178,13 +185,13 @@ internal fun EditProfileForm(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(EditProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
+                onClick = { onEvent(ProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
             )
         ) {
             Checkbox(
                 modifier = Modifier.testTag("feel_and_effort_checkbox"),
                 checked = state.profile.feelAndEffort,
-                onCheckedChange = { onEvent(EditProfileEvent.SetFeelAndEffort(it)) },
+                onCheckedChange = { onEvent(ProfileEvent.SetFeelAndEffort(it)) },
             )
             Text(text = "Feel & Effort")
         }
@@ -201,7 +208,7 @@ internal fun EditProfileForm(
                 text = "Save",
                 enabled = state.profile.name.isNotBlank() &&
                         (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
-                onClick = { onEvent(EditProfileEvent.Save) }
+                onClick = { onEvent(ProfileEvent.Save) }
             )
         }
     }

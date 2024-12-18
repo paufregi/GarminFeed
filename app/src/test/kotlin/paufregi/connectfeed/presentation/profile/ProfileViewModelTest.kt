@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.editprofile
+package paufregi.connectfeed.presentation.profile
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
@@ -25,11 +25,11 @@ import paufregi.connectfeed.core.usecases.GetCourses
 import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
-import paufregi.connectfeed.presentation.Routes
+import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
-class EditProfileViewModelTest {
+class ProfileViewModelTest {
 
     private val getProfile = mockk<GetProfile>()
     private val getActivityTypes = mockk<GetActivityTypes>()
@@ -38,7 +38,7 @@ class EditProfileViewModelTest {
     private val saveProfile = mockk<SaveProfile>()
     private val savedState = mockk<SavedStateHandle>()
 
-    private lateinit var viewModel: EditProfileViewModel
+    private lateinit var viewModel: ProfileViewModel
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -60,13 +60,13 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -85,13 +85,13 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -109,13 +109,13 @@ class EditProfileViewModelTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Failure<List<EventType>>("error")
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -133,13 +133,13 @@ class EditProfileViewModelTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
         val eventTypes = listOf(EventType(id = 1, name = "event"))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Failure<List<Course>>("error")
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -156,13 +156,13 @@ class EditProfileViewModelTest {
     fun `Fails to load event types and courses`() = runTest {
         val activityTypes = listOf(ActivityType.Any, ActivityType.Running)
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Failure<List<EventType>>("error")
         coEvery { getCourses.invoke() } returns Result.Failure<List<Course>>("error")
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             val state = awaitItem()
@@ -181,17 +181,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetName("name"))
+            viewModel.onEvent(ProfileEvent.SetName("name"))
             val state = awaitItem()
             assertThat(state.profile.name).isEqualTo("name")
             cancelAndIgnoreRemainingEvents()
@@ -204,17 +204,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetActivityType(ActivityType.Running))
+            viewModel.onEvent(ProfileEvent.SetActivityType(ActivityType.Running))
             val state = awaitItem()
             assertThat(state.profile.activityType).isEqualTo(ActivityType.Running)
             cancelAndIgnoreRemainingEvents()
@@ -229,17 +229,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetActivityType(ActivityType.Running))
+            viewModel.onEvent(ProfileEvent.SetActivityType(ActivityType.Running))
             val state = awaitItem()
             assertThat(state.profile.activityType).isEqualTo(ActivityType.Running)
             assertThat(state.profile.course).isEqualTo(course)
@@ -255,17 +255,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns profile
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetActivityType(ActivityType.Cycling))
+            viewModel.onEvent(ProfileEvent.SetActivityType(ActivityType.Cycling))
             val state = awaitItem()
             assertThat(state.profile.activityType).isEqualTo(ActivityType.Cycling)
             assertThat(state.profile.course).isNull()
@@ -280,17 +280,17 @@ class EditProfileViewModelTest {
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
         val eventType = EventType(id = 1, name = "event")
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetEventType(eventType))
+            viewModel.onEvent(ProfileEvent.SetEventType(eventType))
             val state = awaitItem()
             assertThat(state.profile.eventType).isEqualTo(eventType)
             cancelAndIgnoreRemainingEvents()
@@ -304,17 +304,17 @@ class EditProfileViewModelTest {
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
         val course = Course(id = 1, name = "course", type = ActivityType.Running)
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetCourse(course))
+            viewModel.onEvent(ProfileEvent.SetCourse(course))
             val state = awaitItem()
             assertThat(state.profile.course).isEqualTo(course)
             cancelAndIgnoreRemainingEvents()
@@ -327,17 +327,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetWater(100))
+            viewModel.onEvent(ProfileEvent.SetWater(100))
             val state = awaitItem()
             assertThat(state.profile.water).isEqualTo(100)
             cancelAndIgnoreRemainingEvents()
@@ -350,17 +350,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetRename(false))
+            viewModel.onEvent(ProfileEvent.SetRename(false))
             val state = awaitItem()
             assertThat(state.profile.rename).isEqualTo(false)
             cancelAndIgnoreRemainingEvents()
@@ -373,17 +373,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetCustomWater(true))
+            viewModel.onEvent(ProfileEvent.SetCustomWater(true))
             val state = awaitItem()
             assertThat(state.profile.customWater).isEqualTo(true)
             cancelAndIgnoreRemainingEvents()
@@ -396,17 +396,17 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.SetFeelAndEffort(true))
+            viewModel.onEvent(ProfileEvent.SetFeelAndEffort(true))
             val state = awaitItem()
             assertThat(state.profile.feelAndEffort).isEqualTo(true)
             cancelAndIgnoreRemainingEvents()
@@ -420,18 +420,18 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
         coEvery { saveProfile.invoke(any()) } returns Result.Success(Unit)
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.Save)
+            viewModel.onEvent(ProfileEvent.Save)
             val state = awaitItem()
             assertThat(state.processing).isEqualTo(ProcessState.Success)
             cancelAndIgnoreRemainingEvents()
@@ -444,18 +444,18 @@ class EditProfileViewModelTest {
         val eventTypes = listOf(EventType(id = 1, name = "event"))
         val courses = listOf(Course(id = 1, name = "course", type = ActivityType.Running))
 
-        every { savedState.toRoute<Routes.EditProfile>() } returns Routes.EditProfile(1)
+        every { savedState.toRoute<Route.Profile>() } returns Route.Profile(1)
         coEvery { getProfile(any()) } returns null
         every { getActivityTypes.invoke() } returns activityTypes
         coEvery { getEventTypes.invoke() } returns Result.Success(eventTypes)
         coEvery { getCourses.invoke() } returns Result.Success(courses)
         coEvery { saveProfile.invoke(any()) } returns Result.Failure("error")
 
-        viewModel = EditProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
+        viewModel = ProfileViewModel(savedState, getProfile, getActivityTypes, getEventTypes, getCourses, saveProfile)
 
         viewModel.state.test {
             awaitItem() // Initial state
-            viewModel.onEvent(EditProfileEvent.Save)
+            viewModel.onEvent(ProfileEvent.Save)
             val state = awaitItem()
             assertThat(state.processing).isEqualTo(ProcessState.FailureSaving)
             cancelAndIgnoreRemainingEvents()
