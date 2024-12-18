@@ -31,7 +31,7 @@ class ProfileScreenTest {
     @Test
     fun `Default values`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Idle,
             ))
         }
@@ -52,7 +52,7 @@ class ProfileScreenTest {
     @Test
     fun `Loading spinner`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Processing
             ))
         }
@@ -62,7 +62,7 @@ class ProfileScreenTest {
     @Test
     fun `Edit profile`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
@@ -91,7 +91,7 @@ class ProfileScreenTest {
     @Test
     fun `Invalid profile - no name`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Idle,
                 profile = Profile(
                     name = "",
@@ -108,7 +108,7 @@ class ProfileScreenTest {
     @Test
     fun `Invalid profile - no event type`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
@@ -123,7 +123,7 @@ class ProfileScreenTest {
     @Test
     fun `No course - type any`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
@@ -139,7 +139,7 @@ class ProfileScreenTest {
     @Test
     fun `No course - type strength`() {
         composeTestRule.setContent {
-            EditProfileContent(state = EditProfileState(
+            ProfileContent(state = EditProfileState(
                 processing = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",

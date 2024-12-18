@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
@@ -39,7 +41,7 @@ import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun EditProfileScreen(
+internal fun ProfileScreen(
     nav: NavHostController = rememberNavController()
 ) {
     val viewModel = hiltViewModel<ProfileViewModel>()
@@ -50,7 +52,7 @@ internal fun EditProfileScreen(
         selectIndex = Navigation.PROFILE,
         nav = nav
     ) { pv ->
-        EditProfileContent(
+        ProfileContent(
             state = state,
             onEvent = viewModel::onEvent,
             paddingValues = pv,
@@ -62,7 +64,7 @@ internal fun EditProfileScreen(
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun EditProfileContent(
+internal fun ProfileContent(
     @PreviewParameter(ProfileStatePreview ::class) state: EditProfileState,
     onEvent: (ProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
@@ -85,14 +87,14 @@ internal fun EditProfileContent(
                 text = "Profile saved",
                 actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
                 paddingValues = paddingValues)
-        else -> EditProfileForm(state, onEvent, paddingValues, nav)
+        else -> ProfileForm(state, onEvent, paddingValues, nav)
     }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
-internal fun EditProfileForm(
+internal fun ProfileForm(
     @PreviewParameter(ProfileStatePreview::class) state: EditProfileState,
     onEvent: (ProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
@@ -105,6 +107,7 @@ internal fun EditProfileForm(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         TextField(
             label = { Text("Name") },
