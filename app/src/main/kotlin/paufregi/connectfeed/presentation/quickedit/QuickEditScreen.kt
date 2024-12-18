@@ -10,21 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Mood
 import androidx.compose.material.icons.filled.MoodBad
 import androidx.compose.material.icons.filled.SentimentNeutral
 import androidx.compose.material.icons.filled.SentimentSatisfiedAlt
 import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -37,12 +31,16 @@ import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.CustomSlider
 import paufregi.connectfeed.presentation.ui.components.Dropdown
 import paufregi.connectfeed.presentation.ui.components.IconRadioGroup
 import paufregi.connectfeed.presentation.ui.components.IconRadioItem
 import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
 import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import paufregi.connectfeed.presentation.ui.components.TextEffort
@@ -51,19 +49,14 @@ import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun QuickEditScreen() {
+internal fun QuickEditScreen(nav: NavController = rememberNavController()) {
     val viewModel = hiltViewModel<QuickEditViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Scaffold(
-        topBar = { TopAppBar(
-            title = { Text("Connect Feed") },
-            actions = {
-                IconButton(onClick = { }) {
-                    Icon(Icons.Filled.Menu, "Settings")
-                }
-            }
-        ) },
+    NavigationDrawer(
+        items = Navigation.items,
+        selectIndex = Navigation.HOME,
+        nav = nav
     ) { pv ->
         QuickEditContent(state, viewModel::onEvent, pv)
     }
