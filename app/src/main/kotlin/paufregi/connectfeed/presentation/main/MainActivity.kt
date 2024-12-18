@@ -14,7 +14,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import paufregi.connectfeed.presentation.Route
-import paufregi.connectfeed.presentation.profile.EditProfileScreen
+import paufregi.connectfeed.presentation.account.AccountScreen
+import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
 import paufregi.connectfeed.presentation.setup.SetupScreen
@@ -40,7 +41,8 @@ class MainActivity : ComponentActivity() {
                     true -> NavHost(navController = nav, startDestination = Route.Home) {
                         composable<Route.Home> { QuickEditScreen(nav = nav) }
                         composable<Route.Profiles> { ProfilesScreen(nav = nav) }
-                        composable<Route.Profile> { EditProfileScreen(nav = nav) }
+                        composable<Route.Profile> { ProfileScreen(nav = nav) }
+                        composable<Route.Account> { AccountScreen(nav = nav) }
                     }
 
                     else -> SetupScreen()

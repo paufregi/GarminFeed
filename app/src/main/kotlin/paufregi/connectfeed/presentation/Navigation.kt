@@ -1,6 +1,7 @@
 package paufregi.connectfeed.presentation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Tune
 import kotlinx.serialization.Serializable
@@ -14,6 +15,9 @@ sealed interface Route {
     data object Profiles : Route
 
     @Serializable
+    data object Account : Route
+
+    @Serializable
     data class Profile(val id: Long = 0L) : Route
 }
 
@@ -25,5 +29,6 @@ object Navigation {
     val items  = listOf(
         NavigationItem("Home", Icons.Filled.Home, Route.Home),
         NavigationItem("Profiles", Icons.Filled.Tune, Route.Profiles),
+        NavigationItem("Account", Icons.Filled.AccountCircle, Route.Account),
     )
 }
