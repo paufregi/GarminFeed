@@ -5,38 +5,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
-import paufregi.connectfeed.presentation.Routes
-import paufregi.connectfeed.presentation.editprofile.EditProfileScreen
+import paufregi.connectfeed.presentation.Route
+import paufregi.connectfeed.presentation.profile.EditProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
-import paufregi.connectfeed.presentation.settings.SettingsScreen
 import paufregi.connectfeed.presentation.setup.SetupScreen
-import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.ui.components.NavBar
-import paufregi.connectfeed.presentation.ui.components.NavItem
 import paufregi.connectfeed.presentation.ui.theme.Theme
-import paufregi.connectfeed.presentation.ui.components.SnackbarObserver
-import paufregi.connectfeed.presentation.ui.components.StatusInfo
-import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 import kotlin.getValue
 
 @AndroidEntryPoint
@@ -55,11 +37,10 @@ class MainActivity : ComponentActivity() {
 
             Theme {
                 when (setupDone) {
-                    true -> NavHost(navController = nav, startDestination = Routes.Home) {
-                        composable<Routes.Home> { QuickEditScreen() }
-                        composable<Routes.Profiles> { ProfilesScreen(nav = nav) }
-                        composable<Routes.EditProfile> { EditProfileScreen(nav = nav) }
-                        composable<Routes.Settings> { SettingsScreen() }
+                    true -> NavHost(navController = nav, startDestination = Route.Home) {
+                        composable<Route.Home> { QuickEditScreen(nav = nav) }
+                        composable<Route.Profiles> { ProfilesScreen(nav = nav) }
+                        composable<Route.Profile> { EditProfileScreen(nav = nav) }
                     }
 
                     else -> SetupScreen()
