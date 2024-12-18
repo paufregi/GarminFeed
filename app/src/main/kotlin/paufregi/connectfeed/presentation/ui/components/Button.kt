@@ -3,6 +3,8 @@ package paufregi.connectfeed.presentation.ui.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,11 +20,18 @@ import androidx.compose.material3.IconButton as MaterialIconButton
 @Composable
 @Suppress("PreviewShouldNotBeCalledRecursively")
 fun Button(
+    modifier: Modifier = Modifier,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
     @PreviewParameter(ButtonTextPreview ::class) text: String,
     onClick: () -> Unit = {},
     enabled: Boolean = true
 ) {
-    MaterialButton(onClick, enabled = enabled) {
+    MaterialButton(
+        modifier = modifier,
+        colors = colors,
+        onClick = onClick,
+        enabled = enabled
+    ) {
        Text(text)
     }
 }
