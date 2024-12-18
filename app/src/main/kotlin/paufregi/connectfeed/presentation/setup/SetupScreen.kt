@@ -42,7 +42,7 @@ internal fun SetupScreen() {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Setup ") }) }
+        topBar = { TopAppBar(title = { Text("Connect Feed") }) }
     ) { pv ->
         SetupContent(
             state = state,
@@ -124,9 +124,9 @@ internal fun SetupForm(
                 text = "Sign in",
                 enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
                 onClick = {
-                    onEvent(SetupEvent.SignIn)
                     keyboardController?.hide()
                     focusManager.clearFocus()
+                    onEvent(SetupEvent.SignIn)
                 }
             )
         }
