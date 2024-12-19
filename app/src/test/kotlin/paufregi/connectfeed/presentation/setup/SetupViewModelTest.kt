@@ -17,7 +17,7 @@ import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.SetupDone
 import paufregi.connectfeed.core.usecases.SignIn
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -104,9 +104,9 @@ class SetupViewModelTest {
         viewModel.onEvent(SetupEvent.SetPassword("pass"))
 
         viewModel.state.test {
-            assertThat(awaitItem().processState).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             viewModel.onEvent(SetupEvent.SignIn)
-            assertThat(awaitItem().processState).isEqualTo(ProcessState.Success("Paul"))
+            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Paul"))
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -122,9 +122,9 @@ class SetupViewModelTest {
         viewModel.onEvent(SetupEvent.SetPassword("pass"))
 
         viewModel.state.test {
-            assertThat(awaitItem().processState).isEqualTo(ProcessState.Idle)
+            assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             viewModel.onEvent(SetupEvent.SignIn)
-            assertThat(awaitItem().processState).isEqualTo(ProcessState.Failure("error"))
+            assertThat(awaitItem().process).isEqualTo(ProcessState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
 

@@ -2,10 +2,10 @@ package paufregi.connectfeed.presentation.quickedit
 
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class QuickEditState(
-    val processState: ProcessState = ProcessState.Processing,
+    val process: ProcessState = ProcessState.Processing,
     val activities: List<Activity> = emptyList(),
     val profiles: List<Profile> = emptyList(),
     val activity: Activity? = null,

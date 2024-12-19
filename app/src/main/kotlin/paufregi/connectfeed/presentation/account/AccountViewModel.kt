@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.RefreshToken
 import paufregi.connectfeed.core.usecases.SignOut
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel

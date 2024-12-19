@@ -39,7 +39,7 @@ sealed class StatusInfoType(
 @Composable
 @ExperimentalMaterial3Api
 fun StatusInfo(
-    @PreviewParameter(StatusInfoTypePreview ::class) type: StatusInfoType,
+    @PreviewParameter(StatusInfoTypePreview::class) type: StatusInfoType,
     text: String = "",
     actionButton: @Composable () -> Unit = { },
     paddingValues: PaddingValues = PaddingValues()
@@ -68,6 +68,5 @@ private class StatusInfoTypePreview : PreviewParameterProvider<StatusInfoType> {
     override val values = sequenceOf(
         StatusInfoType.Success,
         StatusInfoType.Failure,
-        StatusInfoType.Unknown,
     )
 }

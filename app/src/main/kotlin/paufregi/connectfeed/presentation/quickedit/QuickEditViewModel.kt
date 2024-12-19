@@ -14,7 +14,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.UpdateActivity
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,18 +47,18 @@ class QuickEditViewModel @Inject constructor(
     }
 
     private fun load() = viewModelScope.launch {
-        _state.update { it.copy(processState = ProcessState.Processing) }
+        _state.update { it.copy(process = ProcessState.Processing) }
         when (val res = getLatestActivities()) {
             is Result.Success -> _state.update { it.copy(
-                processState = ProcessState.Idle,
+                process = ProcessState.Idle,
                 activities = res.data
             ) }
-            is Result.Failure -> _state.update { it.copy(processState = ProcessState.Failure(res.reason)) }
+            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
         }
     }
 
     private fun saveActivity() = viewModelScope.launch {
-        _state.update { it.copy(processState = ProcessState.Processing) }
+        _state.update { it.copy(process = ProcessState.Processing) }
         val res = updateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
@@ -66,8 +66,8 @@ class QuickEditViewModel @Inject constructor(
             effort = state.value.effort
         )
         when (res) {
-            is Result.Success -> _state.update { it.copy(processState = ProcessState.Success("Activity updated")) }
-            is Result.Failure -> _state.update { it.copy(processState = ProcessState.Failure(res.reason)) }
+            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Activity updated")) }
+            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
         }
     }
 }

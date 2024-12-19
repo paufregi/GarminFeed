@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -36,11 +37,13 @@ data class NavigationItem (
 
 @Composable
 @ExperimentalMaterial3Api
-fun NavigationDrawer(
-    items: List<NavigationItem>,
-    selectIndex: Int,
+fun NavigationScaffold(
+    items: List<NavigationItem> = emptyList<NavigationItem>(),
+    selectIndex: Int = 0,
     nav: NavController = rememberNavController(),
-    content: @Composable (PaddingValues) -> Unit
+    floatingActionButton: @Composable () -> Unit = {},
+    floatingActionButtonPosition: FabPosition = FabPosition.End,
+    content: @Composable (PaddingValues) -> Unit = {}
 ) {
 
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -67,10 +70,12 @@ fun NavigationDrawer(
         }
     ) {
         Scaffold(
+            floatingActionButton = floatingActionButton,
+            floatingActionButtonPosition = floatingActionButtonPosition,
             topBar = {
                 TopAppBar(
                     title = { Text("Connect Feed") },
-                    navigationIcon = {
+                    actions = {
                         Button(
                             icon = Icons.Filled.Menu,
                             onClick = { scope.launch { drawerState.open() } }

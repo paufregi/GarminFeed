@@ -1,7 +1,7 @@
 package paufregi.connectfeed.presentation.account
 
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class AccountState(
-    val processState: ProcessState = ProcessState.Processing,
+    val process: ProcessState = ProcessState.Idle,
 )

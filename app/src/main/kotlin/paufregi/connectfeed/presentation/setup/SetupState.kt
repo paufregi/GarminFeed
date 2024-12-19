@@ -3,10 +3,10 @@ package paufregi.connectfeed.presentation.setup
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import paufregi.connectfeed.core.models.Credential
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class SetupState(
-    val processState: ProcessState = ProcessState.Idle,
+    val process: ProcessState = ProcessState.Idle,
     val credential: Credential = Credential(),
     val showPassword: Boolean = false,
 )
@@ -18,7 +18,7 @@ fun MutableStateFlow<SetupState>.change(
     credential: Credential? = null,
     showPassword: Boolean?  = null,
 ) = this.update { it.copy(
-        processState = processState ?: it.processState,
+        process = processState ?: it.process,
         credential = credential ?: Credential(
             username ?: it.credential.username,
             password ?: it.credential.password),

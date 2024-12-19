@@ -19,7 +19,7 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.presentation.Route
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,7 +41,7 @@ class ProfileViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), ProfileState())
 
     private fun load() = viewModelScope.launch {
-        _state.update { it.copy(processState = ProcessState.Processing) }
+        _state.update { it.copy(process = ProcessState.Processing) }
         var errors = mutableListOf<String>()
 
         _state.update { it.copy(
@@ -59,8 +59,8 @@ class ProfileViewModel @Inject constructor(
         }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(processState = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
-            false -> _state.update { it.copy(processState = ProcessState.Idle) }
+            true -> _state.update { it.copy(process = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
+            false -> _state.update { it.copy(process = ProcessState.Idle) }
         }
     }
 
@@ -86,10 +86,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        _state.update { it.copy(processState = ProcessState.Processing) }
+        _state.update { it.copy(process = ProcessState.Processing) }
         when (val res = saveProfile(state.value.profile) ) {
-            is Result.Success -> _state.update { it.copy(processState = ProcessState.Success("Profile updated")) }
-            is Result.Failure -> _state.update { it.copy(processState = ProcessState.Failure(res.reason)) }
+            is Result.Success -> _state.update { it.copy(process = ProcessState.Success("Profile updated")) }
+            is Result.Failure -> _state.update { it.copy(process = ProcessState.Failure(res.reason)) }
         }
     }
 }

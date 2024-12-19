@@ -4,10 +4,10 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 data class ProfileState(
-    val processState: ProcessState = ProcessState.Processing,
+    val process: ProcessState = ProcessState.Processing,
     val profile: Profile = Profile(),
     val activityTypes: List<ActivityType> = emptyList(),
     val eventTypes: List<EventType> = emptyList(),

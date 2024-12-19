@@ -2,13 +2,13 @@ package paufregi.connectfeed.presentation.setup
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.connectfeed.core.models.Credential
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 class SetupContentStatePreview : PreviewParameterProvider<SetupState> {
     override val values = sequenceOf(
-        SetupState(processState = ProcessState.Processing),
-        SetupState(processState = ProcessState.Success("Paul")),
-        SetupState(processState = ProcessState.Failure("Error")),
+        SetupState(process = ProcessState.Processing),
+        SetupState(process = ProcessState.Success("Paul")),
+        SetupState(process = ProcessState.Failure("Error")),
     )
 }
 

@@ -17,7 +17,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +35,7 @@ import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.Route
 import paufregi.connectfeed.presentation.ui.components.ActivityIcon
 import paufregi.connectfeed.presentation.ui.components.Button
-import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
+import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
 
 @Composable
 @ExperimentalMaterial3Api
@@ -46,17 +45,18 @@ internal fun ProfilesScreen(
     val viewModel = hiltViewModel<ProfilesViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationDrawer(
+    NavigationScaffold(
         items = Navigation.items,
-        selectIndex = Navigation.PROFILES,
-        nav = nav
-    ) { pv ->
-        ProfilesContent(
-            state = state,
-            onEvent = viewModel::onEvent,
-            paddingValues = pv,
-            nav = nav
-        )
+        selectIndex = Navigation.HOME,
+        nav = nav,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { nav.navigate(Route.Profile()) },
+                modifier = Modifier.testTag("create_profile")
+            ) { Icon(Icons.Default.Add, "Create profile") }
+        }
+    ) {
+        ProfilesContent(state, viewModel::onEvent, nav)
     }
 }
 
@@ -66,51 +66,40 @@ internal fun ProfilesScreen(
 internal fun ProfilesContent(
     @PreviewParameter(ProfilesStatePreview::class) state: ProfilesState,
     onEvent: (ProfileEvent) -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(),
     nav: NavHostController = rememberNavController(),
+    paddingValues: PaddingValues = PaddingValues(),
 ) {
-    Scaffold(
-        modifier = Modifier.padding(paddingValues),
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = { nav.navigate(Route.Profile()) },
-                modifier = Modifier.testTag("create_profile")
+    Column(
+        verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(top = 40.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        if (state.profiles.isEmpty()) {
+            Text("No profile")
+        }
+        state.profiles.fastForEachIndexed { index, it ->
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .clickable(onClick = { nav.navigate(Route.Profile(it.id)) })
             ) {
-                Icon(Icons.Default.Add, "Create profile")
-            } }
-    ) { pv ->
-        Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(pv)
-                .padding(top = 40.dp)
-                .verticalScroll(rememberScrollState())
-        ) {
-            if (state.profiles.isEmpty()) {
-                Text("No profile")
-            }
-            state.profiles.fastForEachIndexed { index, it ->
-                Card(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .clickable(onClick = { nav.navigate(Route.Profile(it.id)) })
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.padding(10.dp),
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        modifier = Modifier.padding(10.dp),
-                    ) {
-                        ActivityIcon(it.activityType)
-                        Text(it.name)
-                        Spacer(modifier = Modifier.weight(1f))
-                        Button(
-                            icon = Icons.Default.Delete,
-                            onClick = { onEvent(ProfileEvent.Delete(it)) },
-                            modifier = Modifier.testTag("delete_profile_${it.id}")
-                        )
-                    }
+                    ActivityIcon(it.activityType)
+                    Text(it.name)
+                    Spacer(modifier = Modifier.weight(1f))
+                    Button(
+                        icon = Icons.Default.Delete,
+                        onClick = { onEvent(ProfileEvent.Delete(it)) },
+                        modifier = Modifier.testTag("delete_profile_${it.id}")
+                    )
                 }
             }
         }

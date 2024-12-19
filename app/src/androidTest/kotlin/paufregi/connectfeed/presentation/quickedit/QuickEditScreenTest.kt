@@ -5,7 +5,6 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.isDisplayed
-import androidx.compose.ui.test.isNotDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -17,6 +16,7 @@ import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -41,7 +41,7 @@ class QuickEditScreenTest {
     fun `Default values`() {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
-                processing = ProcessState.Idle,
+                process = ProcessState.Idle,
                 activities = activities,
                 profiles = profiles,
             ))
@@ -55,7 +55,7 @@ class QuickEditScreenTest {
     fun `Loading spinner`() {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
-                processing = ProcessState.Processing,
+                process = ProcessState.Processing,
             ))
         }
         composeTestRule.onNodeWithTag("loading").isDisplayed()
@@ -65,7 +65,7 @@ class QuickEditScreenTest {
     fun `Values selected`() {
         composeTestRule.setContent {
             QuickEditContent(state = QuickEditState(
-                processing = ProcessState.Idle,
+                process = ProcessState.Idle,
                 activities = activities,
                 profiles = profiles,
                 activity = activities[0],

@@ -5,13 +5,13 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 class ProfileStatePreview : PreviewParameterProvider<ProfileState> {
     override val values = sequenceOf(
-        ProfileState(processState = ProcessState.Processing),
-        ProfileState(processState = ProcessState.Success("Profile saved")),
-        ProfileState(processState = ProcessState.Failure("Error saving profile")),
+        ProfileState(process = ProcessState.Processing),
+        ProfileState(process = ProcessState.Success("Profile saved")),
+        ProfileState(process = ProcessState.Failure("Error saving profile")),
         ProfileState(
             profile = Profile(
                 name = "Profile running",

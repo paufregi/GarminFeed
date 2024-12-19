@@ -42,11 +42,14 @@ fun Button(
     modifier: Modifier = Modifier,
     @PreviewParameter(ButtonIconPreview ::class) icon: ImageVector,
     description: String? = "",
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     MaterialIconButton(
         modifier = modifier,
-        onClick = onClick) {
+        onClick = onClick,
+        enabled = enabled
+    ) {
         Icon(icon, description)
     }
 }

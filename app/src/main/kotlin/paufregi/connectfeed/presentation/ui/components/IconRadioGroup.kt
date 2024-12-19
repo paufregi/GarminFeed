@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mood
+import androidx.compose.material.icons.filled.MoodBad
 import androidx.compose.material.icons.filled.SentimentNeutral
 import androidx.compose.material.icons.filled.SentimentVeryDissatisfied
 import androidx.compose.material3.Icon
@@ -70,9 +72,9 @@ fun <T>IconRadioGroup(
 private class IconRadioItemList : PreviewParameterProvider<List<IconRadioItem<Int>>> {
     override val values = sequenceOf(
         listOf(
-            IconRadioItem(1, Icons.Default.SentimentVeryDissatisfied),
+            IconRadioItem(1, Icons.Default.MoodBad),
             IconRadioItem(2, Icons.Default.SentimentNeutral),
-            IconRadioItem(3, Icons.Default.SentimentVeryDissatisfied)
+            IconRadioItem(3, Icons.Default.Mood)
         )
     )
 }

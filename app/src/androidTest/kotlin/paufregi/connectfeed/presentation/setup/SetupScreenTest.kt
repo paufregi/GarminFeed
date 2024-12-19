@@ -4,8 +4,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
-import androidx.compose.ui.test.assertTextEquals
-import androidx.compose.ui.test.assertValueEquals
 import androidx.compose.ui.test.isDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -16,8 +14,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import paufregi.connectfeed.core.models.Credential
-import paufregi.connectfeed.presentation.settings.SettingsContent
-import paufregi.connectfeed.presentation.settings.SettingsState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -60,7 +57,7 @@ class SetupScreenTest {
     @Test
     fun `Loading spinning`() {
         composeTestRule.setContent {
-            SetupContent(state = SetupState(processState = ProcessState.Processing))
+            SetupContent(state = SetupState(process = ProcessState.Processing))
         }
         composeTestRule.onNodeWithTag("loading").isDisplayed()
     }
@@ -68,7 +65,7 @@ class SetupScreenTest {
     @Test
     fun `Sign in - success`() {
         composeTestRule.setContent {
-            SetupContent(state = SetupState(processState = ProcessState.Success("Paul")))
+            SetupContent(state = SetupState(process = ProcessState.Success("Paul")))
         }
         composeTestRule.onNodeWithText("Welcome Paul").isDisplayed()
     }
@@ -76,7 +73,7 @@ class SetupScreenTest {
     @Test
     fun `Sign in - failure`() {
         composeTestRule.setContent {
-            SetupContent(state = SetupState(processState = ProcessState.Failure("error")))
+            SetupContent(state = SetupState(process = ProcessState.Failure("error")))
         }
         composeTestRule.onNodeWithText("error").isDisplayed()
     }

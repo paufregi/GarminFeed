@@ -32,9 +32,12 @@ import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
-import paufregi.connectfeed.presentation.ui.components.Info
-import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
-import paufregi.connectfeed.presentation.ui.components.ProcessDisplay
+import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.NavigationScaffold
+import paufregi.connectfeed.presentation.ui.components.SimpleScaffold
+import paufregi.connectfeed.presentation.ui.components.StatusInfo
+import paufregi.connectfeed.presentation.ui.components.StatusInfoType
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
@@ -42,13 +45,7 @@ internal fun AccountScreen(nav: NavController = rememberNavController()) {
     val viewModel = hiltViewModel<AccountViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    NavigationDrawer(
-        items = Navigation.items,
-        selectIndex = Navigation.HOME,
-        nav = nav
-    ) { pv ->
-        AccountContent(state, viewModel::onEvent, pv)
-    }
+    AccountContent(state, viewModel::onEvent, nav)
 }
 
 @Preview
@@ -57,11 +54,44 @@ internal fun AccountScreen(nav: NavController = rememberNavController()) {
 internal fun AccountContent(
     @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
     onEvent: (AccountEvent) -> Unit = {},
+    nav: NavController = rememberNavController()
+) {
+    when (state.process) {
+        is ProcessState.Processing -> SimpleScaffold { Loading(it) }
+        is ProcessState.Success -> SimpleScaffold {
+            StatusInfo(
+                type = StatusInfoType.Success,
+                text = state.process.message,
+                actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) }) },
+                paddingValues = it
+            )
+        }
+        is ProcessState.Failure -> SimpleScaffold {
+            StatusInfo(
+                type = StatusInfoType.Failure,
+                text = state.process.reason,
+                actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) }) },
+                paddingValues = it
+            )
+        }
+        is ProcessState.Idle -> NavigationScaffold(
+            items = Navigation.items,
+            selectIndex = Navigation.HOME,
+            nav = nav
+        ) { AccountForm(onEvent, it) }
+    }
+}
+
+@Preview
+@Composable
+@ExperimentalMaterial3Api
+internal fun AccountForm(
+    onEvent: (AccountEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     var signOutDialog by remember { mutableStateOf(false) }
 
-    if(signOutDialog == true) {
+    if (signOutDialog == true) {
         ConfirmationDialog(
             title = "Sign out",
             message = "Are you sure you want to sign out?",
@@ -69,53 +99,41 @@ internal fun AccountContent(
             onDismiss = { signOutDialog = false }
         )
     }
-    ProcessDisplay(
-        state = state.processState,
-        successInfo = { s -> Info(
-            text = "Welcome ${s.message}" ,
-            actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) } )}
-        ) },
-        failureInfo = { s -> Info(
-            text = s.reason,
-            actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) } )}
-        ) }
+
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+            .padding(horizontal = 20.dp)
     ) {
-
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 20.dp)
+            modifier = Modifier.padding(bottom = 32.dp)
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(bottom = 32.dp)
-            ) {
-                Image(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Profile picture",
-                    contentScale = ContentScale.FillWidth,
-                    modifier = Modifier.size(200.dp)
-                )
-                Text(text = "Paul", fontSize = 24.sp)
-            }
-
-            Button(
-                text = "Change password",
-                onClick = { onEvent(AccountEvent.SignOut) }
+            Image(
+                imageVector = Icons.Default.AccountCircle,
+                contentDescription = "Profile picture",
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.size(200.dp)
             )
-            Button(
-                text = "Refresh tokens",
-                onClick = { onEvent(AccountEvent.RefreshTokens) }
-            )
-            Button(
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                text = "Sign out",
-                onClick = { signOutDialog = true }
-            )
+            Text(text = "Paul", fontSize = 24.sp)
         }
+
+        Button(
+            text = "Change password",
+            onClick = {  }
+        )
+        Button(
+            text = "Refresh tokens",
+            onClick = { onEvent(AccountEvent.RefreshTokens) }
+        )
+        Button(
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+            text = "Sign out",
+            onClick = { signOutDialog = true }
+        )
     }
 }

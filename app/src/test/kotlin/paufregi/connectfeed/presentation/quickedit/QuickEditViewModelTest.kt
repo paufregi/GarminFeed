@@ -17,14 +17,12 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.Activity
 import paufregi.connectfeed.core.models.ActivityType
-import paufregi.connectfeed.core.models.Course
-import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.UpdateActivity
-import paufregi.connectfeed.presentation.ui.components.ProcessState
+import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -69,7 +67,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processState).isEqualTo(ProcessState.Idle)
+            assertThat(state.process).isEqualTo(ProcessState.Idle)
             assertThat(state.activities).isEqualTo(activities)
             assertThat(state.profiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
@@ -85,7 +83,7 @@ class QuickEditViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processState).isEqualTo(ProcessState.Failure("error"))
+            assertThat(state.process).isEqualTo(ProcessState.Failure("error"))
             assertThat(state.activities).isEqualTo(emptyList<Activity>())
             assertThat(state.profiles).isEqualTo(profiles)
             cancelAndIgnoreRemainingEvents()
