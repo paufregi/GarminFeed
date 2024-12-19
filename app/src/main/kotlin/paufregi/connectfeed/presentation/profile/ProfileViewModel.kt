@@ -19,6 +19,7 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.presentation.Route
+import paufregi.connectfeed.presentation.ui.components.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,14 +34,14 @@ class ProfileViewModel @Inject constructor(
 
     private val profileId: Long = savedStateHandle.toRoute<Route.Profile>().id
 
-    private val _state = MutableStateFlow(EditProfileState())
+    private val _state = MutableStateFlow(ProfileState())
 
     val state = _state
         .onStart { load() }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), EditProfileState())
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), ProfileState())
 
     private fun load() = viewModelScope.launch {
-        _state.update { it.copy(processing = ProcessState.Processing) }
+        _state.update { it.copy(processState = ProcessState.Processing) }
         var errors = mutableListOf<String>()
 
         _state.update { it.copy(
@@ -58,8 +59,8 @@ class ProfileViewModel @Inject constructor(
         }
 
         when (errors.isNotEmpty()) {
-            true -> _state.update { it.copy(processing = ProcessState.FailureLoading("Couldn't load ${errors.joinToString(" & ")}")) }
-            false -> _state.update { it.copy(processing = ProcessState.Idle) }
+            true -> _state.update { it.copy(processState = ProcessState.Failure("Couldn't load ${errors.joinToString(" & ")}")) }
+            false -> _state.update { it.copy(processState = ProcessState.Idle) }
         }
     }
 
@@ -85,10 +86,10 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun save() = viewModelScope.launch {
-        _state.update { it.copy(processing = ProcessState.Processing) }
-        when (saveProfile(state.value.profile) ) {
-            is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }
-            is Result.Failure -> _state.update { it.copy(processing = ProcessState.FailureSaving) }
+        _state.update { it.copy(processState = ProcessState.Processing) }
+        when (val res = saveProfile(state.value.profile) ) {
+            is Result.Success -> _state.update { it.copy(processState = ProcessState.Success("Profile updated")) }
+            is Result.Failure -> _state.update { it.copy(processState = ProcessState.Failure(res.reason)) }
         }
     }
 }

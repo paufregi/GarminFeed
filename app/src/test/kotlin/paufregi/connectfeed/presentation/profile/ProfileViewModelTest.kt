@@ -26,6 +26,7 @@ import paufregi.connectfeed.core.usecases.GetEventTypes
 import paufregi.connectfeed.core.usecases.GetProfile
 import paufregi.connectfeed.core.usecases.SaveProfile
 import paufregi.connectfeed.presentation.Route
+import paufregi.connectfeed.presentation.ui.components.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
@@ -70,7 +71,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.Idle)
+            assertThat(state.processState).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(profile)
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(eventTypes)
@@ -95,7 +96,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.Idle)
+            assertThat(state.processState).isEqualTo(ProcessState.Idle)
             assertThat(state.profile).isEqualTo(Profile())
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(eventTypes)
@@ -119,7 +120,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.FailureLoading("Couldn't load event types"))
+            assertThat(state.processState).isEqualTo(ProcessState.Failure("Couldn't load event types"))
             assertThat(state.profile).isEqualTo(Profile())
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(emptyList<EventType>())
@@ -143,7 +144,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.FailureLoading("Couldn't load courses"))
+            assertThat(state.processState).isEqualTo(ProcessState.Failure("Couldn't load courses"))
             assertThat(state.profile).isEqualTo(Profile())
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(eventTypes)
@@ -166,7 +167,7 @@ class ProfileViewModelTest {
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.FailureLoading("Couldn't load event types & courses"))
+            assertThat(state.processState).isEqualTo(ProcessState.Failure("Couldn't load event types & courses"))
             assertThat(state.profile).isEqualTo(Profile())
             assertThat(state.activityTypes).isEqualTo(activityTypes)
             assertThat(state.eventTypes).isEqualTo(emptyList<EventType>())
@@ -433,7 +434,7 @@ class ProfileViewModelTest {
             awaitItem() // Initial state
             viewModel.onEvent(ProfileEvent.Save)
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.Success)
+            assertThat(state.processState).isEqualTo(ProcessState.Success("Profile updated"))
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -457,7 +458,7 @@ class ProfileViewModelTest {
             awaitItem() // Initial state
             viewModel.onEvent(ProfileEvent.Save)
             val state = awaitItem()
-            assertThat(state.processing).isEqualTo(ProcessState.FailureSaving)
+            assertThat(state.processState).isEqualTo(ProcessState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
     }

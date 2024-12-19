@@ -2,6 +2,7 @@ package paufregi.connectfeed.presentation.setup
 
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import paufregi.connectfeed.core.models.Credential
+import paufregi.connectfeed.presentation.ui.components.ProcessState
 
 class SetupContentStatePreview : PreviewParameterProvider<SetupState> {
     override val values = sequenceOf(

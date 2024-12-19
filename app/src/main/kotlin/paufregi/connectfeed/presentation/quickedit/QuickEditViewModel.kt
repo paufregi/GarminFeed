@@ -14,6 +14,7 @@ import paufregi.connectfeed.core.models.Result
 import paufregi.connectfeed.core.usecases.GetLatestActivities
 import paufregi.connectfeed.core.usecases.GetProfiles
 import paufregi.connectfeed.core.usecases.UpdateActivity
+import paufregi.connectfeed.presentation.ui.components.ProcessState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,23 +47,18 @@ class QuickEditViewModel @Inject constructor(
     }
 
     private fun load() = viewModelScope.launch {
-        _state.update { it.copy(processing = ProcessState.Processing) }
-        var errors = mutableListOf<String>()
+        _state.update { it.copy(processState = ProcessState.Processing) }
         when (val res = getLatestActivities()) {
-            is Result.Success -> _state.update { it.copy(activities = res.data) }
-            is Result.Failure -> {
-                errors.add("activities")
-            }
-        }
-
-        when (errors.isEmpty()) {
-            true -> _state.update { it.copy(processing = ProcessState.Idle) }
-            false -> _state.update { it.copy(processing = ProcessState.FailureLoading) }
+            is Result.Success -> _state.update { it.copy(
+                processState = ProcessState.Idle,
+                activities = res.data
+            ) }
+            is Result.Failure -> _state.update { it.copy(processState = ProcessState.Failure(res.reason)) }
         }
     }
 
     private fun saveActivity() = viewModelScope.launch {
-        _state.update { it.copy(processing = ProcessState.Processing) }
+        _state.update { it.copy(processState = ProcessState.Processing) }
         val res = updateActivity(
             activity = state.value.activity,
             profile = state.value.profile,
@@ -70,8 +66,8 @@ class QuickEditViewModel @Inject constructor(
             effort = state.value.effort
         )
         when (res) {
-            is Result.Success -> _state.update { it.copy(processing = ProcessState.Success) }
-            is Result.Failure -> _state.update { it.copy(processing = ProcessState.FailureUpdating) }
+            is Result.Success -> _state.update { it.copy(processState = ProcessState.Success("Activity updated")) }
+            is Result.Failure -> _state.update { it.copy(processState = ProcessState.Failure(res.reason)) }
         }
     }
 }

@@ -4,19 +4,12 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.ui.components.ProcessState
 
-data class EditProfileState(
-    val processing: ProcessState = ProcessState.Processing,
+data class ProfileState(
+    val processState: ProcessState = ProcessState.Processing,
     val profile: Profile = Profile(),
     val activityTypes: List<ActivityType> = emptyList(),
     val eventTypes: List<EventType> = emptyList(),
     val courses: List<Course> = emptyList(),
 )
-
-sealed interface ProcessState {
-    data object Idle : ProcessState
-    data object Processing : ProcessState
-    data object Success : ProcessState
-    data class FailureLoading(val reason: String) : ProcessState
-    data object FailureSaving : ProcessState
-}

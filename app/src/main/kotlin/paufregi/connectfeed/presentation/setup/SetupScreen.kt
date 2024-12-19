@@ -31,7 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import paufregi.connectfeed.presentation.ui.components.Button
+import paufregi.connectfeed.presentation.ui.components.Info
 import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.ProcessDisplay
 import paufregi.connectfeed.presentation.ui.components.StatusInfo
 import paufregi.connectfeed.presentation.ui.components.StatusInfoType
 
@@ -56,79 +58,69 @@ internal fun SetupScreen() {
 @Composable
 @ExperimentalMaterial3Api
 internal fun SetupContent(
-    @PreviewParameter(SetupContentStatePreview ::class) state: SetupState,
-    onEvent: (SetupEvent) -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(),
-) {
-    when (state.processState) {
-        is ProcessState.Processing -> Loading()
-        is ProcessState.Failure -> StatusInfo(
-            type = StatusInfoType.Failure,
-            text = state.processState.reason,
-            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Reset) } )})
-        is ProcessState.Success -> StatusInfo(
-            type = StatusInfoType.Success,
-            text = "Welcome ${state.processState.name}",
-            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Done) } )})
-        else -> SetupForm(state, onEvent, paddingValues)
-    }
-}
-
-@Preview
-@Composable
-@ExperimentalMaterial3Api
-internal fun SetupForm(
     @PreviewParameter(SetupFormStatePreview::class) state: SetupState,
-    onEvent: (SetupEvent) -> Unit = {  },
+    onEvent: (SetupEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
 
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 20.dp)
+    ProcessDisplay(
+        state = state.processState,
+        successInfo = { s -> Info(
+            text = "Welcome ${s.message}" ,
+            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Reset) } )}
+        ) },
+        failureInfo = { s -> Info(
+            text = s.reason,
+            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Reset) } )}
+        ) }
     ) {
-        TextField(
-            label = { Text("Username") },
-            value = state.credential.username,
-            modifier = Modifier.fillMaxWidth(),
-            onValueChange = { onEvent(SetupEvent.SetUsername(it)) },
-                isError = state.credential.username.isBlank(),
-        )
-        TextField(
-            label = { Text("Password") },
-            value = state.credential.password,
-            onValueChange =  { onEvent(SetupEvent.SetPassword(it)) },
-            isError = state.credential.password.isBlank(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(),
-            trailingIcon = {
-                Button(
-                    onClick = { onEvent(SetupEvent.ShowPassword(!state.showPassword)) },
-                    icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    description = if (state.showPassword) "Hide password" else "Show password"
-                )
-            }
-        )
-        Row(
-            horizontalArrangement = Arrangement.End,
-            modifier = Modifier.fillMaxWidth()
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)
         ) {
-            Button(
-                text = "Sign in",
-                enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
-                onClick = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                    onEvent(SetupEvent.SignIn)
+            TextField(
+                label = { Text("Username") },
+                value = state.credential.username,
+                modifier = Modifier.fillMaxWidth(),
+                onValueChange = { onEvent(SetupEvent.SetUsername(it)) },
+                isError = state.credential.username.isBlank(),
+            )
+            TextField(
+                label = { Text("Password") },
+                value = state.credential.password,
+                onValueChange =  { onEvent(SetupEvent.SetPassword(it)) },
+                isError = state.credential.password.isBlank(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    Button(
+                        onClick = { onEvent(SetupEvent.ShowPassword(!state.showPassword)) },
+                        icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
+                        description = if (state.showPassword) "Hide password" else "Show password"
+                    )
                 }
             )
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    text = "Sign in",
+                    enabled = state.credential.username.isNotBlank() && state.credential.password.isNotBlank(),
+                    onClick = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        onEvent(SetupEvent.SignIn)
+                    }
+                )
+            }
         }
     }
 }

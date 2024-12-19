@@ -19,6 +19,7 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.Course
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
+import paufregi.connectfeed.presentation.ui.components.ProcessState
 
 @HiltAndroidTest
 @ExperimentalMaterial3Api
@@ -31,8 +32,8 @@ class ProfileScreenTest {
     @Test
     fun `Default values`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Idle,
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Idle,
             ))
         }
         composeTestRule.onNodeWithText("Name").isDisplayed()
@@ -52,8 +53,8 @@ class ProfileScreenTest {
     @Test
     fun `Loading spinner`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Processing
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Processing
             ))
         }
         composeTestRule.onNodeWithTag("loading").isDisplayed()
@@ -62,8 +63,8 @@ class ProfileScreenTest {
     @Test
     fun `Edit profile`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Idle,
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Running,
@@ -73,8 +74,8 @@ class ProfileScreenTest {
                     rename = true,
                     customWater = true,
                     feelAndEffort = true
-                )
-            ))
+                ))
+            )
         }
         composeTestRule.onNodeWithText("Name").assertTextContains("Profile 1")
         composeTestRule.onNodeWithText("Activity Type").assertTextContains("Running")
@@ -91,8 +92,8 @@ class ProfileScreenTest {
     @Test
     fun `Invalid profile - no name`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Idle,
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Idle,
                 profile = Profile(
                     name = "",
                     activityType = ActivityType.Running,
@@ -108,8 +109,8 @@ class ProfileScreenTest {
     @Test
     fun `Invalid profile - no event type`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Idle,
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Running,
@@ -123,8 +124,8 @@ class ProfileScreenTest {
     @Test
     fun `No course - type any`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Idle,
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Any,
@@ -139,8 +140,8 @@ class ProfileScreenTest {
     @Test
     fun `No course - type strength`() {
         composeTestRule.setContent {
-            ProfileContent(state = EditProfileState(
-                processing = ProcessState.Idle,
+            ProfileContent(state = ProfileState(
+                processState = ProcessState.Idle,
                 profile = Profile(
                     name = "Profile 1",
                     activityType = ActivityType.Strength,

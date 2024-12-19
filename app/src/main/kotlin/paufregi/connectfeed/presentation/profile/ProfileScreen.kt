@@ -33,10 +33,9 @@ import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.Dropdown
-import paufregi.connectfeed.presentation.ui.components.Loading
+import paufregi.connectfeed.presentation.ui.components.Info
 import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
-import paufregi.connectfeed.presentation.ui.components.StatusInfo
-import paufregi.connectfeed.presentation.ui.components.StatusInfoType
+import paufregi.connectfeed.presentation.ui.components.ProcessDisplay
 import paufregi.connectfeed.presentation.ui.components.toDropdownItem
 
 @Composable
@@ -65,154 +64,137 @@ internal fun ProfileScreen(
 @Composable
 @ExperimentalMaterial3Api
 internal fun ProfileContent(
-    @PreviewParameter(ProfileStatePreview ::class) state: EditProfileState,
+    @PreviewParameter(ProfileStatePreview::class) state: ProfileState,
     onEvent: (ProfileEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
     nav: NavHostController = rememberNavController()
 ) {
-    when (state.processing) {
-        is ProcessState.Processing -> Loading(paddingValues)
-        is ProcessState.FailureLoading -> StatusInfo(
-                type = StatusInfoType.Failure,
-                text = state.processing.reason,
-                actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
-                paddingValues = paddingValues)
-        is ProcessState.FailureSaving -> StatusInfo(
-                type = StatusInfoType.Failure,
-                text = "Couldn't save profile",
-                actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
-                paddingValues = paddingValues)
-        is ProcessState.Success -> StatusInfo(
-                type = StatusInfoType.Success,
-                text = "Profile saved",
-                actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )},
-                paddingValues = paddingValues)
-        else -> ProfileForm(state, onEvent, paddingValues, nav)
-    }
-}
-
-@Preview
-@Composable
-@ExperimentalMaterial3Api
-internal fun ProfileForm(
-    @PreviewParameter(ProfileStatePreview::class) state: EditProfileState,
-    onEvent: (ProfileEvent) -> Unit = {},
-    paddingValues: PaddingValues = PaddingValues(),
-    nav: NavHostController = rememberNavController()
-) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 20.dp)
-            .verticalScroll(rememberScrollState())
+    ProcessDisplay(
+        state = state.processState,
+        successInfo = { s -> Info(
+            text = "Welcome ${s.message}" ,
+            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )}
+        ) },
+        failureInfo = { s -> Info(
+            text = s.reason,
+            actionButton = { Button(text = "Ok", onClick = { nav.navigateUp() } )}
+        ) }
     ) {
-        TextField(
-            label = { Text("Name") },
-            value = state.profile.name,
-            onValueChange = { onEvent(ProfileEvent.SetName(it)) },
-            isError = state.profile.name.isBlank(),
-            modifier = Modifier.fillMaxWidth()
-        )
-        Dropdown(
-            label = { Text("Activity Type") },
-            selected = state.profile.activityType.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
-            items = state.activityTypes.map {
-                it.toDropdownItem { onEvent(ProfileEvent.SetActivityType(it)) }
-            }
-        )
-        Dropdown(
-            label = { Text("Event Type") },
-            selected = state.profile.eventType?.toDropdownItem { },
-            modifier = Modifier.fillMaxWidth(),
-            items = state.eventTypes.map {
-                it.toDropdownItem {
-                    onEvent(ProfileEvent.SetEventType(it))
-                }
-            },
-            isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
-
-        )
-        if (state.profile.activityType != ActivityType.Any && state.profile.activityType != ActivityType.Strength) {
-            Dropdown(
-                label = { Text("Course") },
-                selected = state.profile.course?.toDropdownItem { },
-                modifier = Modifier.fillMaxWidth(),
-                items = state.courses
-                    .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
-                    .map { it.toDropdownItem { onEvent(ProfileEvent.SetCourse(it)) }
-                }
-            )
-        }
-        TextField(
-            label = { Text("Water") },
-            value = state.profile.water?.toString() ?: "",
-            onValueChange = { if (it.isDigitsOnly()) onEvent(ProfileEvent.SetWater(it.toInt())) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = {
-                    onEvent(ProfileEvent.SetRename(!state.profile.rename))
-                })
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)
+                .verticalScroll(rememberScrollState())
         ) {
-            Checkbox(
-                modifier = Modifier.testTag("rename_checkbox"),
-                checked = state.profile.rename,
-                onCheckedChange = { onEvent(ProfileEvent.SetRename(it)) },
+            TextField(
+                label = { Text("Name") },
+                value = state.profile.name,
+                onValueChange = { onEvent(ProfileEvent.SetName(it)) },
+                isError = state.profile.name.isBlank(),
+                modifier = Modifier.fillMaxWidth()
             )
-            Text("Rename activity")
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(ProfileEvent.SetCustomWater(!state.profile.customWater)) }
+            Dropdown(
+                label = { Text("Activity Type") },
+                selected = state.profile.activityType.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.activityTypes.map {
+                    it.toDropdownItem { onEvent(ProfileEvent.SetActivityType(it)) }
+                }
             )
-        ) {
-            Checkbox(
-                modifier = Modifier.testTag("custom_water_checkbox"),
-                checked = state.profile.customWater,
-                onCheckedChange = { onEvent(ProfileEvent.SetCustomWater(it)) },
-            )
-            Text("Customizable water")
-        }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth().clickable(
-                onClick = { onEvent(ProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
-            )
-        ) {
-            Checkbox(
-                modifier = Modifier.testTag("feel_and_effort_checkbox"),
-                checked = state.profile.feelAndEffort,
-                onCheckedChange = { onEvent(ProfileEvent.SetFeelAndEffort(it)) },
-            )
-            Text(text = "Feel & Effort")
-        }
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
-        ) {
-            Button(
-                text = "Cancel",
-                onClick = { nav.navigateUp() }
-            )
+            Dropdown(
+                label = { Text("Event Type") },
+                selected = state.profile.eventType?.toDropdownItem { },
+                modifier = Modifier.fillMaxWidth(),
+                items = state.eventTypes.map {
+                    it.toDropdownItem {
+                        onEvent(ProfileEvent.SetEventType(it))
+                    }
+                },
+                isError = state.profile.activityType != ActivityType.Any && state.profile.eventType == null
 
-            Button(
-                text = "Save",
-                enabled = state.profile.name.isNotBlank() &&
-                        (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
-                onClick = { onEvent(ProfileEvent.Save) }
             )
+            if (state.profile.activityType != ActivityType.Any && state.profile.activityType != ActivityType.Strength) {
+                Dropdown(
+                    label = { Text("Course") },
+                    selected = state.profile.course?.toDropdownItem { },
+                    modifier = Modifier.fillMaxWidth(),
+                    items = state.courses
+                        .filter { it.type == state.profile.activityType || state.profile.activityType == ActivityType.Any }
+                        .map {
+                            it.toDropdownItem { onEvent(ProfileEvent.SetCourse(it)) }
+                        }
+                )
+            }
+            TextField(
+                label = { Text("Water") },
+                value = state.profile.water?.toString() ?: "",
+                onValueChange = { if (it.isDigitsOnly()) onEvent(ProfileEvent.SetWater(it.toInt())) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = {
+                        onEvent(ProfileEvent.SetRename(!state.profile.rename))
+                    })
+            ) {
+                Checkbox(
+                    modifier = Modifier.testTag("rename_checkbox"),
+                    checked = state.profile.rename,
+                    onCheckedChange = { onEvent(ProfileEvent.SetRename(it)) },
+                )
+                Text("Rename activity")
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().clickable(
+                    onClick = { onEvent(ProfileEvent.SetCustomWater(!state.profile.customWater)) }
+                )
+            ) {
+                Checkbox(
+                    modifier = Modifier.testTag("custom_water_checkbox"),
+                    checked = state.profile.customWater,
+                    onCheckedChange = { onEvent(ProfileEvent.SetCustomWater(it)) },
+                )
+                Text("Customizable water")
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth().clickable(
+                    onClick = { onEvent(ProfileEvent.SetFeelAndEffort(!state.profile.feelAndEffort)) }
+                )
+            ) {
+                Checkbox(
+                    modifier = Modifier.testTag("feel_and_effort_checkbox"),
+                    checked = state.profile.feelAndEffort,
+                    onCheckedChange = { onEvent(ProfileEvent.SetFeelAndEffort(it)) },
+                )
+                Text(text = "Feel & Effort")
+            }
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+            ) {
+                Button(
+                    text = "Cancel",
+                    onClick = { nav.navigateUp() }
+                )
+
+                Button(
+                    text = "Save",
+                    enabled = state.profile.name.isNotBlank() &&
+                            (state.profile.activityType == ActivityType.Any || state.profile.eventType != null),
+                    onClick = { onEvent(ProfileEvent.Save) }
+                )
+            }
         }
     }
 }

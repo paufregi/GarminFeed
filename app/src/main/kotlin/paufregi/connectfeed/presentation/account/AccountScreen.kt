@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,8 +32,9 @@ import androidx.navigation.compose.rememberNavController
 import paufregi.connectfeed.presentation.Navigation
 import paufregi.connectfeed.presentation.ui.components.Button
 import paufregi.connectfeed.presentation.ui.components.ConfirmationDialog
+import paufregi.connectfeed.presentation.ui.components.Info
 import paufregi.connectfeed.presentation.ui.components.NavigationDrawer
-
+import paufregi.connectfeed.presentation.ui.components.ProcessDisplay
 
 @Composable
 @ExperimentalMaterial3Api
@@ -53,7 +55,7 @@ internal fun AccountScreen(nav: NavController = rememberNavController()) {
 @Composable
 @ExperimentalMaterial3Api
 internal fun AccountContent(
-    state: AccountState = AccountState(),
+    @PreviewParameter(AccountStatePreview::class) state: AccountState = AccountState(),
     onEvent: (AccountEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
@@ -67,41 +69,53 @@ internal fun AccountContent(
             onDismiss = { signOutDialog = false }
         )
     }
-
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .padding(horizontal = 20.dp)
+    ProcessDisplay(
+        state = state.processState,
+        successInfo = { s -> Info(
+            text = "Welcome ${s.message}" ,
+            actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) } )}
+        ) },
+        failureInfo = { s -> Info(
+            text = s.reason,
+            actionButton = { Button(text = "Ok", onClick = { onEvent(AccountEvent.Reset) } )}
+        ) }
     ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(bottom = 32.dp)
-        ) {
-            Image(
-                imageVector = Icons.Default.AccountCircle,
-                contentDescription = "Profile picture",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.size(200.dp)
-            )
-            Text(text = "Paul", fontSize = 24.sp)
-        }
 
-        Button(
-            text = "Change password",
-            onClick = { onEvent(AccountEvent.SignOut) }
-        )
-        Button(
-            text = "Refresh tokens",
-            onClick = { onEvent(AccountEvent.RefreshTokens) }
-        )
-        Button(
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-            text = "Sign out",
-            onClick = { signOutDialog = true }
-        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 20.dp)
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(bottom = 32.dp)
+            ) {
+                Image(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Profile picture",
+                    contentScale = ContentScale.FillWidth,
+                    modifier = Modifier.size(200.dp)
+                )
+                Text(text = "Paul", fontSize = 24.sp)
+            }
+
+            Button(
+                text = "Change password",
+                onClick = { onEvent(AccountEvent.SignOut) }
+            )
+            Button(
+                text = "Refresh tokens",
+                onClick = { onEvent(AccountEvent.RefreshTokens) }
+            )
+            Button(
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                text = "Sign out",
+                onClick = { signOutDialog = true }
+            )
+        }
     }
 }
