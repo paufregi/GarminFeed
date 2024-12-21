@@ -47,7 +47,7 @@ class LoginScreenTest {
     @Test
     fun `Form - filled with visible password`() {
         composeTestRule.setContent {
-            SetupContent(state = LoginState(credential = Credential("userTest", "passTest")))
+            SetupContent(state = LoginState(credential = Credential("userTest", "passTest"), showPassword = true))
         }
         composeTestRule.onNodeWithText("Username").assertTextContains("userTest")
         composeTestRule.onNodeWithText("Password").assertTextContains("passTest")
