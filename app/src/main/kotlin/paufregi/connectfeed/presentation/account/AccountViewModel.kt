@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.RefreshToken
+import paufregi.connectfeed.core.usecases.RefreshTokens
 import paufregi.connectfeed.core.usecases.SignOut
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import javax.inject.Inject
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AccountViewModel @Inject constructor(
     val signOutUseCase: SignOut,
-    val refreshTokenUseCase: RefreshToken,
+    val refreshTokenUseCase: RefreshTokens,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AccountState())
