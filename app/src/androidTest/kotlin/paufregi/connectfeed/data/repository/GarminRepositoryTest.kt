@@ -1,10 +1,12 @@
 package paufregi.connectfeed.data.repository
 
 import android.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.datastore.preferences.core.edit
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -51,10 +53,14 @@ class GarminRepositoryTest {
     lateinit var repo: GarminRepository
 
     @Inject
+    lateinit var dataStore: UserDataStore
+
+    @Inject
     lateinit var database: GarminDatabase
 
-    private lateinit var dao: GarminDao
-    private lateinit var dataStore: UserDataStore
+    @Inject
+    lateinit var dao: GarminDao
+
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
@@ -73,8 +79,6 @@ class GarminRepositoryTest {
         connectServer.dispatcher = connectDispatcher
         garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
-
-        dao = database.garminDao()
     }
 
     @After
@@ -83,6 +87,9 @@ class GarminRepositoryTest {
         garminSSOServer.shutdown()
         garthServer.shutdown()
         database.close()
+        runBlocking{
+            dataStore.dataStore.edit { it.clear() }
+        }
     }
 
     @Test
@@ -92,7 +99,7 @@ class GarminRepositoryTest {
         repo.getUser().test{
             assertThat(awaitItem()).isNull()
             repo.saveUser(user1)
-            assertThat(awaitItem()).isEqualTo(user2)
+            assertThat(awaitItem()).isEqualTo(user1)
             repo.saveUser(user2)
             assertThat(awaitItem()).isEqualTo(user2)
             repo.deleteUser()
@@ -153,20 +160,20 @@ class GarminRepositoryTest {
         val oAuth2 = createOAuth2(Date())
 
         dataStore.getOauth1().test {
-            assertThat(awaitItem()).isNotNull()
+            assertThat(awaitItem()).isNull()
             dataStore.saveOAuth1(oAuth1)
             assertThat(awaitItem()).isEqualTo(oAuth1)
             repo.deleteTokens()
-            assertThat(awaitItem()).isNotNull()
+            assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
 
         dataStore.getOauth2().test {
-            assertThat(awaitItem()).isNotNull()
+            assertThat(awaitItem()).isNull()
             dataStore.saveOAuth2(oAuth2)
             assertThat(awaitItem()).isEqualTo(oAuth2)
             repo.deleteTokens()
-            assertThat(awaitItem()).isNotNull()
+            assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
