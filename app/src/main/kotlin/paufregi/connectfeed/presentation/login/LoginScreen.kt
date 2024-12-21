@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.setup
+package paufregi.connectfeed.presentation.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,33 +37,34 @@ import paufregi.connectfeed.presentation.ui.models.ProcessState
 
 @Composable
 @ExperimentalMaterial3Api
-internal fun SetupScreen() {
-    val viewModel = hiltViewModel<SetupViewModel>()
+internal fun SetupScreen(onLoginComplete: () -> Unit = {}) {
+    val viewModel = hiltViewModel<LoginViewModel>()
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    SimpleScaffold { SetupContent(state, viewModel::onEvent, it) }
+    SimpleScaffold { SetupContent(state, viewModel::onEvent, onLoginComplete, it) }
 }
 
 @Preview
 @Composable
 @ExperimentalMaterial3Api
 internal fun SetupContent(
-    @PreviewParameter(SetupFormStatePreview::class) state: SetupState,
-    onEvent: (SetupEvent) -> Unit = {},
+    @PreviewParameter(SetupContentStatePreview::class) state: LoginState,
+    onEvent: (LoginEvent) -> Unit = {},
+    onLoginComplete: () -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     when (state.process) {
         is ProcessState.Processing -> Loading(paddingValues)
         is ProcessState.Success -> StatusInfo(
             type = StatusInfoType.Success,
-            text = state.process.message,
-            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Reset) }) },
+            text = "Welcome ${state.process.message}",
+            actionButton = { Button(text = "Ok", onClick = { onLoginComplete() }) },
             paddingValues = paddingValues
         )
         is ProcessState.Failure -> StatusInfo(
             type = StatusInfoType.Failure,
             text = state.process.reason,
-            actionButton = { Button(text = "Ok", onClick = { onEvent(SetupEvent.Reset) }) },
+            actionButton = { Button(text = "Ok", onClick = { onEvent(LoginEvent.Reset) }) },
             paddingValues = paddingValues
         )
         is ProcessState.Idle -> SetupForm(state, onEvent, paddingValues)
@@ -74,8 +75,8 @@ internal fun SetupContent(
 @Composable
 @ExperimentalMaterial3Api
 internal fun SetupForm(
-    @PreviewParameter(SetupFormStatePreview::class) state: SetupState,
-    onEvent: (SetupEvent) -> Unit = {},
+    @PreviewParameter(SetupFormStatePreview::class) state: LoginState,
+    onEvent: (LoginEvent) -> Unit = {},
     paddingValues: PaddingValues = PaddingValues(),
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -93,20 +94,20 @@ Column(
             label = { Text("Username") },
             value = state.credential.username,
             modifier = Modifier.fillMaxWidth(),
-            onValueChange = { onEvent(SetupEvent.SetUsername(it)) },
+            onValueChange = { onEvent(LoginEvent.SetUsername(it)) },
             isError = state.credential.username.isBlank(),
         )
         TextField(
             label = { Text("Password") },
             value = state.credential.password,
-            onValueChange =  { onEvent(SetupEvent.SetPassword(it)) },
+            onValueChange =  { onEvent(LoginEvent.SetPassword(it)) },
             isError = state.credential.password.isBlank(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             visualTransformation = if (state.showPassword) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth(),
             trailingIcon = {
                 Button(
-                    onClick = { onEvent(SetupEvent.ShowPassword(!state.showPassword)) },
+                    onClick = { onEvent(LoginEvent.ShowPassword(!state.showPassword)) },
                     icon = if (state.showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff,
                     description = if (state.showPassword) "Hide password" else "Show password"
                 )
@@ -122,7 +123,7 @@ Column(
                 onClick = {
                     keyboardController?.hide()
                     focusManager.clearFocus()
-                    onEvent(SetupEvent.SignIn)
+                    onEvent(LoginEvent.SignIn)
                 }
             )
         }

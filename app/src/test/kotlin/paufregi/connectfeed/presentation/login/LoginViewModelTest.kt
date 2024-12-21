@@ -1,4 +1,4 @@
-package paufregi.connectfeed.presentation.setup
+package paufregi.connectfeed.presentation.login
 
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -15,18 +15,17 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.Result
-import paufregi.connectfeed.core.usecases.SetupDone
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.core.usecases.SignIn
 import paufregi.connectfeed.presentation.ui.models.ProcessState
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
-class SetupViewModelTest {
+class LoginViewModelTest {
 
     private val signIn = mockk<SignIn>()
-    private val setupDone = mockk<SetupDone>()
 
-    private lateinit var viewModel: SetupViewModel
+    private lateinit var viewModel: LoginViewModel
 
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
@@ -41,11 +40,11 @@ class SetupViewModelTest {
 
     @Test
     fun `Set username`() = runTest {
-        viewModel = SetupViewModel(signIn, setupDone)
+        viewModel = LoginViewModel(signIn)
 
         viewModel.state.test {
             assertThat(awaitItem().credential.username).isEqualTo("")
-            viewModel.onEvent(SetupEvent.SetUsername("user"))
+            viewModel.onEvent(LoginEvent.SetUsername("user"))
             assertThat(awaitItem().credential.username).isEqualTo("user")
             cancelAndIgnoreRemainingEvents()
         }
@@ -53,11 +52,11 @@ class SetupViewModelTest {
 
     @Test
     fun `Set password`() = runTest {
-        viewModel = SetupViewModel(signIn, setupDone)
+        viewModel = LoginViewModel(signIn)
 
         viewModel.state.test {
             assertThat(awaitItem().credential.password).isEqualTo("")
-            viewModel.onEvent(SetupEvent.SetPassword("pass"))
+            viewModel.onEvent(LoginEvent.SetPassword("pass"))
             assertThat(awaitItem().credential.password).isEqualTo("pass")
             cancelAndIgnoreRemainingEvents()
         }
@@ -65,11 +64,11 @@ class SetupViewModelTest {
 
     @Test
     fun `Show password`() = runTest {
-        viewModel = SetupViewModel(signIn, setupDone)
+        viewModel = LoginViewModel(signIn)
 
         viewModel.state.test {
             assertThat(awaitItem().showPassword).isFalse()
-            viewModel.onEvent(SetupEvent.ShowPassword(true))
+            viewModel.onEvent(LoginEvent.ShowPassword(true))
             assertThat(awaitItem().showPassword).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
@@ -77,17 +76,17 @@ class SetupViewModelTest {
 
     @Test
     fun `Reset state`() = runTest {
-        viewModel = SetupViewModel(signIn, setupDone)
-        viewModel.onEvent(SetupEvent.SetUsername("user"))
-        viewModel.onEvent(SetupEvent.SetPassword("pass"))
-        viewModel.onEvent(SetupEvent.ShowPassword(true))
+        viewModel = LoginViewModel(signIn)
+        viewModel.onEvent(LoginEvent.SetUsername("user"))
+        viewModel.onEvent(LoginEvent.SetPassword("pass"))
+        viewModel.onEvent(LoginEvent.ShowPassword(true))
 
         viewModel.state.test {
             var state = awaitItem()
             assertThat(state.credential.username).isEqualTo("user")
             assertThat(state.credential.password).isEqualTo("pass")
             assertThat(state.showPassword).isTrue()
-            viewModel.onEvent(SetupEvent.Reset)
+            viewModel.onEvent(LoginEvent.Reset)
             state = awaitItem()
             assertThat(state.credential.username).isEqualTo("")
             assertThat(state.credential.password).isEqualTo("")
@@ -98,48 +97,38 @@ class SetupViewModelTest {
 
     @Test
     fun `Sign in - success`() = runTest {
-        coEvery { signIn(any()) } returns Result.Success("Paul")
-        viewModel = SetupViewModel(signIn, setupDone)
-        viewModel.onEvent(SetupEvent.SetUsername("user"))
-        viewModel.onEvent(SetupEvent.SetPassword("pass"))
+        val user = User("user", "avatar")
+        coEvery { signIn(any()) } returns Result.Success(user)
+        viewModel = LoginViewModel(signIn)
+        viewModel.onEvent(LoginEvent.SetUsername("user"))
+        viewModel.onEvent(LoginEvent.SetPassword("pass"))
 
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
-            viewModel.onEvent(SetupEvent.SignIn)
+            viewModel.onEvent(LoginEvent.SignIn)
             assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Paul"))
             cancelAndIgnoreRemainingEvents()
         }
 
         coVerify { signIn(Credential("user", "pass")) }
-        confirmVerified(signIn, setupDone)
+        confirmVerified(signIn)
     }
 
     @Test
     fun `Sign in - failed`() = runTest {
         coEvery { signIn(any()) } returns Result.Failure("error")
-        viewModel = SetupViewModel(signIn, setupDone)
-        viewModel.onEvent(SetupEvent.SetUsername("user"))
-        viewModel.onEvent(SetupEvent.SetPassword("pass"))
+        viewModel = LoginViewModel(signIn)
+        viewModel.onEvent(LoginEvent.SetUsername("user"))
+        viewModel.onEvent(LoginEvent.SetPassword("pass"))
 
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
-            viewModel.onEvent(SetupEvent.SignIn)
+            viewModel.onEvent(LoginEvent.SignIn)
             assertThat(awaitItem().process).isEqualTo(ProcessState.Failure("error"))
             cancelAndIgnoreRemainingEvents()
         }
 
         coVerify { signIn(Credential("user", "pass")) }
-        confirmVerified(signIn, setupDone)
-    }
-
-    @Test
-    fun `Setup done`() = runTest {
-        coEvery { setupDone() } returns Unit
-        viewModel = SetupViewModel(signIn, setupDone)
-
-        viewModel.onEvent(SetupEvent.Done)
-
-        coVerify { setupDone() }
-        confirmVerified(signIn, setupDone)
+        confirmVerified(signIn)
     }
 }
