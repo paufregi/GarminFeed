@@ -142,6 +142,106 @@ val htmlForTicket = """
         </html>
     """.trimIndent()
 
+val userProfileJson = """
+    {
+    "id": 1,
+    "profileId": 1,
+    "garminGUID": "621e187e-259e-474d-b502-6538c56c29c3",
+    "displayName": "c27c9419-a89c-4529-83d0-a977794836c3",
+    "fullName": "Paul",
+    "userName": "email@email.com",
+    "profileImageType": "UPLOADED_PHOTO",
+    "profileImageUrlLarge": "https://profile.image.com/large.jpg",
+    "profileImageUrlMedium": "https://profile.image.com/medium.jpg",
+    "profileImageUrlSmall": "https://profile.image.com/small.jpg",
+    "location": "Auckland",
+    "facebookUrl": null,
+    "twitterUrl": null,
+    "personalWebsite": null,
+    "motivation": 2,
+    "bio": null,
+    "primaryActivity": "running",
+    "favoriteActivityTypes": [
+        "running",
+        "cycling",
+        "weight_training"
+    ],
+    "runningTrainingSpeed": 0.0,
+    "cyclingTrainingSpeed": 0.0,
+    "favoriteCyclingActivityTypes": [
+        "road",
+        "commuting"
+    ],
+    "cyclingClassification": null,
+    "cyclingMaxAvgPower": 0.0,
+    "swimmingTrainingSpeed": 0.0,
+    "profileVisibility": "private",
+    "activityStartVisibility": "public",
+    "activityMapVisibility": "public",
+    "courseVisibility": "public",
+    "activityHeartRateVisibility": "public",
+    "activityPowerVisibility": "public",
+    "badgeVisibility": "private",
+    "showAge": true,
+    "showWeight": false,
+    "showHeight": false,
+    "showWeightClass": false,
+    "showAgeRange": false,
+    "showGender": true,
+    "showActivityClass": false,
+    "showVO2Max": false,
+    "showPersonalRecords": true,
+    "showLast12Months": true,
+    "showLifetimeTotals": true,
+    "showUpcomingEvents": true,
+    "showRecentFavorites": true,
+    "showRecentDevice": true,
+    "showRecentGear": false,
+    "showBadges": true,
+    "otherActivity": null,
+    "otherPrimaryActivity": null,
+    "otherMotivation": null,
+    "userRoles": [
+        "SCOPE_ATP_READ",
+        "SCOPE_ATP_WRITE",
+        "SCOPE_COMMUNITY_COURSE_READ",
+        "SCOPE_COMMUNITY_COURSE_WRITE",
+        "SCOPE_CONNECT_READ",
+        "SCOPE_CONNECT_WRITE",
+        "SCOPE_DT_CLIENT_ANALYTICS_WRITE",
+        "SCOPE_GARMINPAY_READ",
+        "SCOPE_GARMINPAY_WRITE",
+        "SCOPE_GCOFFER_READ",
+        "SCOPE_GCOFFER_WRITE",
+        "SCOPE_GHS_SAMD",
+        "SCOPE_GHS_UPLOAD",
+        "SCOPE_GOLF_API_READ",
+        "SCOPE_GOLF_API_WRITE",
+        "SCOPE_INSIGHTS_READ",
+        "SCOPE_INSIGHTS_WRITE",
+        "SCOPE_OMT_CAMPAIGN_READ",
+        "SCOPE_OMT_SUBSCRIPTION_READ",
+        "SCOPE_PRODUCT_SEARCH_READ",
+        "ROLE_CONNECTUSER",
+        "ROLE_FITNESS_USER",
+        "ROLE_WELLNESS_USER",
+        "ROLE_MARINE_USER"
+    ],
+    "nameApproved": true,
+    "userProfileFullName": "Paul",
+    "makeGolfScorecardsPrivate": true,
+    "allowGolfLiveScoring": false,
+    "allowGolfScoringByConnections": true,
+    "userLevel": 6,
+    "userPoint": 741,
+    "levelUpdateDate": "2024-01-01T20:48:42.0",
+    "levelIsViewed": false,
+    "levelPointThreshold": 1260,
+    "userPointOffset": 0,
+    "userPro": false
+}
+""".trimIndent()
+
 val latestActivitiesJson = """
     [
         {
@@ -571,6 +671,8 @@ val connectDispatcher: Dispatcher = object : Dispatcher() {
                 MockResponse().setResponseCode(200).setBody(oauth2Body)
             path == "/upload-service/upload" && request.method == "POST" ->
                 MockResponse().setResponseCode(200)
+            path == "/userprofile-service/userprofile/userProfileBase" && request.method == "GET" ->
+                MockResponse().setResponseCode(200).setBody(userProfileJson)
             path == "/course-service/course" && request.method == "GET" ->
                 MockResponse().setResponseCode(200).setBody(coursesJson)
             path == "/activity-service/activity/eventTypes" && request.method == "GET" ->

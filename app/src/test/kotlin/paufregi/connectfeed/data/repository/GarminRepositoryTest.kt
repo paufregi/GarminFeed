@@ -25,6 +25,7 @@ import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.GarminConnect
 import paufregi.connectfeed.data.api.models.Activity
 import paufregi.connectfeed.data.api.models.ActivityType
@@ -33,6 +34,7 @@ import paufregi.connectfeed.data.api.models.EventType
 import paufregi.connectfeed.data.api.models.Metadata
 import paufregi.connectfeed.data.api.models.Summary
 import paufregi.connectfeed.data.api.models.UpdateActivity
+import paufregi.connectfeed.data.api.models.UserProfile
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import paufregi.connectfeed.data.datastore.UserDataStore
@@ -62,25 +64,81 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Get setup`() = runTest {
-        coEvery { userDataStore.getSetup() } returns flowOf(true)
+    fun `Get user`() = runTest {
+        val user = User("user", "url")
+        coEvery { userDataStore.getUser() } returns flowOf(user)
 
-        repo.getSetup().test {
-            assertThat(awaitItem()).isEqualTo(true)
+        repo.getUser().test {
+            assertThat(awaitItem()).isEqualTo(user)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify { userDataStore.getCredential() }
+        coVerify { userDataStore.getUser() }
         confirmVerified(garminDao, garminConnect, userDataStore)
     }
 
     @Test
-    fun `Save setup`() = runTest {
-        coEvery { userDataStore.saveSetup(any()) } returns Unit
+    fun `Save user`() = runTest {
+        val user = User("user", "url")
+        coEvery { userDataStore.saveUser(any()) } returns Unit
 
-        repo.saveSetup(true)
+        repo.saveUser(user)
 
-        coVerify { userDataStore.saveSetup(true) }
+        coVerify { userDataStore.saveUser(user) }
+        confirmVerified(garminDao, garminConnect, userDataStore)
+    }
+
+    @Test
+    fun `Delete user`() = runTest {
+        coEvery { userDataStore.deleteUser() } returns Unit
+
+        repo.deleteUser()
+
+        coVerify { userDataStore.deleteUser() }
+        confirmVerified(garminDao, garminConnect, userDataStore)
+    }
+
+    @Test
+    fun `Fetch user`() = runTest {
+        val userProfile = UserProfile("user", "url")
+        val user = User("user", "url")
+        coEvery { garminConnect.getUserProfile() } returns Response.success(userProfile)
+
+        val res = repo.fetchUser()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(user)
+
+        coVerify { garminConnect.getUserProfile() }
+        confirmVerified(garminDao, garminConnect, userDataStore)
+    }
+
+    @Test
+    fun `Fetch user - null`() = runTest {
+        coEvery { garminConnect.getUserProfile() } returns Response.success(null)
+
+        val res = repo.fetchUser()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isNull()
+
+        coVerify { garminConnect.getUserProfile() }
+        confirmVerified(garminDao, garminConnect, userDataStore)
+    }
+
+    @Test
+    fun `Fetch user - failure`() = runTest {
+        coEvery { garminConnect.getUserProfile() } returns Response.error<UserProfile>(400, "error".toResponseBody("text/plain; charset=UTF-8".toMediaType()))
+
+        val res = repo.fetchUser()
+
+        assertThat(res.isSuccessful).isFalse()
+        res as Result.Failure
+        assertThat(res.reason).isEqualTo("error")
+
+        coVerify { garminConnect.getUserProfile() }
         confirmVerified(garminDao, garminConnect, userDataStore)
     }
 

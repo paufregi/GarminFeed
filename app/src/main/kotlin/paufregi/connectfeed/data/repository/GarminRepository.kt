@@ -11,6 +11,7 @@ import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.api.GarminConnect
 import paufregi.connectfeed.data.api.models.EventType as DataEventType
 import paufregi.connectfeed.data.api.models.Metadata
@@ -30,16 +31,19 @@ class GarminRepository @Inject constructor(
     private val garminConnect: GarminConnect,
     private val userDataStore: UserDataStore
 ) {
-    fun getSetup(): Flow<Boolean> =
-        userDataStore.getSetup()
+    fun getUser(): Flow<User?> =
+        userDataStore.getUser()
 
-    suspend fun saveSetup(setup: Boolean) =
-        userDataStore.saveSetup(setup)
+    suspend fun saveUser(user: User) =
+        userDataStore.saveUser(user)
 
-    suspend fun fetchFullName(): Result<String> =
+    suspend fun deleteUser() =
+        userDataStore.deleteUser()
+
+    suspend fun fetchUser(): Result<User?> =
         callApi (
             { garminConnect.getUserProfile() },
-            { res -> res.body()?.firstName ?: "" }
+            { res -> res.body()?.toCore() }
         )
 
     fun getCredential(): Flow<Credential?> =
