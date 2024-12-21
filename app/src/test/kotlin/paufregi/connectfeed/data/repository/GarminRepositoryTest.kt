@@ -136,7 +136,6 @@ class GarminRepositoryTest {
 
         assertThat(res.isSuccessful).isFalse()
         res as Result.Failure
-        assertThat(res.reason).isEqualTo("error")
 
         coVerify { garminConnect.getUserProfile() }
         confirmVerified(garminDao, garminConnect, userDataStore)

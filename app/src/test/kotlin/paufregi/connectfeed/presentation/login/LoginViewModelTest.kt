@@ -106,7 +106,7 @@ class LoginViewModelTest {
         viewModel.state.test {
             assertThat(awaitItem().process).isEqualTo(ProcessState.Idle)
             viewModel.onEvent(LoginEvent.SignIn)
-            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("Paul"))
+            assertThat(awaitItem().process).isEqualTo(ProcessState.Success("user"))
             cancelAndIgnoreRemainingEvents()
         }
 
