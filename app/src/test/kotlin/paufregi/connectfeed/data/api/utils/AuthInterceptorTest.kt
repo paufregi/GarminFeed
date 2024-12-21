@@ -28,7 +28,6 @@ import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.api.models.OAuthConsumer
 import paufregi.connectfeed.data.api.models.Ticket
 import paufregi.connectfeed.data.database.GarminDao
-import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.datastore.UserDataStore
 import paufregi.connectfeed.tomorrow
 import retrofit2.Response
