@@ -18,7 +18,7 @@ import paufregi.connectfeed.presentation.account.AccountScreen
 import paufregi.connectfeed.presentation.profile.ProfileScreen
 import paufregi.connectfeed.presentation.profiles.ProfilesScreen
 import paufregi.connectfeed.presentation.quickedit.QuickEditScreen
-import paufregi.connectfeed.presentation.setup.SetupScreen
+import paufregi.connectfeed.presentation.login.SetupScreen
 import paufregi.connectfeed.presentation.ui.theme.Theme
 import kotlin.getValue
 
@@ -31,21 +31,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val setupDone by viewModel.state.collectAsStateWithLifecycle()
-            installSplashScreen().setKeepOnScreenCondition { setupDone == null }
-
             val nav = rememberNavController()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            installSplashScreen().setKeepOnScreenCondition { state.loggedIn == null }
+
+            if (state.loggedIn == false && state.showLogin != true) {
+                viewModel.showLogin()
+            }
 
             Theme {
-                when (setupDone) {
-                    true -> NavHost(navController = nav, startDestination = Route.Home) {
+                if (state.showLogin == true) {
+                    SetupScreen(viewModel::hideLogin)
+                } else {
+                    NavHost(navController = nav, startDestination = Route.Home) {
                         composable<Route.Home> { QuickEditScreen(nav = nav) }
                         composable<Route.Profiles> { ProfilesScreen(nav = nav) }
                         composable<Route.Profile> { ProfileScreen(nav = nav) }
                         composable<Route.Account> { AccountScreen(nav = nav) }
                     }
-
-                    else -> SetupScreen()
                 }
             }
         }

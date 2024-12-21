@@ -11,6 +11,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextClearance
 import androidx.compose.ui.test.performTextInput
+import androidx.datastore.dataStore
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
@@ -33,8 +34,8 @@ import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
-import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
+import paufregi.connectfeed.data.datastore.UserDataStore
 import paufregi.connectfeed.data.repository.GarminRepository
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
@@ -58,9 +59,13 @@ class MainActivityTest {
     lateinit var repo: GarminRepository
 
     @Inject
+    lateinit var dataStore: UserDataStore
+
+    @Inject
     lateinit var database: GarminDatabase
 
-    private lateinit var dao: GarminDao
+    @Inject
+    lateinit var dao: GarminDao
 
     private val connectServer = MockWebServer()
     private val garminSSOServer = MockWebServer()
@@ -79,8 +84,6 @@ class MainActivityTest {
         connectServer.dispatcher = connectDispatcher
         garthServer.dispatcher = garthDispatcher
         garminSSOServer.dispatcher = garminSSODispatcher
-
-        dao = database.garminDao()
     }
 
     @After
@@ -115,7 +118,7 @@ class MainActivityTest {
 
     @Test
     fun `Create profile`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         ActivityScenario.launch(MainActivity::class.java)
         composeTestRule.onNodeWithTag("nav_profiles").performClick()
@@ -148,7 +151,7 @@ class MainActivityTest {
 
     @Test
     fun `Update profile`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
         dao.saveProfile(ProfileEntity(id = 5, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -183,7 +186,7 @@ class MainActivityTest {
 
     @Test
     fun `Delete profile`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
         dao.saveProfile(ProfileEntity(id = 10, name = "Profile 1", activityType = ActivityType.Running, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)
@@ -200,7 +203,7 @@ class MainActivityTest {
 
     @Test
     fun `Update activity`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
         dao.saveProfile(ProfileEntity(name = "Profile 1", activityType = ActivityType.Cycling, eventType = EventType(id = 1, name = "Race")))
 
         ActivityScenario.launch(MainActivity::class.java)

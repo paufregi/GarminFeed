@@ -12,13 +12,13 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import paufregi.connectfeed.core.usecases.IsSetupDone
+import paufregi.connectfeed.core.usecases.IsLoggedIn
 import paufregi.connectfeed.presentation.utils.MainDispatcherRule
 
 @ExperimentalCoroutinesApi
 class MainViewModelTest {
 
-    private val isSetupDone = mockk<IsSetupDone>()
+    private val isLoggedIn = mockk<IsLoggedIn>()
 
     private lateinit var viewModel: MainViewModel
 
@@ -37,14 +37,50 @@ class MainViewModelTest {
 
     @Test
     fun `Load data`() = runTest {
+        every { isLoggedIn.invoke() } returns flowOf(true)
 
-        every { isSetupDone.invoke() } returns flowOf(true)
-
-        viewModel = MainViewModel(isSetupDone)
+        viewModel = MainViewModel(isLoggedIn)
 
         viewModel.state.test {
             val state = awaitItem()
-            assertThat(state).isEqualTo(true)
+            assertThat(state.loggedIn).isTrue()
+            assertThat(state.showLogin).isNull()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Show login`() = runTest {
+        every { isLoggedIn.invoke() } returns flowOf(true)
+
+        viewModel = MainViewModel(isLoggedIn)
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.loggedIn).isTrue()
+            assertThat(state.showLogin).isNull()
+            viewModel.showLogin()
+            state = awaitItem()
+            assertThat(state.loggedIn).isTrue()
+            assertThat(state.showLogin).isTrue()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `Hide login`() = runTest {
+        every { isLoggedIn.invoke() } returns flowOf(true)
+
+        viewModel = MainViewModel(isLoggedIn)
+
+        viewModel.state.test {
+            var state = awaitItem()
+            assertThat(state.loggedIn).isTrue()
+            assertThat(state.showLogin).isNull()
+            viewModel.showLogin()
+            state = awaitItem()
+            assertThat(state.loggedIn).isTrue()
+            assertThat(state.showLogin).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
     }
