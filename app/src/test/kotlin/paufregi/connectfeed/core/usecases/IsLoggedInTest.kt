@@ -4,53 +4,49 @@ import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.confirmVerified
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class IsSetupDoneTest {
+class IsLoggedInTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: IsSetupDone
+    private lateinit var useCase: IsLoggedIn
 
     @Before
-    fun setup() {
-        useCase = IsSetupDone(repo)
+    fun setup(){
+        useCase = IsLoggedIn(repo)
     }
 
     @After
-    fun tearDown() {
+    fun tearDown(){
         clearAllMocks()
     }
 
     @Test
-    fun `Setup done`() = runTest {
-        coEvery { repo.getSetup() } returns flowOf(true)
+    fun `Logged In`() = runTest {
+        val user = User("user", "avatar")
+        coEvery { repo.getUser() } returns flowOf(user)
+        val res = useCase()
 
-        useCase().test {
+        res.test {
             assertThat(awaitItem()).isTrue()
             cancelAndIgnoreRemainingEvents()
         }
-
-        coVerify { repo.getSetup() }
-        confirmVerified(repo)
     }
 
     @Test
-    fun `Setup not done`() = runTest {
-        coEvery { repo.getSetup() } returns flowOf(false)
+    fun `Not logged In`() = runTest {
+        coEvery { repo.getUser() } returns flowOf(null)
+        val res = useCase()
 
-        useCase().test {
+        res.test {
             assertThat(awaitItem()).isFalse()
             cancelAndIgnoreRemainingEvents()
         }
-
-        coVerify { repo.getCredential() }
-        confirmVerified(repo)
     }
 }

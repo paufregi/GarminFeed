@@ -11,27 +11,30 @@ import org.junit.Before
 import org.junit.Test
 import paufregi.connectfeed.data.repository.GarminRepository
 
-class SetupDoneTest {
+class SignOutTest{
     private val repo = mockk<GarminRepository>()
-    private lateinit var useCase: SetupDone
+    private lateinit var useCase: SignOut
 
     @Before
-    fun setup() {
-        useCase = SetupDone(repo)
+    fun setup(){
+        useCase = SignOut(repo)
     }
 
     @After
-    fun tearDown() {
+    fun tearDown(){
         clearAllMocks()
     }
 
     @Test
-    fun `Setup done`() = runTest {
-        coEvery { repo.saveSetup(any()) } returns Unit
+    fun `Sign out`() = runTest {
+        coEvery { repo.deleteCredential() } returns Unit
+        coEvery { repo.deleteTokens() } returns Unit
+        val res = useCase()
 
-        useCase()
-
-        coVerify { repo.saveSetup(true) }
+        coVerify {
+            repo.deleteCredential()
+            repo.deleteTokens()
+        }
         confirmVerified(repo)
     }
 }

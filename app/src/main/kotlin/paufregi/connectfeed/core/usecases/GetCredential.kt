@@ -6,7 +6,5 @@ import paufregi.connectfeed.data.repository.GarminRepository
 import javax.inject.Inject
 
 class GetCredential @Inject constructor (private val garminRepository: GarminRepository) {
-    operator fun invoke(): Flow<Credential?> {
-        return garminRepository.getCredential()
-    }
+    operator fun invoke(): Flow<Credential?> = garminRepository.getCredential()
 }
