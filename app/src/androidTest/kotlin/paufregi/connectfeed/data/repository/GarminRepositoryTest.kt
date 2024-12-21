@@ -18,15 +18,16 @@ import paufregi.connectfeed.core.models.ActivityType as CoreActivityType
 import paufregi.connectfeed.core.models.Course as CoreCourse
 import paufregi.connectfeed.core.models.EventType as CoreEventType
 import paufregi.connectfeed.core.models.Course
+import paufregi.connectfeed.core.models.Credential
 import paufregi.connectfeed.core.models.EventType
 import paufregi.connectfeed.core.models.Profile
 import paufregi.connectfeed.core.models.Result
+import paufregi.connectfeed.core.models.User
 import paufregi.connectfeed.createOAuth2
 import paufregi.connectfeed.cred
 import paufregi.connectfeed.data.api.models.OAuth1
 import paufregi.connectfeed.data.database.GarminDao
 import paufregi.connectfeed.data.database.GarminDatabase
-import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.datastore.UserDataStore
 import paufregi.connectfeed.garminSSODispatcher
 import paufregi.connectfeed.garminSSOPort
@@ -85,23 +86,44 @@ class GarminRepositoryTest {
     }
 
     @Test
-    fun `Store setup`() = runTest {
-        repo.getSetup().test{
-            assertThat(awaitItem()).isFalse()
-            repo.saveSetup(true)
-            assertThat(awaitItem()).isTrue()
-            repo.saveSetup(false)
-            assertThat(awaitItem()).isFalse()
+    fun `Store user`() = runTest {
+        val user1 = User("user_1", "avatar_1")
+        val user2 = User("user_2", "avatar_2")
+        repo.getUser().test{
+            assertThat(awaitItem()).isNull()
+            repo.saveUser(user1)
+            assertThat(awaitItem()).isEqualTo(user2)
+            repo.saveUser(user2)
+            assertThat(awaitItem()).isEqualTo(user2)
+            repo.deleteUser()
+            assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
+    fun `Fetch user`() = runTest {
+        dataStore.saveCredential(cred)
+
+        val expected = User("Paul", "https://profile.image.com/large.jpg")
+
+        val res = repo.fetchUser()
+
+        assertThat(res.isSuccessful).isTrue()
+        res as Result.Success
+        assertThat(res.data).isEqualTo(expected)
+    }
+
+    @Test
     fun `Store credential`() = runTest {
+        val credential1 = Credential("user_1", "password_1")
+        val credential2 = Credential("user_2", "password_2")
         repo.getCredential().test{
             assertThat(awaitItem()).isNull()
-            repo.saveCredential(cred)
-            assertThat(awaitItem()).isEqualTo(cred)
+            repo.saveCredential(credential1)
+            assertThat(awaitItem()).isEqualTo(credential1)
+            repo.saveCredential(credential2)
+            assertThat(awaitItem()).isEqualTo(credential2)
             repo.deleteCredential()
             assertThat(awaitItem()).isNull()
             cancelAndIgnoreRemainingEvents()
@@ -151,7 +173,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get latest activities`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val expected = listOf(
             CoreActivity(id = 1, name = "Activity 1", type = CoreActivityType.Cycling),
@@ -167,7 +189,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get courses`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val expected = listOf(
             CoreCourse(id = 1, name = "Course 1", type = CoreActivityType.Running),
@@ -183,7 +205,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Get event types`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val expected = listOf(
             CoreEventType(id = 1, name = "Race"),
@@ -199,7 +221,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Update activity`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val activity = CoreActivity(id = 1, name = "activity", type = CoreActivityType.Cycling)
         val profile = Profile(
@@ -218,7 +240,7 @@ class GarminRepositoryTest {
 
     @Test
     fun `Upload file`() = runTest {
-        dao.saveCredential(CredentialEntity(credential = cred))
+        dataStore.saveCredential(cred)
 
         val testFile = File.createTempFile("test", "test")
         testFile.deleteOnExit()

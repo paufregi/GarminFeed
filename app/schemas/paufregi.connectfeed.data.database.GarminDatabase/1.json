@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "03a627d8d2fd07100d648afd26e2e83f",
+    "identityHash": "c1c13ad70305dac337d06157dca32f44",
     "entities": [
       {
-        "tableName": "credentials",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `username` TEXT NOT NULL, `password` TEXT NOT NULL)",
+        "tableName": "profiles",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `activityType` TEXT NOT NULL, `water` INTEGER, `rename` INTEGER NOT NULL, `customWater` INTEGER NOT NULL, `feelAndEffort` INTEGER NOT NULL, `event_id` INTEGER, `event_name` TEXT, `course_id` INTEGER, `course_name` TEXT, `course_type` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -15,16 +15,70 @@
             "notNull": true
           },
           {
-            "fieldPath": "credential.username",
-            "columnName": "username",
+            "fieldPath": "name",
+            "columnName": "name",
             "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "credential.password",
-            "columnName": "password",
+            "fieldPath": "activityType",
+            "columnName": "activityType",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "water",
+            "columnName": "water",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "rename",
+            "columnName": "rename",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "customWater",
+            "columnName": "customWater",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "feelAndEffort",
+            "columnName": "feelAndEffort",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType.id",
+            "columnName": "event_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "eventType.name",
+            "columnName": "event_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "course.id",
+            "columnName": "course_id",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "course.name",
+            "columnName": "course_name",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "course.type",
+            "columnName": "course_type",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -40,7 +94,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '03a627d8d2fd07100d648afd26e2e83f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c1c13ad70305dac337d06157dca32f44')"
     ]
   }
 }

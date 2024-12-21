@@ -13,9 +13,6 @@ import org.junit.Rule
 import org.junit.Test
 import paufregi.connectfeed.core.models.ActivityType
 import paufregi.connectfeed.core.models.EventType
-import paufregi.connectfeed.core.models.Profile
-import paufregi.connectfeed.cred
-import paufregi.connectfeed.data.database.entities.CredentialEntity
 import paufregi.connectfeed.data.database.entities.ProfileEntity
 import javax.inject.Inject
 
@@ -43,20 +40,6 @@ class GarminDaoTest {
     @After
     fun tearDown() {
         db.close()
-    }
-
-    @Test
-    fun `Save and retrieve credential`() = runTest {
-        val credEntity = CredentialEntity(credential = cred)
-
-        val cred = dao.getCredential()
-
-        cred.test {
-            assertThat(awaitItem()).isNull()
-            dao.saveCredential(credEntity)
-            assertThat(awaitItem()).isEqualTo(credEntity)
-            cancelAndIgnoreRemainingEvents()
-        }
     }
 
     @Test
